@@ -4,6 +4,7 @@
 #include "Button.hpp"
 #include "Remote.hpp"
 #include "WiFiManager.hpp"
+#include "HttpParser.hpp"
 #include "Secrets.hpp"
 
 #define IR_RECEIVE_PIN 7
@@ -74,85 +75,51 @@ void sendForm(WiFiClient &client)
 
 void loop()
 {
-  ///////////////////////////////////////////////////////////////////// wifi stuff
   WiFiClient client = wifiManager.getServer().available(); // Get the server from WiFiManager
 
   if (client)
   {
     Serial.println("New client connected.");
-    char request[1024] = {0}; // Buffer for storing the request
-    int reqIndex = 0;
-    int contentLength = 0;
-    bool isPost = false;
 
-    // TODO: pull the read and parsing stuff out to the wifi class?
-    // Read the HTTP request
-    while (client.connected() && client.available())
+    // Use HttpParser to parse the request
+    HttpRequest request = HttpParser::parse(client);
+
+    if (request.isPost)
     {
-      char c = client.read();
-      if (reqIndex < sizeof(request) - 1)
-      {
-        request[reqIndex++] = c;
-      }
-      request[reqIndex] = '\0'; // Null-terminate the request
+      Serial.println("Processing POST request...");
 
-      // Detect the end of headers
-      if (strstr(request, "\r\n\r\n") != nullptr)
-      {
-        // Check if POST request
-        if (strstr(request, "POST /") != nullptr)
-        {
-          isPost = true;
-          char *contentLengthHeader = strstr(request, "Content-Length: ");
-          if (contentLengthHeader)
-          {
-            contentLength = atoi(contentLengthHeader + 16);
-          }
-        }
-        break;
-      }
-    }
-
-    // Handle POST request body
-    char body[256] = {0}; // Buffer for POST body
-    if (isPost && contentLength > 0)
-    {
-      int bytesRead = 0;
-      while (bytesRead < contentLength && client.connected())
-      {
-        if (client.available())
-        {
-          char c = client.read();
-          if (bytesRead < sizeof(body) - 1)
-          {
-            body[bytesRead++] = c;
-          }
-        }
-      }
-      body[bytesRead] = '\0'; // Null-terminate the body
-      Serial.println("Form Data Received:");
-
-      // Parse the POST body
-      String postData = String(body);
+      // Parse POST body
       String discStr = "";
       String message = "";
 
-      int discIndex = postData.indexOf("disc=");
+      int discIndex = request.body.indexOf("disc=");
       if (discIndex != -1)
       {
-        int discEndIndex = postData.indexOf("&", discIndex);
+        int discEndIndex = request.body.indexOf("&", discIndex);
         if (discEndIndex == -1)
-          discEndIndex = postData.length();                        // If no '&', go to end of string
-        discStr = postData.substring(discIndex + 5, discEndIndex); // Extract disc value
+          discEndIndex = request.body.length();
+        discStr = request.body.substring(discIndex + 5, discEndIndex);
+        Serial.print("Parsed 'disc': ");
+        Serial.println(discStr);
+      }
+      else
+      {
+        Serial.println("'disc' parameter not found.");
       }
 
-      int messageIndex = postData.indexOf("message=");
+      int messageIndex = request.body.indexOf("message=");
       if (messageIndex != -1)
       {
-        int messageEndIndex = postData.indexOf("&", messageIndex);
+        int messageEndIndex = request.body.indexOf("&", messageIndex);
         if (messageEndIndex == -1)
-          messageEndIndex = postData.length();
-        message = postData.substring(messageIndex + 8, messageEndIndex); // Extract message value
+          messageEndIndex = request.body.length();
+        message = request.body.substring(messageIndex + 8, messageEndIndex);
+        Serial.print("Parsed 'message': ");
+        Serial.println(message);
+      }
+      else
+      {
+        Serial.println("'message' parameter not found.");
       }
 
       if (!discStr.isEmpty() && !message.isEmpty())
@@ -160,25 +127,27 @@ void loop()
         // Convert disc string to integer
         int disc = discStr.toInt();
 
-        // Print extracted values
-        Serial.print("Disc: ");
+        Serial.print("Final Disc value: ");
         Serial.println(disc);
-        Serial.print("Message: ");
+        Serial.print("Final Message value: ");
         Serial.println(message);
 
-        // Select disc
+        // Perform actions
         selectDisc(disc);
-
-        // Set disc memo
         setDiscMemo(message);
       }
       else
       {
-        Serial.println("Error: Missing 'disc' or 'message'.");
+        Serial.println("Error: Missing 'disc' or 'message' parameters.");
       }
+    }
+    else
+    {
+      Serial.println("Received a non-POST request.");
     }
 
     // Send response to client
+    Serial.println("Sending response form to client...");
     sendForm(client);
     delay(10); // Allow the client time to read the response
 
@@ -186,7 +155,6 @@ void loop()
     client.stop();
     Serial.println("Client disconnected.");
   }
-  ///////////////////////////////////////////////////////////////////// end wifi stuff
 
   if (IrReceiver.decode())
   {

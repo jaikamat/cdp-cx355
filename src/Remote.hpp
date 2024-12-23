@@ -6,6 +6,9 @@
 #include <map>
 #include "Button.hpp"
 
+// TODO: Should I instead create a CDP class that encompasses the modes there? Along with latency, disc turning time, etc. So that the two are sync'd?
+// This would mean I could initialize the CD player itself at the beginning of the server setup, pass it into the remote, and have the two be synced to one another.
+// The remote itself doesn't actually have modes or memory. The main unit is the actual object that should be oriented so.
 class Remote
 {
 public:
