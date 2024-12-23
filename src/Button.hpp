@@ -22,6 +22,9 @@ namespace Button
     // Time/Text/Caps are the same button but differ if alpha mode is engaged
     const int TIME_TEXT = 0x28;
     const int CAPS = 0x28;
+    // Group/Space are the same button but differ if alpha mode is engaged
+    const int GROUP = 0x4C;
+    const int SPACE_BAR = 0x4C;
 }
 
 #endif // BUTTON_HPP

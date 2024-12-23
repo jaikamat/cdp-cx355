@@ -115,7 +115,6 @@ public:
         }
     }
 
-    // TODO: Support spaces
     // TODO: Support punctuation
     void sendAlpha(String input)
     {
@@ -231,6 +230,13 @@ public:
 
         for (char c : input)
         {
+            if (c == ' ') // Handle space character
+            {
+                press(Button::SPACE_BAR);
+                delay(300);
+                continue;
+            }
+
             CapsMode requiredMode;
             if (isupper(c))
             {
@@ -282,7 +288,11 @@ public:
                     press(buttonCode);
                     delay(300); // Delay between presses
                 }
-                press(Button::AMS_RIGHT); // Move to the next character
+                // Digits advance the cursor by default - skip AMS_RIGHT when entering numbers
+                if (!isDigit(c))
+                {
+                    press(Button::AMS_RIGHT); // Move to the next character
+                }
                 delay(300);
             }
         }

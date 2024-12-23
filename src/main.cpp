@@ -39,6 +39,32 @@ void setDiscMemo(String memo)
   remote.press(Button::ENTER);
 }
 
+// Decode URL strings in the POST request
+String urlDecode(const String &encoded)
+{
+  String decoded = "";
+  for (size_t i = 0; i < encoded.length(); i++)
+  {
+    char c = encoded[i];
+    if (c == '+')
+    {
+      decoded += ' '; // Replace '+' with space
+    }
+    else if (c == '%' && i + 2 < encoded.length())
+    {
+      // Decode %XX into the corresponding character
+      char hex[3] = {encoded[i + 1], encoded[i + 2], '\0'};
+      decoded += (char)strtol(hex, nullptr, 16);
+      i += 2; // Skip the next two characters
+    }
+    else
+    {
+      decoded += c; // Add other characters as-is
+    }
+  }
+  return decoded;
+}
+
 void setup()
 {
   Serial.begin(115200);                                  // Establish serial communication
@@ -98,7 +124,7 @@ void loop()
         int discEndIndex = request.body.indexOf("&", discIndex);
         if (discEndIndex == -1)
           discEndIndex = request.body.length();
-        discStr = request.body.substring(discIndex + 5, discEndIndex);
+        discStr = urlDecode(request.body.substring(discIndex + 5, discEndIndex));
         Serial.print("Parsed 'disc': ");
         Serial.println(discStr);
       }
@@ -113,7 +139,7 @@ void loop()
         int messageEndIndex = request.body.indexOf("&", messageIndex);
         if (messageEndIndex == -1)
           messageEndIndex = request.body.length();
-        message = request.body.substring(messageIndex + 8, messageEndIndex);
+        message = urlDecode(request.body.substring(messageIndex + 8, messageEndIndex));
         Serial.print("Parsed 'message': ");
         Serial.println(message);
       }
