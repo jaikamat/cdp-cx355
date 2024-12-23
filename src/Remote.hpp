@@ -96,7 +96,7 @@ public:
             {'9', Button::NUM_9},
         };
 
-        std::string numString = std::to_string(number);
+        String numString = String(number);
 
         for (char digit : numString)
         {
@@ -117,7 +117,7 @@ public:
 
     // TODO: Support spaces
     // TODO: Support punctuation
-    void sendAlpha(std::string input)
+    void sendAlpha(String input)
     {
         std::map<char, std::pair<int, int>> alphaUppercaseMap = {
             {'A', {Button::NUM_2, 1}},

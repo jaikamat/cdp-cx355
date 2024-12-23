@@ -33,7 +33,7 @@ void setDiscMemo(String memo)
   delay(1000);
 
   remote.setMode(Remote::Alpha);
-  remote.sendAlpha("JusticeLive");
+  remote.sendAlpha(memo);
   remote.setMode(Remote::Default);
 
   remote.press(Button::ENTER);
@@ -52,24 +52,24 @@ void setup()
 void sendForm(WiFiClient &client)
 {
   String html =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html\r\n"
-      "Connection: close\r\n"
-      "\r\n"
-      "<!DOCTYPE HTML>"
-      "<html>"
-      "<head><title>CDP-CX355 Controller</title></head>"
-      "<body>"
-      "<h1>Arduino Uno R4 WiFi Web Server</h1>"
-      "<form method='POST'>"
-      "  <label for='disc'>Disc:</label><br>"
-      "  <input type='number' id='disc' name='disc'><br>"
-      "  <label for='message'>Message:</label><br>"
-      "  <input type='text' id='message' name='message'><br>"
-      "  <input type='submit' value='Submit'>"
-      "</form>"
-      "</body>"
-      "</html>";
+      F("HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Connection: close\r\n"
+        "\r\n"
+        "<!DOCTYPE HTML>"
+        "<html>"
+        "<head><title>CDP-CX355 Controller</title></head>"
+        "<body>"
+        "<h1>Arduino Uno R4 WiFi Web Server</h1>"
+        "<form method='POST'>"
+        "  <label for='disc'>Disc:</label><br>"
+        "  <input type='number' id='disc' name='disc'><br>"
+        "  <label for='message'>Message:</label><br>"
+        "  <input type='text' id='message' name='message'><br>"
+        "  <input type='submit' value='Submit'>"
+        "</form>"
+        "</body>"
+        "</html>");
   client.print(html);
 }
 
