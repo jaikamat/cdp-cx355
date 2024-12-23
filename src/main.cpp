@@ -6,12 +6,14 @@
 #include "WiFiManager.hpp"
 #include "HttpParser.hpp"
 #include "Secrets.hpp"
+#include "Arduino_LED_Matrix.h"
 
 #define IR_RECEIVE_PIN 7
 #define IR_SEND_PIN 2
 
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
+ArduinoLEDMatrix matrix;
 WiFiManager wifiManager(ssid, password);
 
 void selectDisc(int discNumber)
@@ -67,12 +69,26 @@ String urlDecode(const String &encoded)
 
 void setup()
 {
-  Serial.begin(115200);                                  // Establish serial communication
+  Serial.begin(115200); // Establish serial communication
+  matrix.begin();
+
+  matrix.loadSequence(LEDMATRIX_ANIMATION_STARTUP);
+  matrix.play(false);
+  delay(4800);
+
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK); // Start the receiver
   IrSender.begin(IR_SEND_PIN);                           // Start the emitter
 
+  matrix.loadSequence(LEDMATRIX_ANIMATION_WIFI_SEARCH);
+  matrix.play(true);
+
   // Connect to WiFi
   wifiManager.connect();
+
+  // Indicate we have connected to wifi
+  matrix.loadFrame(LEDMATRIX_CLOUD_WIFI);
+  delay(1000);
+  matrix.clear();
 }
 
 void sendForm(WiFiClient &client)
@@ -112,6 +128,9 @@ void loop()
 
     if (request.isPost)
     {
+      matrix.loadSequence(LEDMATRIX_ANIMATION_SPINNING_COIN);
+      matrix.play(true);
+
       Serial.println("Processing POST request...");
 
       // Parse POST body
@@ -180,6 +199,9 @@ void loop()
     // Close the connection
     client.stop();
     Serial.println("Client disconnected.");
+
+    // clear the matrix
+    matrix.clear();
   }
 
   if (IrReceiver.decode())
