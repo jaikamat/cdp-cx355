@@ -33,6 +33,12 @@ public:
         currentMode = mode;
     }
 
+    void reset()
+    {
+        currentMode = Default;
+        currentCapsMode = Uppercase;
+    }
+
     void cycleCapsMode()
     {
         switch (currentCapsMode)

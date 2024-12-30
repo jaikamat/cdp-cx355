@@ -7,6 +7,8 @@
 #include "HttpParser.hpp"
 #include "Secrets.hpp"
 #include "Arduino_LED_Matrix.h"
+#include <functional>
+#include <map>
 
 #define IR_RECEIVE_PIN 7
 #define IR_SEND_PIN 2
@@ -16,27 +18,6 @@ const char *password = WIFI_PASSWORD;
 ArduinoLEDMatrix matrix;
 WiFiManager wifiManager(ssid, password);
 Remote remote = Remote();
-
-void selectDisc(int discNumber)
-{
-  remote.press(Button::DISC);
-  delay(1000);
-  remote.sendNumber(discNumber);
-  delay(1000);
-  remote.press(Button::ENTER);
-}
-
-void setDiscMemo(String memo)
-{
-  remote.press(Button::MEMO_INPUT);
-  delay(1000);
-
-  remote.setMode(Remote::Alpha);
-  remote.sendAlpha(memo);
-  remote.setMode(Remote::Default);
-
-  remote.press(Button::ENTER);
-}
 
 // Decode URL strings in the POST request
 String urlDecode(const String &encoded)
@@ -64,8 +45,110 @@ String urlDecode(const String &encoded)
   return decoded;
 }
 
+void selectDisc(int discNumber)
+{
+  remote.reset();
+  remote.press(Button::DISC);
+  delay(1000);
+  remote.sendNumber(discNumber);
+  delay(1000);
+  remote.press(Button::ENTER);
+  delay(100);
+}
+
+void setDiscMemo(String memo)
+{
+  remote.reset();
+  remote.press(Button::MEMO_INPUT);
+  delay(1000);
+
+  remote.setMode(Remote::Alpha);
+  remote.sendAlpha(memo);
+  remote.setMode(Remote::Default);
+
+  remote.press(Button::ENTER);
+  delay(100);
+}
+
+// Define a type for your command functions
+using CommandHandler = std::function<void(const String &)>;
+
+// Create a map to store command handlers
+std::map<String, CommandHandler> commandHandlers;
+
+// Create individual handlers
+void handlePowerCommand(const String &)
+{
+  remote.reset();
+  remote.press(Button::POWER);
+}
+
+void handleSelectDiscCommand(const String &args)
+{
+  int discNumber = args.toInt();
+  selectDisc(discNumber);
+}
+
+void handleSetDiscMemoCommand(const String &args)
+{
+  setDiscMemo(args);
+}
+
+void handleSelectDiscAndMemoCommand(const String &args)
+{
+  // Extract `disc` and `message` parameters
+  int discIndex = args.indexOf("disc=");
+  int messageIndex = args.indexOf("message=");
+  String discValue = "";
+  String messageValue = "";
+
+  if (discIndex != -1)
+  {
+    int discEnd = args.indexOf("&", discIndex);
+    if (discEnd == -1)
+      discEnd = args.length();
+    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
+  }
+
+  if (messageIndex != -1)
+  {
+    int messageEnd = args.indexOf("&", messageIndex);
+    if (messageEnd == -1)
+      messageEnd = args.length();
+    messageValue = urlDecode(args.substring(messageIndex + 8, messageEnd));
+  }
+
+  // Log and process
+  Serial.print("Disc Value: ");
+  Serial.println(discValue);
+  Serial.print("Message Value: ");
+  Serial.println(messageValue);
+
+  if (!discValue.isEmpty() && !messageValue.isEmpty())
+  {
+    int discNumber = discValue.toInt();
+    selectDisc(discNumber);
+    setDiscMemo(messageValue);
+  }
+  else
+  {
+    Serial.println("Error: Missing disc or message parameters.");
+  }
+}
+
+// Initialize the handlers in setup
+void setupCommandHandlers()
+{
+  commandHandlers["power"] = handlePowerCommand;
+  commandHandlers["selectDisc"] = handleSelectDiscCommand;
+  commandHandlers["setDiscMemo"] = handleSetDiscMemoCommand;
+  commandHandlers["selectDiscAndMemo"] = handleSelectDiscAndMemoCommand;
+}
+
 void setup()
 {
+  setupCommandHandlers();
+
   Serial.begin(115200); // Establish serial communication
   matrix.begin();
 
@@ -105,7 +188,13 @@ void sendForm(WiFiClient &client)
         "  <input type='number' id='disc' name='disc'><br>"
         "  <label for='message'>Message:</label><br>"
         "  <input type='text' id='message' name='message'><br>"
-        "  <input type='submit' value='Submit'>"
+        "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
+        "  <input type='submit' value='Submit Disc and Memo'><br>"
+        "</form>"
+        "<br>"
+        "<form method='POST'>"
+        "  <input type='hidden' name='command' value='power'>"
+        "  <input type='submit' value='Power'><br>"
         "</form>"
         "</body>"
         "</html>");
@@ -130,57 +219,30 @@ void loop()
 
       Serial.println("Processing POST request...");
 
-      // Parse POST body
-      String discStr = "";
-      String message = "";
+      String command = "";
 
-      int discIndex = request.body.indexOf("disc=");
-      if (discIndex != -1)
+      // Extract 'command' parameter from the POST body
+      int commandIndex = request.body.indexOf("command=");
+      if (commandIndex != -1)
       {
-        int discEndIndex = request.body.indexOf("&", discIndex);
-        if (discEndIndex == -1)
-          discEndIndex = request.body.length();
-        discStr = urlDecode(request.body.substring(discIndex + 5, discEndIndex));
-        Serial.print("Parsed 'disc': ");
-        Serial.println(discStr);
+        int commandEndIndex = request.body.indexOf("&", commandIndex);
+        if (commandEndIndex == -1)
+          commandEndIndex = request.body.length();
+        command = urlDecode(request.body.substring(commandIndex + 8, commandEndIndex));
+      }
+
+      Serial.print("Extracted Command: ");
+      Serial.println(command);
+
+      // Execute the command if it exists in the map
+      auto handler = commandHandlers.find(command);
+      if (handler != commandHandlers.end())
+      {
+        handler->second(request.body); // Pass the entire body to the handler
       }
       else
       {
-        Serial.println("'disc' parameter not found.");
-      }
-
-      int messageIndex = request.body.indexOf("message=");
-      if (messageIndex != -1)
-      {
-        int messageEndIndex = request.body.indexOf("&", messageIndex);
-        if (messageEndIndex == -1)
-          messageEndIndex = request.body.length();
-        message = urlDecode(request.body.substring(messageIndex + 8, messageEndIndex));
-        Serial.print("Parsed 'message': ");
-        Serial.println(message);
-      }
-      else
-      {
-        Serial.println("'message' parameter not found.");
-      }
-
-      if (!discStr.isEmpty() && !message.isEmpty())
-      {
-        // Convert disc string to integer
-        int disc = discStr.toInt();
-
-        Serial.print("Final Disc value: ");
-        Serial.println(disc);
-        Serial.print("Final Message value: ");
-        Serial.println(message);
-
-        // Perform actions
-        selectDisc(disc);
-        setDiscMemo(message);
-      }
-      else
-      {
-        Serial.println("Error: Missing 'disc' or 'message' parameters.");
+        Serial.println("Error: Unknown command.");
       }
     }
     else
