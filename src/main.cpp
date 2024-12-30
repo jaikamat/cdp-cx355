@@ -15,11 +15,10 @@ const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
 ArduinoLEDMatrix matrix;
 WiFiManager wifiManager(ssid, password);
+Remote remote = Remote();
 
 void selectDisc(int discNumber)
 {
-  Remote remote = Remote();
-
   remote.press(Button::DISC);
   delay(1000);
   remote.sendNumber(discNumber);
@@ -29,8 +28,6 @@ void selectDisc(int discNumber)
 
 void setDiscMemo(String memo)
 {
-  Remote remote = Remote();
-
   remote.press(Button::MEMO_INPUT);
   delay(1000);
 
