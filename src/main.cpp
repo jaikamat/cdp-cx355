@@ -7,6 +7,7 @@
 #include "HttpParser.hpp"
 #include "Secrets.hpp"
 #include "Arduino_LED_Matrix.h"
+#include "DiscStorage.hpp"
 #include <functional>
 #include <map>
 
@@ -18,6 +19,7 @@ const char *password = WIFI_PASSWORD;
 ArduinoLEDMatrix matrix;
 WiFiManager wifiManager(ssid, password);
 Remote remote = Remote();
+DiscStorage storage;
 
 // Decode URL strings in the POST request
 String urlDecode(const String &encoded)
@@ -96,11 +98,11 @@ void handleSetDiscMemoCommand(const String &args)
 
 void handleSelectDiscAndMemoCommand(const String &args)
 {
-  // Extract `disc` and `message` parameters
+  // Extract `disc` and `memo` parameters
   int discIndex = args.indexOf("disc=");
-  int messageIndex = args.indexOf("message=");
+  int memoIndex = args.indexOf("memo=");
   String discValue = "";
-  String messageValue = "";
+  String memoValue = "";
 
   if (discIndex != -1)
   {
@@ -110,29 +112,32 @@ void handleSelectDiscAndMemoCommand(const String &args)
     discValue = urlDecode(args.substring(discIndex + 5, discEnd));
   }
 
-  if (messageIndex != -1)
+  if (memoIndex != -1)
   {
-    int messageEnd = args.indexOf("&", messageIndex);
-    if (messageEnd == -1)
-      messageEnd = args.length();
-    messageValue = urlDecode(args.substring(messageIndex + 8, messageEnd));
+    int memoEnd = args.indexOf("&", memoIndex);
+    if (memoEnd == -1)
+      memoEnd = args.length();
+    memoValue = urlDecode(args.substring(memoIndex + 5, memoEnd));
   }
 
   // Log and process
   Serial.print("Disc Value: ");
   Serial.println(discValue);
-  Serial.print("Message Value: ");
-  Serial.println(messageValue);
+  Serial.print("Memo Value: ");
+  Serial.println(memoValue);
 
-  if (!discValue.isEmpty() && !messageValue.isEmpty())
+  if (!discValue.isEmpty() && !memoValue.isEmpty())
   {
     int discNumber = discValue.toInt();
     selectDisc(discNumber);
-    setDiscMemo(messageValue);
+    setDiscMemo(memoValue);
+
+    // Write memo to EEPROM
+    storage.writeDiscWithNumber(discNumber, memoValue);
   }
   else
   {
-    Serial.println("Error: Missing disc or message parameters.");
+    Serial.println("Error: Missing disc or memo message.");
   }
 }
 
@@ -147,10 +152,10 @@ void setupCommandHandlers()
 
 void setup()
 {
-  setupCommandHandlers();
-
   Serial.begin(115200); // Establish serial communication
   matrix.begin();
+
+  setupCommandHandlers();
 
   matrix.loadSequence(LEDMATRIX_ANIMATION_STARTUP);
   matrix.play(false);
@@ -174,31 +179,56 @@ void setup()
 void sendForm(WiFiClient &client)
 {
   String html =
-      F("HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/html\r\n"
-        "Connection: close\r\n"
-        "\r\n"
-        "<!DOCTYPE HTML>"
-        "<html>"
-        "<head><title>CDP-CX355 Controller</title></head>"
-        "<body>"
-        "<h1>Arduino Uno R4 WiFi Web Server</h1>"
-        "<form method='POST'>"
-        "  <label for='disc'>Disc:</label><br>"
-        "  <input type='number' id='disc' name='disc'><br>"
-        "  <label for='message'>Message:</label><br>"
-        "  <input type='text' id='message' name='message'><br>"
-        "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
-        "  <input type='submit' value='Submit Disc and Memo'><br>"
-        "</form>"
-        "<br>"
-        "<form method='POST'>"
-        "  <input type='hidden' name='command' value='power'>"
-        "  <input type='submit' value='Power'><br>"
-        "</form>"
-        "</body>"
-        "</html>");
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html\r\n"
+      "Connection: close\r\n"
+      "\r\n"
+      "<!DOCTYPE HTML>"
+      "<html>"
+      "<head>"
+      "<title>CDP-CX355 Controller</title>"
+      "<style>"
+      "  body { font-family: Arial, sans-serif; }"
+      "  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }"
+      "  .grid-item { border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color: #f9f9f9; }"
+      "  form { display: flex; flex-direction: column; }"
+      "  input[type='text'], input[type='submit'] { margin-top: 5px; padding: 5px; font-size: 14px; }"
+      "</style>"
+      "</head>"
+      "<body>"
+      "<h1>CDP-CX355 Jukebox Controller</h1>"
+      "<div class='grid-container'>";
+
   client.print(html);
+
+  // Generate forms and add them to the grid
+  for (int i = 0; i < storage.getMaxDiscs(); i++)
+  {
+    DiscInfo disc = storage.readDisc(i);
+
+    String formHtml =
+        "<div class='grid-item'>"
+        "<form method='POST'>"
+        "  <label for='disc'>Disc " +
+        String(disc.discNumber) + ":</label>"
+                                  "  <input type='hidden' name='disc' value='" +
+        String(disc.discNumber) + "'>"
+                                  "  <input type='text' name='memo' value='" +
+        String(disc.memo) + "'>"
+                            "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
+                            "  <input type='submit' value='Update Disc'>"
+                            "</form>"
+                            "</div>";
+
+    client.print(formHtml);
+  }
+
+  String footer =
+      "</div>" // Close grid container
+      "</body>"
+      "</html>";
+
+  client.print(footer);
 }
 
 void loop()
@@ -209,14 +239,14 @@ void loop()
   {
     Serial.println("New client connected.");
 
+    matrix.loadSequence(LEDMATRIX_ANIMATION_SPINNING_COIN);
+    matrix.play(true);
+
     // Use HttpParser to parse the request
     HttpRequest request = HttpParser::parse(client);
 
     if (request.isPost)
     {
-      matrix.loadSequence(LEDMATRIX_ANIMATION_SPINNING_COIN);
-      matrix.play(true);
-
       Serial.println("Processing POST request...");
 
       String command = "";
