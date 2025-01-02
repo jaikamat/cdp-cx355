@@ -294,7 +294,7 @@ void sendForm(WiFiClient &client)
         String(disc.discNumber) + "'>"
                                   "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
                                   "  <input type='text' name='memo' value='" +
-        String(disc.memo) + "' maxlength='13'>"
+        String(disc.memo) + "' maxlength='13' pattern='^[a-zA-Z0-9 ]*$'>"
                             "  <input type='submit' value='Update'>"
                             "</form>";
 
