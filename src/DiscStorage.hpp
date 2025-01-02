@@ -15,7 +15,7 @@ struct DiscInfo
 class DiscStorage
 {
 private:
-    static constexpr int MAX_DISCS = 50;                 // Maximum number of discs, setting to 100 for now for faster development TODO: make this 300
+    static constexpr int MAX_DISCS = 25;                 // Maximum number of discs, setting to 100 for now for faster development TODO: make this 300
     static constexpr int RECORD_SIZE = sizeof(DiscInfo); // Size of each record in bytes
 
     // Calculate EEPROM address based on index
@@ -45,15 +45,21 @@ public:
     void writeDiscWithNumber(int discNumber, String memo, bool isDataCD = false)
     {
         int discIndex = discNumber - 1;
-        char charBuf[16];
-        memo.toCharArray(charBuf, sizeof(charBuf)); // Copy the String to char array
 
-        DiscInfo disc = {static_cast<uint16_t>(discNumber), "", isDataCD};
+        // Read the existing record to preserve the current flags
+        DiscInfo disc = readDisc(discIndex);
+
+        // Update the memo
+        char charBuf[16];
+        memo.toCharArray(charBuf, sizeof(charBuf));         // Copy the String to char array
         strncpy(disc.memo, charBuf, sizeof(disc.memo) - 1); // Ensure null-termination
         disc.memo[sizeof(disc.memo) - 1] = '\0';            // Explicit null-termination (safe)
 
-        int address = calculateAddress(discIndex);
-        EEPROM.put(address, disc); // Save the record
+        // Preserve the isDataCD flag unless explicitly overwritten
+        disc.isDataCD = isDataCD ? isDataCD : disc.isDataCD;
+
+        // Write the updated record back to EEPROM
+        writeDisc(discIndex, disc);
     }
 
     // Mark a disc as a Data CD
@@ -84,7 +90,7 @@ public:
     {
         for (int i = 0; i < MAX_DISCS; i++)
         {
-            DiscInfo disc = {static_cast<uint16_t>(i + 1), "Default Memo", false};
+            DiscInfo disc = {static_cast<uint16_t>(i + 1), "", false};
             writeDisc(i, disc);
         }
     }

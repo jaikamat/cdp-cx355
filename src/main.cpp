@@ -151,22 +151,23 @@ void handleSelectDiscAndMemoCommand(const String &args)
   {
     int discNumber = discValue.toInt();
 
-    if (storage.isDataDisc(discNumber))
-    {
-      // Log a clear error for data discs
-      Serial.print("Error: Cannot set memo for Disc ");
-      Serial.print(discNumber);
-      Serial.println(" because it is marked as a Data CD.");
-      return;
-    }
-
-    // Save the memo locally
+    // Save the memo locally to EEPROM
     Serial.print("Saving memo locally for Disc ");
     Serial.print(discNumber);
     Serial.println("...");
     storage.writeDiscWithNumber(discNumber, memoValue);
 
-    // Send to the jukebox
+    // Check if the disc is a Data CD
+    if (storage.isDataDisc(discNumber))
+    {
+      // Log a message and skip sending IR commands
+      Serial.print("Disc ");
+      Serial.print(discNumber);
+      Serial.println(" is marked as a Data CD. Memo saved locally, but no IR commands sent.");
+      return; // Exit the function
+    }
+
+    // Send commands to the jukebox via IR for non-data discs
     Serial.print("Sending memo to jukebox for Disc ");
     Serial.print(discNumber);
     Serial.println("...");
@@ -286,25 +287,40 @@ void sendForm(WiFiClient &client)
   {
     DiscInfo disc = storage.readDisc(i);
 
-    String rowHtml =
-        "<tr>"
-        "<td>" +
-        String(disc.discNumber) + "</td>"
-                                  "<td>" +
-        String(disc.memo) + "</td>"
-                            "<td>"
-                            "<form method='POST' style='display: inline;'>"
-                            "  <input type='hidden' name='disc' value='" +
+    // Memo input field and update button (editable for all discs)
+    String memoField =
+        "<form method='POST' style='display: inline;'>"
+        "  <input type='hidden' name='disc' value='" +
+        String(disc.discNumber) + "'>"
+                                  "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
+                                  "  <input type='text' name='memo' value='" +
+        String(disc.memo) + "' maxlength='13'>"
+                            "  <input type='submit' value='Update'>"
+                            "</form>";
+
+    // Data CD checkbox form
+    String dataCDField =
+        "<form method='POST' style='display: inline;'>"
+        "  <input type='hidden' name='disc' value='" +
         String(disc.discNumber) + "'>"
                                   "  <input type='hidden' name='command' value='setDiscAsDataCD'>"
                                   "  <input type='checkbox' name='isDataCD' value='true' " +
         (disc.isDataCD ? "checked" : "") + "> Data CD"
                                            "  <input type='submit' value='Update'>"
-                                           "</form>"
-                                           "</td>"
-                                           "<td>"
-                                           "<form method='POST' style='display: inline;'>"
-                                           "  <input type='hidden' name='disc' value='" +
+                                           "</form>";
+
+    // Construct the row HTML
+    String rowHtml =
+        "<tr>"
+        "<td>" +
+        String(disc.discNumber) + "</td>"
+                                  "<td>" +
+        memoField + "</td>"
+                    "<td>" +
+        dataCDField + "</td>"
+                      "<td>"
+                      "<form method='POST' style='display: inline;'>"
+                      "  <input type='hidden' name='disc' value='" +
         String(disc.discNumber) + "'>"
                                   "  <input type='hidden' name='command' value='selectDisc'>"
                                   "  <input type='submit' value='Select'>"
@@ -316,17 +332,8 @@ void sendForm(WiFiClient &client)
   }
 
   client.print("</table>"
-               "<form method='POST'>"
-               "  <label for='disc'>Disc Number:</label><br>"
-               "  <input type='number' id='disc' name='disc' min='1' max='" +
-               String(storage.getMaxDiscs()) + "' required><br>"
-                                               "  <label for='memo'>New Memo:</label><br>"
-                                               "  <input type='text' id='memo' name='memo' maxlength='15' required><br>"
-                                               "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
-                                               "  <input type='submit' value='Update Disc'>"
-                                               "</form>"
-                                               "</body>"
-                                               "</html>");
+               "</body>"
+               "</html>");
 }
 
 void loop()
