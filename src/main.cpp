@@ -87,8 +87,29 @@ void handlePowerCommand(const String &)
 
 void handleSelectDiscCommand(const String &args)
 {
-  int discNumber = args.toInt();
-  selectDisc(discNumber);
+  int discIndex = args.indexOf("disc=");
+  String discValue = "";
+
+  if (discIndex != -1)
+  {
+    int discEnd = args.indexOf("&", discIndex);
+    if (discEnd == -1)
+      discEnd = args.length();
+    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
+  }
+
+  Serial.print("Disc Value: ");
+  Serial.println(discValue);
+
+  if (!discValue.isEmpty())
+  {
+    int discNumber = discValue.toInt();
+    selectDisc(discNumber);
+  }
+  else
+  {
+    Serial.println("Error: Missing disc value.");
+  }
 }
 
 void handleSetDiscMemoCommand(const String &args)
@@ -129,15 +150,72 @@ void handleSelectDiscAndMemoCommand(const String &args)
   if (!discValue.isEmpty() && !memoValue.isEmpty())
   {
     int discNumber = discValue.toInt();
+
+    if (storage.isDataDisc(discNumber))
+    {
+      // Log a clear error for data discs
+      Serial.print("Error: Cannot set memo for Disc ");
+      Serial.print(discNumber);
+      Serial.println(" because it is marked as a Data CD.");
+      return;
+    }
+
+    // Save the memo locally
+    Serial.print("Saving memo locally for Disc ");
+    Serial.print(discNumber);
+    Serial.println("...");
+    storage.writeDiscWithNumber(discNumber, memoValue);
+
+    // Send to the jukebox
+    Serial.print("Sending memo to jukebox for Disc ");
+    Serial.print(discNumber);
+    Serial.println("...");
     selectDisc(discNumber);
     setDiscMemo(memoValue);
 
-    // Write memo to EEPROM
-    storage.writeDiscWithNumber(discNumber, memoValue);
+    Serial.println("Memo successfully set.");
   }
   else
   {
     Serial.println("Error: Missing disc or memo message.");
+  }
+}
+
+void handleSetDiscAsDataCDCommand(const String &args)
+{
+  int discIndex = args.indexOf("disc=");
+  int dataCDIndex = args.indexOf("isDataCD=");
+  String discValue = "";
+  bool isDataCD = false;
+
+  if (discIndex != -1)
+  {
+    int discEnd = args.indexOf("&", discIndex);
+    if (discEnd == -1)
+      discEnd = args.length();
+    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
+  }
+
+  if (dataCDIndex != -1)
+  {
+    int dataCDEnd = args.indexOf("&", dataCDIndex);
+    if (dataCDEnd == -1)
+      dataCDEnd = args.length();
+    String isDataCDValue = urlDecode(args.substring(dataCDIndex + 9, dataCDEnd));
+    isDataCD = (isDataCDValue == "true");
+  }
+
+  if (!discValue.isEmpty())
+  {
+    int discNumber = discValue.toInt();
+    storage.setDiscAsDataCD(discNumber, isDataCD);
+    Serial.print("Disc ");
+    Serial.print(discNumber);
+    Serial.println(isDataCD ? " marked as Data CD." : " unmarked as Data CD.");
+  }
+  else
+  {
+    Serial.println("Error: Missing disc value.");
   }
 }
 
@@ -148,6 +226,7 @@ void setupCommandHandlers()
   commandHandlers["selectDisc"] = handleSelectDiscCommand;
   commandHandlers["setDiscMemo"] = handleSetDiscMemoCommand;
   commandHandlers["selectDiscAndMemo"] = handleSelectDiscAndMemoCommand;
+  commandHandlers["setDiscAsDataCD"] = handleSetDiscAsDataCDCommand;
 }
 
 void setup()
@@ -188,47 +267,66 @@ void sendForm(WiFiClient &client)
       "<head>"
       "<title>CDP-CX355 Controller</title>"
       "<style>"
-      "  body { font-family: Arial, sans-serif; }"
-      "  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }"
-      "  .grid-item { border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color: #f9f9f9; }"
-      "  form { display: flex; flex-direction: column; }"
-      "  input[type='text'], input[type='submit'] { margin-top: 5px; padding: 5px; font-size: 14px; }"
+      "  body { font-family: Arial, sans-serif; margin: 20px; }"
+      "  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }"
+      "  th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }"
+      "  th { background-color: #f2f2f2; }"
+      "  input[type='number'], input[type='text'], input[type='submit'], input[type='checkbox'] { margin-top: 5px; padding: 5px; font-size: 14px; }"
       "</style>"
       "</head>"
       "<body>"
       "<h1>CDP-CX355 Jukebox Controller</h1>"
-      "<div class='grid-container'>";
+      "<table>"
+      "<tr><th>Disc Number</th><th>Memo</th><th>Data CD</th><th>Action</th></tr>";
 
   client.print(html);
 
-  // Generate forms and add them to the grid
+  // Add rows to the table for each disc with an inline form
   for (int i = 0; i < storage.getMaxDiscs(); i++)
   {
     DiscInfo disc = storage.readDisc(i);
 
-    String formHtml =
-        "<div class='grid-item'>"
-        "<form method='POST'>"
-        "  <label for='disc'>Disc " +
-        String(disc.discNumber) + ":</label>"
-                                  "  <input type='hidden' name='disc' value='" +
+    String rowHtml =
+        "<tr>"
+        "<td>" +
+        String(disc.discNumber) + "</td>"
+                                  "<td>" +
+        String(disc.memo) + "</td>"
+                            "<td>"
+                            "<form method='POST' style='display: inline;'>"
+                            "  <input type='hidden' name='disc' value='" +
         String(disc.discNumber) + "'>"
-                                  "  <input type='text' name='memo' value='" +
-        String(disc.memo) + "'>"
-                            "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
-                            "  <input type='submit' value='Update Disc'>"
-                            "</form>"
-                            "</div>";
+                                  "  <input type='hidden' name='command' value='setDiscAsDataCD'>"
+                                  "  <input type='checkbox' name='isDataCD' value='true' " +
+        (disc.isDataCD ? "checked" : "") + "> Data CD"
+                                           "  <input type='submit' value='Update'>"
+                                           "</form>"
+                                           "</td>"
+                                           "<td>"
+                                           "<form method='POST' style='display: inline;'>"
+                                           "  <input type='hidden' name='disc' value='" +
+        String(disc.discNumber) + "'>"
+                                  "  <input type='hidden' name='command' value='selectDisc'>"
+                                  "  <input type='submit' value='Select'>"
+                                  "</form>"
+                                  "</td>"
+                                  "</tr>";
 
-    client.print(formHtml);
+    client.print(rowHtml);
   }
 
-  String footer =
-      "</div>" // Close grid container
-      "</body>"
-      "</html>";
-
-  client.print(footer);
+  client.print("</table>"
+               "<form method='POST'>"
+               "  <label for='disc'>Disc Number:</label><br>"
+               "  <input type='number' id='disc' name='disc' min='1' max='" +
+               String(storage.getMaxDiscs()) + "' required><br>"
+                                               "  <label for='memo'>New Memo:</label><br>"
+                                               "  <input type='text' id='memo' name='memo' maxlength='15' required><br>"
+                                               "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
+                                               "  <input type='submit' value='Update Disc'>"
+                                               "</form>"
+                                               "</body>"
+                                               "</html>");
 }
 
 void loop()
@@ -274,10 +372,6 @@ void loop()
       {
         Serial.println("Error: Unknown command.");
       }
-    }
-    else
-    {
-      Serial.println("Received a non-POST request.");
     }
 
     // Send response to client

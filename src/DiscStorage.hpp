@@ -8,13 +8,14 @@
 struct DiscInfo
 {
     uint16_t discNumber; // Disc number (2 bytes)
-    char memo[16];       // Memo data (16 bytes, 3 for padding from the supported 13)
+    char memo[16];       // Memo data (16 bytes, including padding for 13-char memos)
+    bool isDataCD;       // Flag indicating if the disc is a data CD (1 byte)
 };
 
 class DiscStorage
 {
 private:
-    static constexpr int MAX_DISCS = 300;                // Maximum number of discs
+    static constexpr int MAX_DISCS = 50;                 // Maximum number of discs, setting to 100 for now for faster development TODO: make this 300
     static constexpr int RECORD_SIZE = sizeof(DiscInfo); // Size of each record in bytes
 
     // Calculate EEPROM address based on index
@@ -41,17 +42,35 @@ public:
     }
 
     // Write a disc record to EEPROM using the disc number
-    void writeDiscWithNumber(int discNumber, String memo)
+    void writeDiscWithNumber(int discNumber, String memo, bool isDataCD = false)
     {
-        // TODO: String conversions in C++ are hard. I have no idea what this is really doing yet.
         int discIndex = discNumber - 1;
         char charBuf[16];
         memo.toCharArray(charBuf, sizeof(charBuf)); // Copy the String to char array
-        DiscInfo disc = {static_cast<uint16_t>(discNumber), ""};
+
+        DiscInfo disc = {static_cast<uint16_t>(discNumber), "", isDataCD};
         strncpy(disc.memo, charBuf, sizeof(disc.memo) - 1); // Ensure null-termination
         disc.memo[sizeof(disc.memo) - 1] = '\0';            // Explicit null-termination (safe)
+
         int address = calculateAddress(discIndex);
         EEPROM.put(address, disc); // Save the record
+    }
+
+    // Mark a disc as a Data CD
+    void setDiscAsDataCD(int discNumber, bool isDataCD)
+    {
+        int discIndex = discNumber - 1;
+        DiscInfo disc = readDisc(discIndex); // Read the existing record
+        disc.isDataCD = isDataCD;            // Update the flag
+        writeDisc(discIndex, disc);          // Write it back to EEPROM
+    }
+
+    // Check if a disc is a Data CD
+    bool isDataDisc(int discNumber)
+    {
+        int discIndex = discNumber - 1;
+        DiscInfo disc = readDisc(discIndex);
+        return disc.isDataCD;
     }
 
     // Get the maximum number of discs supported
@@ -65,7 +84,7 @@ public:
     {
         for (int i = 0; i < MAX_DISCS; i++)
         {
-            DiscInfo disc = {static_cast<uint16_t>(i + 1), "Default Memo"};
+            DiscInfo disc = {static_cast<uint16_t>(i + 1), "Default Memo", false};
             writeDisc(i, disc);
         }
     }
