@@ -1,8 +1,5 @@
-#include <IRremote.hpp>
 #include <map>
 #include "WiFiS3.h"
-#include "Button.hpp"
-#include "Remote.hpp"
 #include "WiFiManager.hpp"
 #include "HttpParser.hpp"
 #include "Secrets.hpp"
@@ -10,389 +7,324 @@
 #include "DiscStorage.hpp"
 #include <functional>
 #include <map>
+#include "Sony_SLink.h"
 
-#define IR_RECEIVE_PIN 7
-#define IR_SEND_PIN 2
+#define SLINK_PIN 2 // Pick a suitable I/O pin for S-Link
 
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
+
 ArduinoLEDMatrix matrix;
 LedMatrixController ledController(matrix);
 WiFiManager wifiManager(ssid, password);
-Remote remote = Remote();
 DiscStorage storage;
+Slink slink; // S-Link object
+bool isPlayerOn = false;
 
-// Decode URL strings in the POST request
+// ------------------ URL-DECODE HELPER ------------------
 String urlDecode(const String &encoded)
 {
-  String decoded = "";
+  String decoded;
   for (size_t i = 0; i < encoded.length(); i++)
   {
     char c = encoded[i];
     if (c == '+')
     {
-      decoded += ' '; // Replace '+' with space
+      decoded += ' ';
     }
     else if (c == '%' && i + 2 < encoded.length())
     {
-      // Decode %XX into the corresponding character
       char hex[3] = {encoded[i + 1], encoded[i + 2], '\0'};
       decoded += (char)strtol(hex, nullptr, 16);
-      i += 2; // Skip the next two characters
+      i += 2;
     }
     else
     {
-      decoded += c; // Add other characters as-is
+      decoded += c;
     }
   }
   return decoded;
 }
 
-void selectDisc(int discNumber)
+// ------------------ S-LINK COMMANDS ------------------
+void slinkPlay() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_PLAY); }
+void slinkStop() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_STOP); }
+void slinkPauseToggle() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_PAUSE_TOGGLE); }
+void slinkNextTrack() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_NEXT); }
+void slinkPrevTrack() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_PREV); }
+void slinkPowerOn() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_POWER_ON); }
+void slinkPowerOff() { slink.sendCommand(SLINK_DEVICE_CDP_CX1L, SLINK_CMD_CD_POWER_OFF); }
+
+/** Convert integer 1..99 -> BCD byte */
+uint8_t toBCD(int val)
 {
-  remote.reset();
-  remote.press(Button::DISC);
-  delay(1000);
-  remote.sendNumber(discNumber);
-  delay(1000);
-  remote.press(Button::ENTER);
-  delay(100);
+  int v = val % 100;
+  int highNibble = v / 10;
+  int lowNibble = v % 10;
+  return (highNibble << 4) | lowNibble;
 }
 
-void setDiscMemo(String memo)
+/** Send “Play Direct Track” command for discNumber (1..400) */
+void slinkSelectDisc(int discNumber)
 {
-  remote.reset();
-  remote.press(Button::MEMO_INPUT);
-  delay(1000);
+  // Decide device byte based on discNumber
+  uint8_t device = (discNumber > 200) ? 0x93 : 0x90;
 
-  remote.setMode(Remote::Alpha);
-  remote.sendAlpha(memo);
-  remote.setMode(Remote::Default);
+  // For 201..400, subtract 200
+  int discVal = discNumber;
+  if (discNumber > 200)
+    discVal -= 200;
 
-  remote.press(Button::ENTER);
-  delay(100);
+  // Convert to BCD or custom offset
+  uint8_t discByte = 0;
+  if (discVal <= 99)
+    discByte = toBCD(discVal);
+  else if (discVal <= 200)
+    discByte = 0x9A + (discVal - 100);
+
+  // command = 0x50, then discByte, then track=0x01
+  slink.sendCommand(device, 0x50, discByte, 0x01);
 }
 
-// Define a type for your command functions
+// ------------------ COMMAND HANDLERS ------------------
 using CommandHandler = std::function<void(const String &)>;
-
-// Create a map to store command handlers
 std::map<String, CommandHandler> commandHandlers;
 
-// Create individual handlers
 void handlePowerCommand(const String &)
 {
-  remote.reset();
-  remote.press(Button::POWER);
+  Serial.println(isPlayerOn ? "Power: ON -> OFF" : "Power: OFF -> ON");
+  if (isPlayerOn)
+    slinkPowerOff();
+  else
+    slinkPowerOn();
+  isPlayerOn = !isPlayerOn;
 }
 
 void handleSelectDiscCommand(const String &args)
 {
-  int discIndex = args.indexOf("disc=");
-  String discValue = "";
-
-  if (discIndex != -1)
+  int idx = args.indexOf("disc=");
+  if (idx < 0)
+    return;
+  int end = args.indexOf('&', idx);
+  if (end < 0)
+    end = args.length();
+  int discNumber = urlDecode(args.substring(idx + 5, end)).toInt();
+  if (discNumber <= 0)
   {
-    int discEnd = args.indexOf("&", discIndex);
-    if (discEnd == -1)
-      discEnd = args.length();
-    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
+    Serial.println("Invalid disc param");
+    return;
   }
-
-  Serial.print("Disc Value: ");
-  Serial.println(discValue);
-
-  if (!discValue.isEmpty())
-  {
-    int discNumber = discValue.toInt();
-    selectDisc(discNumber);
-  }
-  else
-  {
-    Serial.println("Error: Missing disc value.");
-  }
+  Serial.print("Selecting disc #");
+  Serial.println(discNumber);
+  slinkSelectDisc(discNumber);
 }
 
-void handleSetDiscMemoCommand(const String &args)
-{
-  setDiscMemo(args);
-}
+void handlePlayCommand(const String &) { slinkPlay(); }
+void handleStopCommand(const String &) { slinkStop(); }
+void handlePauseCommand(const String &) { slinkPauseToggle(); }
+void handleNextCommand(const String &) { slinkNextTrack(); }
+void handlePrevCommand(const String &) { slinkPrevTrack(); }
 
-void handleSelectDiscAndMemoCommand(const String &args)
-{
-  // Extract `disc` and `memo` parameters
-  int discIndex = args.indexOf("disc=");
-  int memoIndex = args.indexOf("memo=");
-  String discValue = "";
-  String memoValue = "";
-
-  if (discIndex != -1)
-  {
-    int discEnd = args.indexOf("&", discIndex);
-    if (discEnd == -1)
-      discEnd = args.length();
-    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
-  }
-
-  if (memoIndex != -1)
-  {
-    int memoEnd = args.indexOf("&", memoIndex);
-    if (memoEnd == -1)
-      memoEnd = args.length();
-    memoValue = urlDecode(args.substring(memoIndex + 5, memoEnd));
-  }
-
-  // Log and process
-  Serial.print("Disc Value: ");
-  Serial.println(discValue);
-  Serial.print("Memo Value: ");
-  Serial.println(memoValue);
-
-  if (!discValue.isEmpty() && !memoValue.isEmpty())
-  {
-    int discNumber = discValue.toInt();
-
-    // Save the memo locally to EEPROM
-    Serial.print("Saving memo locally for Disc ");
-    Serial.print(discNumber);
-    Serial.println("...");
-    storage.writeDiscWithNumber(discNumber, memoValue);
-
-    // Check if the disc is a Data CD
-    if (storage.isDataDisc(discNumber))
-    {
-      // Log a message and skip sending IR commands
-      Serial.print("Disc ");
-      Serial.print(discNumber);
-      Serial.println(" is marked as a Data CD. Memo saved locally, but no IR commands sent.");
-      return; // Exit the function
-    }
-
-    // Send commands to the jukebox via IR for non-data discs
-    Serial.print("Sending memo to jukebox for Disc ");
-    Serial.print(discNumber);
-    Serial.println("...");
-    selectDisc(discNumber);
-    setDiscMemo(memoValue);
-
-    Serial.println("Memo successfully set.");
-  }
-  else
-  {
-    Serial.println("Error: Missing disc or memo message.");
-  }
-}
-
-void handleSetDiscAsDataCDCommand(const String &args)
-{
-  int discIndex = args.indexOf("disc=");
-  int dataCDIndex = args.indexOf("isDataCD=");
-  String discValue = "";
-  bool isDataCD = false;
-
-  if (discIndex != -1)
-  {
-    int discEnd = args.indexOf("&", discIndex);
-    if (discEnd == -1)
-      discEnd = args.length();
-    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
-  }
-
-  if (dataCDIndex != -1)
-  {
-    int dataCDEnd = args.indexOf("&", dataCDIndex);
-    if (dataCDEnd == -1)
-      dataCDEnd = args.length();
-    String isDataCDValue = urlDecode(args.substring(dataCDIndex + 9, dataCDEnd));
-    isDataCD = (isDataCDValue == "true");
-  }
-
-  if (!discValue.isEmpty())
-  {
-    int discNumber = discValue.toInt();
-    storage.setDiscAsDataCD(discNumber, isDataCD);
-    Serial.print("Disc ");
-    Serial.print(discNumber);
-    Serial.println(isDataCD ? " marked as Data CD." : " unmarked as Data CD.");
-  }
-  else
-  {
-    Serial.println("Error: Missing disc value.");
-  }
-}
-
-// Initialize the handlers in setup
+// ------------------ SETUP COMMAND MAP ------------------
 void setupCommandHandlers()
 {
   commandHandlers["power"] = handlePowerCommand;
   commandHandlers["selectDisc"] = handleSelectDiscCommand;
-  commandHandlers["setDiscMemo"] = handleSetDiscMemoCommand;
-  commandHandlers["selectDiscAndMemo"] = handleSelectDiscAndMemoCommand;
-  commandHandlers["setDiscAsDataCD"] = handleSetDiscAsDataCDCommand;
+  commandHandlers["play"] = handlePlayCommand;
+  commandHandlers["stop"] = handleStopCommand;
+  commandHandlers["pause"] = handlePauseCommand;
+  commandHandlers["next"] = handleNextCommand;
+  commandHandlers["prev"] = handlePrevCommand;
+  // ... add more if needed
 }
 
+// ------------------ SETUP & LOOP ------------------
 void setup()
 {
-  Serial.begin(115200); // Establish serial communication
-  matrix.begin();
+  Serial.begin(115200);
 
+  slink.init(SLINK_PIN);
+  pinMode(SLINK_PIN, INPUT);
+
+  matrix.begin(); // LED matrix
   setupCommandHandlers();
 
-  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK); // Start the receiver
-  IrSender.begin(IR_SEND_PIN);                           // Start the emitter
-
-  // Play WiFi search animation
   ledController.playAnimation(MatrixAnimation::WifiSearch, true);
-
-  // Connect to WiFi
   wifiManager.connect();
-
-  // Indicate WiFi connection
   ledController.displayText("wifi connected");
 }
 
-void sendForm(WiFiClient &client)
+//
+// Minimal HTML + pagination example
+//
+void sendForm(WiFiClient &client, DiscStorage &storage, int page)
 {
-  String html =
+  // Adjust as needed
+  const int discsPerPage = 20;
+  const int totalDiscs = storage.getMaxDiscs();
+  int totalPages = (totalDiscs + discsPerPage - 1) / discsPerPage;
+
+  if (page >= totalPages)
+    page = totalPages - 1;
+  if (page < 0)
+    page = 0;
+
+  int startIdx = page * discsPerPage;
+  int endIdx = startIdx + discsPerPage;
+  if (endIdx > totalDiscs)
+    endIdx = totalDiscs;
+
+  // HTTP headers
+  client.print(F(
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/html\r\n"
       "Connection: close\r\n"
       "\r\n"
-      "<!DOCTYPE HTML>"
-      "<html>"
-      "<head>"
-      "<title>CDP-CX355 Controller</title>"
-      "<style>"
-      "  body { font-family: Arial, sans-serif; margin: 20px; }"
-      "  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }"
-      "  th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }"
-      "  th { background-color: #f2f2f2; }"
-      "  input[type='number'], input[type='text'], input[type='submit'], input[type='checkbox'] { margin-top: 5px; padding: 5px; font-size: 14px; }"
-      "</style>"
-      "</head>"
-      "<body>"
-      "<h1>CDP-CX355 Jukebox Controller</h1>"
-      "<table>"
-      "<tr><th>Disc Number</th><th>Memo</th><th>Data CD</th><th>Action</th></tr>";
+      "<!DOCTYPE html><html><head><title>CDP-CX355</title></head>"
+      "<body style='font-family:Arial,sans-serif;font-size:14px;margin:20px;'>"));
 
-  client.print(html);
+  // Title and page info
+  client.print("<h1>CDP-CX355 Controller</h1>");
+  client.print("<p>Showing discs ");
+  client.print(startIdx);
+  client.print(" to ");
+  client.print(endIdx - 1);
+  client.print(" of ");
+  client.print(totalDiscs);
+  client.print("</p>");
 
-  // Add rows to the table for each disc with an inline form
-  for (int i = 0; i < storage.getMaxDiscs(); i++)
+  // Page nav
+  client.print("<p>");
+  if (page > 0)
+  {
+    client.print("<a href='/?page=");
+    client.print(page - 1);
+    client.print("'>Prev</a> ");
+  }
+  if (page < totalPages - 1)
+  {
+    client.print(" <a href='/?page=");
+    client.print(page + 1);
+    client.print("'>Next</a>");
+  }
+  client.print("</p>");
+
+  // Quick command forms
+  client.print(
+      "<form method='POST'><input type='hidden' name='command' value='play'>"
+      "<input type='submit' value='Play'></form>"
+      "<form method='POST'><input type='hidden' name='command' value='stop'>"
+      "<input type='submit' value='Stop'></form>"
+      "<form method='POST'><input type='hidden' name='command' value='pause'>"
+      "<input type='submit' value='Pause'></form>"
+      "<form method='POST'><input type='hidden' name='command' value='next'>"
+      "<input type='submit' value='Next'></form>"
+      "<form method='POST'><input type='hidden' name='command' value='prev'>"
+      "<input type='submit' value='Prev'></form>"
+      "<form method='POST'><input type='hidden' name='command' value='power'>"
+      "<input type='submit' value='Power Toggle'></form>");
+
+  // Table of discs
+  client.print("<table border='1' cellpadding='4' style='border-collapse:collapse;'><tr>"
+               "<th>#</th><th>Memo</th><th>Action</th></tr>");
+
+  for (int i = startIdx; i < endIdx; i++)
   {
     DiscInfo disc = storage.readDisc(i);
 
-    // Memo input field and update button (editable for all discs)
-    String memoField =
-        "<form method='POST' style='display: inline;'>"
-        "  <input type='hidden' name='disc' value='" +
-        String(disc.discNumber) + "'>"
-                                  "  <input type='hidden' name='command' value='selectDiscAndMemo'>"
-                                  "  <input type='text' name='memo' value='" +
-        String(disc.memo) + "' maxlength='13' pattern='^[a-zA-Z0-9 ]*$'>"
-                            "  <input type='submit' value='Update'>"
-                            "</form>";
+    client.print("<tr><td>");
+    client.print(disc.discNumber);
+    client.print("</td><td>");
 
-    // Data CD checkbox form
-    String dataCDField =
-        "<form method='POST' style='display: inline;'>"
-        "  <input type='hidden' name='disc' value='" +
-        String(disc.discNumber) + "'>"
-                                  "  <input type='hidden' name='command' value='setDiscAsDataCD'>"
-                                  "  <input type='checkbox' name='isDataCD' value='true' " +
-        (disc.isDataCD ? "checked" : "") + "> Data CD"
-                                           "  <input type='submit' value='Update'>"
-                                           "</form>";
+    // Memo update form (inline)
+    client.print("<form method='POST' style='display:inline;'>"
+                 "<input type='hidden' name='command' value='selectDiscAndMemo'>"
+                 "<input type='hidden' name='disc' value='");
+    client.print(disc.discNumber);
+    client.print("'><input type='text' name='memo' value='");
+    client.print(disc.memo);
+    client.print("' maxlength='13'> "
+                 "<input type='submit' value='Update'></form>");
 
-    // Construct the row HTML
-    String rowHtml =
-        "<tr>"
-        "<td>" +
-        String(disc.discNumber) + "</td>"
-                                  "<td>" +
-        memoField + "</td>"
-                    "<td>" +
-        dataCDField + "</td>"
-                      "<td>"
-                      "<form method='POST' style='display: inline;'>"
-                      "  <input type='hidden' name='disc' value='" +
-        String(disc.discNumber) + "'>"
-                                  "  <input type='hidden' name='command' value='selectDisc'>"
-                                  "  <input type='submit' value='Select'>"
-                                  "</form>"
-                                  "</td>"
-                                  "</tr>";
-
-    client.print(rowHtml);
+    // Disc "Play" form
+    client.print("</td><td><form method='POST' style='display:inline;'>"
+                 "<input type='hidden' name='command' value='selectDisc'>"
+                 "<input type='hidden' name='disc' value='");
+    client.print(disc.discNumber);
+    client.print("'>"
+                 "<input type='submit' value='Play'></form>"
+                 "</td></tr>");
   }
 
-  client.print("</table>"
-               "</body>"
-               "</html>");
+  client.print("</table></body></html>");
 }
 
 void loop()
 {
-  WiFiClient client = wifiManager.getServer().available(); // Get the server from WiFiManager
+  WiFiClient client = wifiManager.getServer().available();
+  if (!client)
+    return;
 
-  if (client)
+  Serial.println("New client connected.");
+  HttpRequest request = HttpParser::parse(client);
+
+  if (request.isPost)
   {
-    Serial.println("New client connected.");
-
-    // Play loading state
-    ledController.playAnimation(MatrixAnimation::Loading, true);
-
-    // Use HttpParser to parse the request
-    HttpRequest request = HttpParser::parse(client);
-
-    if (request.isPost)
+    // Extract “command=XYZ” from POST body
+    String cmdValue;
+    int idx = request.body.indexOf("command=");
+    if (idx >= 0)
     {
-      Serial.println("Processing POST request...");
+      int end = request.body.indexOf('&', idx);
+      if (end < 0)
+        end = request.body.length();
+      cmdValue = urlDecode(request.body.substring(idx + 8, end));
+    }
+    Serial.print("Command: ");
+    Serial.println(cmdValue);
 
-      String command = "";
-
-      // Extract 'command' parameter from the POST body
-      int commandIndex = request.body.indexOf("command=");
-      if (commandIndex != -1)
-      {
-        int commandEndIndex = request.body.indexOf("&", commandIndex);
-        if (commandEndIndex == -1)
-          commandEndIndex = request.body.length();
-        command = urlDecode(request.body.substring(commandIndex + 8, commandEndIndex));
-      }
-
-      Serial.print("Extracted Command: ");
-      Serial.println(command);
-
-      // Execute the command if it exists in the map
-      auto handler = commandHandlers.find(command);
-      if (handler != commandHandlers.end())
-      {
-        handler->second(request.body); // Pass the entire body to the handler
-      }
-      else
-      {
-        Serial.println("Error: Unknown command.");
-      }
+    // Dispatch
+    auto it = commandHandlers.find(cmdValue);
+    if (it != commandHandlers.end())
+    {
+      it->second(request.body);
+    }
+    else
+    {
+      Serial.println("Unknown command");
     }
 
-    // Send response to client
-    Serial.println("Sending response form to client...");
-    sendForm(client);
-    delay(10); // Allow the client time to read the response
-
-    // Close the connection
-    client.stop();
-    Serial.println("Client disconnected.");
-
-    ledController.clearDisplay();
+    // Return the form
+    // TODO: we are setting pageNumber to 0. How can we preserve it?
+    sendForm(client, storage, 0);
   }
-
-  if (IrReceiver.decode())
+  else
   {
-    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX); // Print "old" raw data
-    IrReceiver.printIRResultShort(&Serial);                       // Print complete received data in one line
-    IrReceiver.printIRSendUsage(&Serial);                         // Print the statement required to send this data
-    IrReceiver.resume();                                          // Enable receiving of the next value
+    // GET request: parse "?page=N"
+    int pageNumber = 0;
+    int qMark = request.url.indexOf('?');
+    if (qMark >= 0)
+    {
+      String query = request.url.substring(qMark + 1);
+      int pIdx = query.indexOf("page=");
+      if (pIdx >= 0)
+      {
+        int amp = query.indexOf('&', pIdx);
+        if (amp < 0)
+          amp = query.length();
+        pageNumber = query.substring(pIdx + 5, amp).toInt();
+        if (pageNumber < 0)
+          pageNumber = 0;
+      }
+    }
+    Serial.print("GET page = ");
+    Serial.println(pageNumber);
+
+    // Return the page
+    sendForm(client, storage, pageNumber);
   }
+
+  delay(10);
+  client.stop();
+  Serial.println("Client disconnected.");
 }

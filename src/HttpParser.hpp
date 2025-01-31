@@ -8,6 +8,8 @@ struct HttpRequest
     bool isPost = false;
     int contentLength = 0;
     String body = "";
+    String method;
+    String url;
 };
 
 class HttpParser
