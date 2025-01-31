@@ -246,7 +246,8 @@ void sendForm(WiFiClient &client, DiscStorage &storage, int page)
   client.print("<p>");
   if (page > 0)
   {
-    client.print("<a href='/?page=");
+    client.print("<a href='/?page=0'>First</a>");
+    client.print(" <a href='/?page=");
     client.print(page - 1);
     client.print("'>Prev</a> ");
   }
@@ -255,6 +256,9 @@ void sendForm(WiFiClient &client, DiscStorage &storage, int page)
     client.print(" <a href='/?page=");
     client.print(page + 1);
     client.print("'>Next</a>");
+    client.print(" <a href='/?page=");
+    client.print(totalPages - 1);
+    client.print("'>Last</a>");
   }
   client.print("</p>");
 
