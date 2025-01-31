@@ -119,6 +119,54 @@ void handleSelectDiscCommand(const String &args)
   slinkSelectDisc(discNumber);
 }
 
+void handleSelectDiscAndMemoCommand(const String &args)
+{
+  // Extract `disc` and `memo` parameters
+  int discIndex = args.indexOf("disc=");
+  int memoIndex = args.indexOf("memo=");
+  String discValue = "";
+  String memoValue = "";
+
+  if (discIndex != -1)
+  {
+    int discEnd = args.indexOf("&", discIndex);
+    if (discEnd == -1)
+      discEnd = args.length();
+    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
+  }
+
+  if (memoIndex != -1)
+  {
+    int memoEnd = args.indexOf("&", memoIndex);
+    if (memoEnd == -1)
+      memoEnd = args.length();
+    memoValue = urlDecode(args.substring(memoIndex + 5, memoEnd));
+  }
+
+  // Log and process
+  Serial.print("Disc Value: ");
+  Serial.println(discValue);
+  Serial.print("Memo Value: ");
+  Serial.println(memoValue);
+
+  if (!discValue.isEmpty() && !memoValue.isEmpty())
+  {
+    int discNumber = discValue.toInt();
+
+    // Save the memo locally to EEPROM
+    Serial.print("Saving memo locally for Disc ");
+    Serial.print(discNumber);
+    Serial.println("...");
+    storage.writeDiscWithNumber(discNumber, memoValue);
+
+    Serial.println("Memo successfully set.");
+  }
+  else
+  {
+    Serial.println("Error: Missing disc or memo message.");
+  }
+}
+
 void handlePlayCommand(const String &) { slinkPlay(); }
 void handleStopCommand(const String &) { slinkStop(); }
 void handlePauseCommand(const String &) { slinkPauseToggle(); }
@@ -135,6 +183,7 @@ void setupCommandHandlers()
   commandHandlers["pause"] = handlePauseCommand;
   commandHandlers["next"] = handleNextCommand;
   commandHandlers["prev"] = handlePrevCommand;
+  commandHandlers["setDiscMemo"] = handleSelectDiscAndMemoCommand;
   // ... add more if needed
 }
 
@@ -155,7 +204,7 @@ void setup()
 }
 
 //
-// Minimal HTML + pagination example
+// Minimal HTML + pagination example, but rows in batches of 5
 //
 void sendForm(WiFiClient &client, DiscStorage &storage, int page)
 {
@@ -224,38 +273,63 @@ void sendForm(WiFiClient &client, DiscStorage &storage, int page)
       "<form method='POST'><input type='hidden' name='command' value='power'>"
       "<input type='submit' value='Power Toggle'></form>");
 
-  // Table of discs
-  client.print("<table border='1' cellpadding='4' style='border-collapse:collapse;'><tr>"
-               "<th>#</th><th>Memo</th><th>Action</th></tr>");
+  // Table start
+  client.print("<table border='1' cellpadding='4' style='border-collapse:collapse;'>"
+               "<tr><th>#</th><th>Memo</th><th>Action</th></tr>");
+
+  // We'll collect 5 rows in a chunk
+  String rowChunk;
+  const int ROW_BATCH_SIZE = 5;
+  int rowCount = 0;
 
   for (int i = startIdx; i < endIdx; i++)
   {
     DiscInfo disc = storage.readDisc(i);
 
-    client.print("<tr><td>");
-    client.print(disc.discNumber);
-    client.print("</td><td>");
+    // Build one row
+    String row = "<tr><td>";
+    row += disc.discNumber;
+    row += "</td><td>"
+           "<form method='POST' style='display:inline;'>"
+           "<input type='hidden' name='command' value='setDiscMemo'>"
+           "<input type='hidden' name='disc' value='";
+    row += disc.discNumber;
+    row += "'><input type='text' name='memo' value='";
+    row += disc.memo;
+    row += "' maxlength='13'> "
+           "<input type='submit' value='Update'></form>"
+           "</td><td>"
+           "<form method='POST' style='display:inline;'>"
+           "<input type='hidden' name='command' value='selectDisc'>"
+           "<input type='hidden' name='disc' value='";
+    row += disc.discNumber;
+    row += "'><input type='submit' value='Play'>"
+           "</form></td></tr>";
 
-    // Memo update form (inline)
-    client.print("<form method='POST' style='display:inline;'>"
-                 "<input type='hidden' name='command' value='selectDiscAndMemo'>"
-                 "<input type='hidden' name='disc' value='");
-    client.print(disc.discNumber);
-    client.print("'><input type='text' name='memo' value='");
-    client.print(disc.memo);
-    client.print("' maxlength='13'> "
-                 "<input type='submit' value='Update'></form>");
+    // Add it to the chunk
+    rowChunk += row;
+    rowCount++;
 
-    // Disc "Play" form
-    client.print("</td><td><form method='POST' style='display:inline;'>"
-                 "<input type='hidden' name='command' value='selectDisc'>"
-                 "<input type='hidden' name='disc' value='");
-    client.print(disc.discNumber);
-    client.print("'>"
-                 "<input type='submit' value='Play'></form>"
-                 "</td></tr>");
+    // If we've hit 5 rows in this chunk, send it
+    if (rowCount == ROW_BATCH_SIZE)
+    {
+      client.print(rowChunk);
+      rowChunk = ""; // Clear the chunk
+      rowCount = 0;
+
+      // Optionally, give the WiFi stack time to send
+      // delay(2);
+      // client.flush();
+    }
   }
 
+  // Print any leftover rows if rowCount < 5
+  if (rowChunk.length() > 0)
+  {
+    client.print(rowChunk);
+  }
+
+  // End table and HTML
   client.print("</table></body></html>");
 }
 
