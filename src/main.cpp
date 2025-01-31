@@ -235,30 +235,33 @@ void sendForm(WiFiClient &client, DiscStorage &storage, int page)
   // Title and page info
   client.print("<h1>CDP-CX355 Controller</h1>");
   client.print("<p>Showing discs ");
-  client.print(startIdx);
+  client.print(startIdx + 1);
   client.print(" to ");
-  client.print(endIdx - 1);
+  client.print(endIdx);
   client.print(" of ");
   client.print(totalDiscs);
   client.print("</p>");
 
-  // Page nav
-  client.print("<p>");
-  if (page > 0)
+  // Page nav with current page highlighted
+  client.print("<p>Pages: ");
+  for (int i = 0; i < totalPages; i++)
   {
-    client.print("<a href='/?page=0'>First</a>");
-    client.print(" <a href='/?page=");
-    client.print(page - 1);
-    client.print("'>Prev</a> ");
-  }
-  if (page < totalPages - 1)
-  {
-    client.print(" <a href='/?page=");
-    client.print(page + 1);
-    client.print("'>Next</a>");
-    client.print(" <a href='/?page=");
-    client.print(totalPages - 1);
-    client.print("'>Last</a>");
+    if (i == page)
+    {
+      // Highlight the current page without a link
+      client.print("<strong>");
+      client.print(i + 1); // show 1-based page number
+      client.print("</strong> ");
+    }
+    else
+    {
+      // Normal page link
+      client.print("<a href='/?page=");
+      client.print(i);
+      client.print("'>");
+      client.print(i + 1);
+      client.print("</a> ");
+    }
   }
   client.print("</p>");
 
