@@ -167,6 +167,49 @@ void handleSelectDiscAndMemoCommand(const String &args)
   }
 }
 
+void handleBulkUpdateCommand(const String &args)
+{
+  // 1) Parse all memo fields m_XX=YYYY from the POST body
+  //    and save them to storage.
+  const int totalDiscs = storage.getMaxDiscs();
+
+  for (int i = 1; i <= totalDiscs; i++)
+  {
+    // Each disc's memo field is named m_i => "m_1=...", "m_2=...", etc.
+    String paramName = "m_" + String(i) + "=";
+    int idx = args.indexOf(paramName);
+    if (idx >= 0)
+    {
+      // find end of param
+      int end = args.indexOf('&', idx);
+      if (end < 0)
+        end = args.length();
+      // skip paramName
+      String memoVal = urlDecode(args.substring(idx + paramName.length(), end));
+      // Write to storage (assuming disc #1 = index 0 in your storage, etc.)
+      // If your DiscStorage uses 0-based indexing, we do: i-1
+      storage.writeDiscWithNumber(i, memoVal);
+    }
+  }
+
+  // 2) Check if user clicked "Play" next to a disc => that yields disc=N
+  int discIdx = args.indexOf("disc=");
+  if (discIdx >= 0)
+  {
+    int end = args.indexOf('&', discIdx);
+    if (end < 0)
+      end = args.length();
+    int discNum = urlDecode(args.substring(discIdx + 5, end)).toInt();
+
+    if (discNum > 0)
+    {
+      Serial.print("Playing disc #");
+      Serial.println(discNum);
+      slinkSelectDisc(discNum);
+    }
+  }
+}
+
 void handlePlayCommand(const String &) { slinkPlay(); }
 void handleStopCommand(const String &) { slinkStop(); }
 void handlePauseCommand(const String &) { slinkPauseToggle(); }
@@ -184,6 +227,7 @@ void setupCommandHandlers()
   commandHandlers["next"] = handleNextCommand;
   commandHandlers["prev"] = handlePrevCommand;
   commandHandlers["setDiscMemo"] = handleSelectDiscAndMemoCommand;
+  commandHandlers["bulkUpdate"] = handleBulkUpdateCommand;
   // ... add more if needed
 }
 
@@ -204,140 +248,93 @@ void setup()
 }
 
 //
-// Minimal HTML + pagination example, but rows in batches of 5
+// Minimal HTML + pagination example, but rows in batches
 //
 void sendForm(WiFiClient &client, DiscStorage &storage, int page)
 {
-  // Adjust as needed
-  const int discsPerPage = 20;
-  const int totalDiscs = storage.getMaxDiscs();
-  int totalPages = (totalDiscs + discsPerPage - 1) / discsPerPage;
+  // For now, ignore 'page' or remove it if you don't want pagination.
+  // We'll just show ALL discs. Or you can keep your chunking if you have 300 discs.
+  // If you want pagination, you can still keep page logic, but let's show everything.
 
-  if (page >= totalPages)
-    page = totalPages - 1;
-  if (page < 0)
-    page = 0;
+  const int discsPerPage = storage.getMaxDiscs(); // show them all on one page
+  int startIdx = 0;
+  int endIdx = storage.getMaxDiscs();
 
-  int startIdx = page * discsPerPage;
-  int endIdx = startIdx + discsPerPage;
-  if (endIdx > totalDiscs)
-    endIdx = totalDiscs;
-
-  // HTTP headers
+  // Minimal HTTP headers
   client.print(F(
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/html\r\n"
       "Connection: close\r\n"
       "\r\n"
-      "<!DOCTYPE html><html><head><title>CDP-CX355</title></head>"
-      "<body style='font-family:Arial,sans-serif;font-size:14px;margin:20px;'>"));
+      "<html><body>"));
 
-  // Title and page info
-  client.print("<h1>CDP-CX355 Controller</h1>");
-  client.print("<p>Showing discs ");
-  client.print(startIdx + 1);
-  client.print(" to ");
-  client.print(endIdx);
-  client.print(" of ");
-  client.print(totalDiscs);
-  client.print("</p>");
-
-  // Page nav with current page highlighted
-  client.print("<p>Pages: ");
-  for (int i = 0; i < totalPages; i++)
-  {
-    if (i == page)
-    {
-      // Highlight the current page without a link
-      client.print("<strong>");
-      client.print(i + 1); // show 1-based page number
-      client.print("</strong> ");
-    }
-    else
-    {
-      // Normal page link
-      client.print("<a href='/?page=");
-      client.print(i);
-      client.print("'>");
-      client.print(i + 1);
-      client.print("</a> ");
-    }
-  }
-  client.print("</p>");
-
-  // Quick command forms
+  // Some short command forms (play, stop, etc.) in separate forms, if you like
+  // Or you can skip these entirely for an even smaller page
   client.print(
-      "<form method='POST'><input type='hidden' name='command' value='play'>"
-      "<input type='submit' value='Play'></form>"
-      "<form method='POST'><input type='hidden' name='command' value='stop'>"
-      "<input type='submit' value='Stop'></form>"
-      "<form method='POST'><input type='hidden' name='command' value='pause'>"
-      "<input type='submit' value='Pause'></form>"
-      "<form method='POST'><input type='hidden' name='command' value='next'>"
-      "<input type='submit' value='Next'></form>"
-      "<form method='POST'><input type='hidden' name='command' value='prev'>"
-      "<input type='submit' value='Prev'></form>"
-      "<form method='POST'><input type='hidden' name='command' value='power'>"
-      "<input type='submit' value='Power Toggle'></form>");
+      "<form method=POST><input type=hidden name=command value=play>"
+      "<input type=submit value=Play></form>"
+      "<form method=POST><input type=hidden name=command value=stop>"
+      "<input type=submit value=Stop></form>"
+      "<form method=POST><input type=hidden name=command value=pause>"
+      "<input type=submit value=Pause></form>"
+      "<form method=POST><input type=hidden name=command value=next>"
+      "<input type=submit value=Next></form>"
+      "<form method=POST><input type=hidden name=command value=prev>"
+      "<input type=submit value=Prev></form>"
+      "<form method=POST><input type=hidden name=command value=power>"
+      "<input type=submit value=Power></form>");
 
-  // Table start
-  client.print("<table border='1' cellpadding='4' style='border-collapse:collapse;'>"
-               "<tr><th>#</th><th>Memo</th><th>Action</th></tr>");
+  // Single big form for all discs
+  client.print("<form method=POST>");
 
-  // We'll collect 5 rows in a chunk
-  String rowChunk;
-  const int ROW_BATCH_SIZE = 5;
+  // We'll say command=bulkUpdate for everything
+  client.print("<input type=hidden name='command' value='bulkUpdate'>");
+
+  // We'll chunk the discs to avoid large strings
+  const int ROW_BATCH_SIZE = 10;
+  String chunk;
   int rowCount = 0;
 
   for (int i = startIdx; i < endIdx; i++)
   {
-    DiscInfo disc = storage.readDisc(i);
+    DiscInfo d = storage.readDisc(i);
+    int discNum = d.discNumber; // or i+1, depending on your storage
+    String memoVal = d.memo;
 
-    // Build one row
-    String row = "<tr><td>";
-    row += disc.discNumber;
-    row += "</td><td>"
-           "<form method='POST' style='display:inline;'>"
-           "<input type='hidden' name='command' value='setDiscMemo'>"
-           "<input type='hidden' name='disc' value='";
-    row += disc.discNumber;
-    row += "'><input type='text' name='memo' value='";
-    row += disc.memo;
-    row += "' maxlength='13'> "
-           "<input type='submit' value='Update'></form>"
-           "</td><td>"
-           "<form method='POST' style='display:inline;'>"
-           "<input type='hidden' name='command' value='selectDisc'>"
-           "<input type='hidden' name='disc' value='";
-    row += disc.discNumber;
-    row += "'><input type='submit' value='Play'>"
-           "</form></td></tr>";
+    // Build a minimal line: "#NN: <input name=m_NN value='Memo'> <button name='disc' value='NN'>Play</button><br>"
+    String line = "#";
+    line += discNum;
+    line += ":<input name=m_";
+    line += discNum;
+    line += " value=\"";
+    line += memoVal;
+    line += "\"> ";
+    // If user clicks this button, it passes disc=NN in addition to all m_ fields
+    line += "<button name=disc value=";
+    line += discNum;
+    line += ">Play</button><br>";
 
-    // Add it to the chunk
-    rowChunk += row;
+    // Add to chunk
+    chunk += line;
     rowCount++;
 
-    // If we've hit 5 rows in this chunk, send it
     if (rowCount == ROW_BATCH_SIZE)
     {
-      client.print(rowChunk);
-      rowChunk = ""; // Clear the chunk
+      client.print(chunk);
+      chunk = "";
       rowCount = 0;
-
-      // Optionally, give the WiFi stack time to send
-      // delay(2);
-      // client.flush();
     }
   }
 
-  // Print any leftover rows if rowCount < 5
-  if (rowChunk.length() > 0)
-  {
-    client.print(rowChunk);
-  }
+  // Send leftover if any
+  if (chunk.length() > 0)
+    client.print(chunk);
 
-  // End table and HTML
-  client.print("</table></body></html>");
+  // Finally a single "UpdateAll" button to save all memo fields
+  client.print("<input type=submit value='UpdateAll'></form>");
+
+  // Close HTML
+  client.print("</body></html>");
 }
 
 void loop()
@@ -348,6 +345,17 @@ void loop()
 
   Serial.println("New client connected.");
   HttpRequest request = HttpParser::parse(client);
+
+  // Squelch favicon.ico requests to save time
+  if (!request.isPost && request.url == "/favicon.ico")
+  {
+    // A quick “no icon” response
+    client.println("HTTP/1.1 404 Not Found");
+    client.println("Connection: close");
+    client.println();
+    client.stop();
+    return; // Skip the normal page
+  }
 
   if (request.isPost)
   {
