@@ -100,73 +100,6 @@ void handlePowerCommand(const String &)
   isPlayerOn = !isPlayerOn;
 }
 
-void handleSelectDiscCommand(const String &args)
-{
-  int idx = args.indexOf("disc=");
-  if (idx < 0)
-    return;
-  int end = args.indexOf('&', idx);
-  if (end < 0)
-    end = args.length();
-  int discNumber = urlDecode(args.substring(idx + 5, end)).toInt();
-  if (discNumber <= 0)
-  {
-    Serial.println("Invalid disc param");
-    return;
-  }
-  Serial.print("Selecting disc #");
-  Serial.println(discNumber);
-  slinkSelectDisc(discNumber);
-}
-
-void handleSelectDiscAndMemoCommand(const String &args)
-{
-  // Extract `disc` and `memo` parameters
-  int discIndex = args.indexOf("disc=");
-  int memoIndex = args.indexOf("memo=");
-  String discValue = "";
-  String memoValue = "";
-
-  if (discIndex != -1)
-  {
-    int discEnd = args.indexOf("&", discIndex);
-    if (discEnd == -1)
-      discEnd = args.length();
-    discValue = urlDecode(args.substring(discIndex + 5, discEnd));
-  }
-
-  if (memoIndex != -1)
-  {
-    int memoEnd = args.indexOf("&", memoIndex);
-    if (memoEnd == -1)
-      memoEnd = args.length();
-    memoValue = urlDecode(args.substring(memoIndex + 5, memoEnd));
-  }
-
-  // Log and process
-  Serial.print("Disc Value: ");
-  Serial.println(discValue);
-  Serial.print("Memo Value: ");
-  Serial.println(memoValue);
-
-  if (!discValue.isEmpty() && !memoValue.isEmpty())
-  {
-    int discNumber = discValue.toInt();
-
-    // Save the memo locally to EEPROM
-    Serial.print("Saving memo locally for Disc ");
-    Serial.print(discNumber);
-    Serial.println("...");
-    storage.writeDiscWithNumber(discNumber, memoValue);
-
-    Serial.println("Memo successfully set.");
-  }
-  else
-  {
-    Serial.println("Error: Missing disc or memo message.");
-  }
-}
-
 void handleBulkUpdateCommand(const String &args)
 {
   // 1) Parse all memo fields m_XX=YYYY from the POST body
@@ -220,13 +153,11 @@ void handlePrevCommand(const String &) { slinkPrevTrack(); }
 void setupCommandHandlers()
 {
   commandHandlers["power"] = handlePowerCommand;
-  commandHandlers["selectDisc"] = handleSelectDiscCommand;
   commandHandlers["play"] = handlePlayCommand;
   commandHandlers["stop"] = handleStopCommand;
   commandHandlers["pause"] = handlePauseCommand;
   commandHandlers["next"] = handleNextCommand;
   commandHandlers["prev"] = handlePrevCommand;
-  commandHandlers["setDiscMemo"] = handleSelectDiscAndMemoCommand;
   commandHandlers["bulkUpdate"] = handleBulkUpdateCommand;
   // ... add more if needed
 }
@@ -271,18 +202,14 @@ void sendForm(WiFiClient &client, DiscStorage &storage, int page)
   // Some short command forms (play, stop, etc.) in separate forms, if you like
   // Or you can skip these entirely for an even smaller page
   client.print(
-      "<form method=POST><input type=hidden name=command value=play>"
-      "<input type=submit value=Play></form>"
-      "<form method=POST><input type=hidden name=command value=stop>"
-      "<input type=submit value=Stop></form>"
-      "<form method=POST><input type=hidden name=command value=pause>"
-      "<input type=submit value=Pause></form>"
-      "<form method=POST><input type=hidden name=command value=next>"
-      "<input type=submit value=Next></form>"
-      "<form method=POST><input type=hidden name=command value=prev>"
-      "<input type=submit value=Prev></form>"
-      "<form method=POST><input type=hidden name=command value=power>"
-      "<input type=submit value=Power></form>");
+      "<form method='POST'>"
+      "<button name='command' value='play'>Play</button>"
+      "<button name='command' value='stop'>Stop</button>"
+      "<button name='command' value='pause'>Pause</button>"
+      "<button name='command' value='next'>Next</button>"
+      "<button name='command' value='prev'>Prev</button>"
+      "<button name='command' value='power'>Power</button>"
+      "</form>");
 
   // Single big form for all discs
   client.print("<form method=POST>");
@@ -312,7 +239,7 @@ void sendForm(WiFiClient &client, DiscStorage &storage, int page)
     // If user clicks this button, it passes disc=NN in addition to all m_ fields
     line += "<button name=disc value=";
     line += discNum;
-    line += ">Play</button><br>";
+    line += ">P</button><br>";
 
     // Add to chunk
     chunk += line;
