@@ -15,7 +15,7 @@ struct DiscInfo
 class DiscStorage
 {
 private:
-    static constexpr int MAX_DISCS = 300;                // Maximum number of discs, setting to 100 for now for faster development TODO: make this 300
+    static constexpr int MAX_DISCS = 300;                // Maximum number of discs
     static constexpr int RECORD_SIZE = sizeof(DiscInfo); // Size of each record in bytes
 
     // Calculate EEPROM address based on index

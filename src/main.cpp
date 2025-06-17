@@ -6,7 +6,6 @@
 #include <LedMatrixController.hpp>
 #include "DiscStorage.hpp"
 #include <functional>
-#include <map>
 #include "Sony_SLink.h"
 
 #define SLINK_PIN 2 // Pick a suitable I/O pin for S-Link
@@ -213,18 +212,12 @@ void sendDiscsJsonStream(WiFiClient &client)
     if (flushCounter == FLUSH_BATCH)
     {
       flushCounter = 0;
-      // optionally flush or yield a tiny delay
-      // client.flush();
-      // delay(2);
     }
   }
 
   // End array
   client.print("]");
 
-  // Close up
-  // client.flush();
-  // delay(10);
   client.stop();
 }
 
@@ -244,7 +237,6 @@ void sendIndexHtml(WiFiClient &client)
 
       "<script>"
       "  window.addEventListener('DOMContentLoaded', () => {"
-      "    alert('Fetching discs');"
       "    fetch('/discs')"
       "      .then(response => response.json())"
       "      .then(discData => {"
@@ -275,91 +267,6 @@ void sendIndexHtml(WiFiClient &client)
       "</body></html>"));
 }
 
-//
-// Minimal HTML + pagination example, but rows in batches
-//
-void sendForm(WiFiClient &client, DiscStorage &storage, int page)
-{
-  // For now, ignore 'page' or remove it if you don't want pagination.
-  // We'll just show ALL discs. Or you can keep your chunking if you have 300 discs.
-  // If you want pagination, you can still keep page logic, but let's show everything.
-
-  const int discsPerPage = storage.getMaxDiscs(); // show them all on one page
-  int startIdx = 0;
-  int endIdx = storage.getMaxDiscs();
-
-  // Minimal HTTP headers
-  client.print(F(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html\r\n"
-      "Connection: close\r\n"
-      "\r\n"
-      "<html><body>"));
-
-  // Some short command forms (play, stop, etc.) in separate forms, if you like
-  // Or you can skip these entirely for an even smaller page
-  client.print(
-      "<form method='POST'>"
-      "<button name='command' value='play'>Play</button>"
-      "<button name='command' value='stop'>Stop</button>"
-      "<button name='command' value='pause'>Pause</button>"
-      "<button name='command' value='next'>Next</button>"
-      "<button name='command' value='prev'>Prev</button>"
-      "<button name='command' value='power'>Power</button>"
-      "</form>");
-
-  // Single big form for all discs
-  client.print("<form method=POST>");
-
-  // We'll say command=bulkUpdate for everything
-  client.print("<input type=hidden name='command' value='bulkUpdate'>");
-
-  // We'll chunk the discs to avoid large strings
-  const int ROW_BATCH_SIZE = 10;
-  String chunk;
-  int rowCount = 0;
-
-  for (int i = startIdx; i < endIdx; i++)
-  {
-    DiscInfo d = storage.readDisc(i);
-    int discNum = d.discNumber; // or i+1, depending on your storage
-    String memoVal = d.memo;
-
-    // Build a minimal line: "#NN: <input name=m_NN value='Memo'> <button name='disc' value='NN'>Play</button><br>"
-    String line = "#";
-    line += discNum;
-    line += ":<input name=m_";
-    line += discNum;
-    line += " value=\"";
-    line += memoVal;
-    line += "\"> ";
-    // If user clicks this button, it passes disc=NN in addition to all m_ fields
-    line += "<button name=disc value=";
-    line += discNum;
-    line += ">P</button><br>";
-
-    // Add to chunk
-    chunk += line;
-    rowCount++;
-
-    if (rowCount == ROW_BATCH_SIZE)
-    {
-      client.print(chunk);
-      chunk = "";
-      rowCount = 0;
-    }
-  }
-
-  // Send leftover if any
-  if (chunk.length() > 0)
-    client.print(chunk);
-
-  // Finally a single "UpdateAll" button to save all memo fields
-  client.print("<input type=submit value='UpdateAll'></form>");
-
-  // Close HTML
-  client.print("</body></html>");
-}
 
 void loop()
 {
