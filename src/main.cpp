@@ -178,6 +178,103 @@ void setup()
   ledController.displayText("wifi connected");
 }
 
+void sendDiscsJsonStream(WiFiClient &client)
+{
+  client.println(F("HTTP/1.1 200 OK"));
+  client.println(F("Content-Type: application/json"));
+  client.println(F("Connection: close"));
+  client.println();
+
+  // Begin array
+  client.print("[");
+
+  int total = storage.getMaxDiscs();
+  const int FLUSH_BATCH = 10; // flush every 10 discs
+  int flushCounter = 0;
+
+  for (int i = 0; i < total; i++)
+  {
+    // Print comma if not the first disc
+    if (i > 0)
+      client.print(",");
+
+    DiscInfo d = storage.readDisc(i);
+
+    // Build a small local string or print directly
+    // Carefully escaping any quotes in the memo if needed
+    // For simplicity, assume memo has no " in it
+    client.print("{\"d\":");
+    client.print(d.discNumber);
+    client.print(",\"m\":\"");
+    client.print(d.memo);
+    client.print("\"}");
+
+    flushCounter++;
+    if (flushCounter == FLUSH_BATCH)
+    {
+      flushCounter = 0;
+      // optionally flush or yield a tiny delay
+      // client.flush();
+      // delay(2);
+    }
+  }
+
+  // End array
+  client.print("]");
+
+  // Close up
+  // client.flush();
+  // delay(10);
+  client.stop();
+}
+
+void sendIndexHtml(WiFiClient &client)
+{
+  client.println((
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html\r\n"
+      "Connection: close\r\n"
+      "\r\n"
+      "<!DOCTYPE html>"
+      "<html>"
+      "<head><title>JSON Demo</title></head>"
+      "<body>"
+      "<h1>Disc List (Loaded via fetch)</h1>"
+      "<div id='discList'>Loading discs...</div>"
+
+      "<script>"
+      "  window.addEventListener('DOMContentLoaded', () => {"
+      "    alert('Fetching discs');"
+      "    fetch('/discs')"
+      "      .then(response => response.json())"
+      "      .then(discData => {"
+      "        const container = document.getElementById('discList');"
+      "        let html = '';"
+      "        discData.forEach(item => {"
+      "          html += 'Disc ' + item.d + ': ' + item.m;"
+      "          html += ' <button onclick=\"playDisc(' + item.d + ')\">Play</button><br>';"
+      "        });"
+      "        container.innerHTML = html;"
+      "      })"
+      "      .catch(err => {"
+      "        console.error('Error fetching discs:', err);"
+      "        document.getElementById('discList').textContent = 'Error loading discs.';"
+      "      });"
+      "  });"
+
+      "  function playDisc(num) {"
+      "    fetch('/', {"
+      "      method: 'POST',"
+      "      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
+      "      body: 'command=selectDisc&disc=' + num"
+      "    });"
+      "    alert('Playing disc ' + num);"
+      "  }"
+      "</script>"
+
+      "</body></html>"));
+}
+
 //
 // Minimal HTML + pagination example, but rows in batches
 //
@@ -273,20 +370,40 @@ void loop()
   Serial.println("New client connected.");
   HttpRequest request = HttpParser::parse(client);
 
-  // Squelch favicon.ico requests to save time
+  // Possibly handle /favicon.ico quickly:
   if (!request.isPost && request.url == "/favicon.ico")
   {
-    // A quick “no icon” response
-    client.println("HTTP/1.1 404 Not Found");
-    client.println("Connection: close");
-    client.println();
+    client.println("HTTP/1.1 204 No Content");
+    client.println("Connection: close\r\n");
     client.stop();
-    return; // Skip the normal page
+    return;
   }
 
-  if (request.isPost)
+  if (!request.isPost)
   {
-    // Extract “command=XYZ” from POST body
+    // GET requests
+    if (request.url == "/")
+    {
+      // Serve the index page
+      sendIndexHtml(client);
+    }
+    else if (request.url == "/discs")
+    {
+      // Serve JSON
+      sendDiscsJsonStream(client);
+    }
+    else
+    {
+      // 404 if unknown
+      client.println(F("HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n"));
+    }
+    delay(10);
+    client.stop();
+  }
+  else
+  {
+    // POST request => parse command=...
+    // do your usual logic
     String cmdValue;
     int idx = request.body.indexOf("command=");
     if (idx >= 0)
@@ -299,7 +416,7 @@ void loop()
     Serial.print("Command: ");
     Serial.println(cmdValue);
 
-    // Dispatch
+    // Dispatch to commandHandlers, etc.
     auto it = commandHandlers.find(cmdValue);
     if (it != commandHandlers.end())
     {
@@ -310,37 +427,14 @@ void loop()
       Serial.println("Unknown command");
     }
 
-    // Return the form
-    // TODO: we are setting pageNumber to 0. How can we preserve it?
-    sendForm(client, storage, 0);
-  }
-  else
-  {
-    // GET request: parse "?page=N"
-    int pageNumber = 0;
-    int qMark = request.url.indexOf('?');
-    if (qMark >= 0)
-    {
-      String query = request.url.substring(qMark + 1);
-      int pIdx = query.indexOf("page=");
-      if (pIdx >= 0)
-      {
-        int amp = query.indexOf('&', pIdx);
-        if (amp < 0)
-          amp = query.length();
-        pageNumber = query.substring(pIdx + 5, amp).toInt();
-        if (pageNumber < 0)
-          pageNumber = 0;
-      }
-    }
-    Serial.print("GET page = ");
-    Serial.println(pageNumber);
-
-    // Return the page
-    sendForm(client, storage, pageNumber);
+    // Maybe redirect or just serve a minimal response:
+    // "Redirect" example:
+    client.println(F("HTTP/1.1 303 See Other"));
+    client.println(F("Location: /"));
+    client.println(F("Connection: close\r\n"));
+    client.println();
+    client.stop();
   }
 
-  delay(10);
-  client.stop();
   Serial.println("Client disconnected.");
 }
