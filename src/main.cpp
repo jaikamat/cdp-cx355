@@ -177,93 +177,174 @@ void setup()
   ledController.displayText("wifi connected");
 }
 
-void sendDiscsJsonStream(WiFiClient &client)
+void sendDiscsJsonStream(WiFiClient &client, String url)
 {
+  // Parse pagination parameters from URL
+  int page = 1;
+  int limit = 25; // Load 25 discs per page to avoid memory issues
+  
+  int pageIdx = url.indexOf("page=");
+  if (pageIdx >= 0) {
+    int end = url.indexOf('&', pageIdx);
+    if (end < 0) end = url.length();
+    page = url.substring(pageIdx + 5, end).toInt();
+    if (page < 1) page = 1;
+  }
+  
+  int limitIdx = url.indexOf("limit=");
+  if (limitIdx >= 0) {
+    int end = url.indexOf('&', limitIdx);
+    if (end < 0) end = url.length();
+    limit = url.substring(limitIdx + 6, end).toInt();
+    if (limit < 1 || limit > 50) limit = 25; // Max 50 per page
+  }
+
   client.println(F("HTTP/1.1 200 OK"));
   client.println(F("Content-Type: application/json"));
   client.println(F("Connection: close"));
   client.println();
 
-  // Begin array
-  client.print("[");
-
   int total = storage.getMaxDiscs();
-  const int FLUSH_BATCH = 10; // flush every 10 discs
-  int flushCounter = 0;
+  int startIdx = (page - 1) * limit;
+  int endIdx = startIdx + limit;
+  if (endIdx > total) endIdx = total;
 
-  for (int i = 0; i < total; i++)
+  // JSON response with pagination info
+  client.print("{\"discs\":[");
+
+  bool first = true;
+  for (int i = startIdx; i < endIdx; i++)
   {
-    // Print comma if not the first disc
-    if (i > 0)
-      client.print(",");
+    if (!first) client.print(",");
+    first = false;
 
     DiscInfo d = storage.readDisc(i);
-
-    // Build a small local string or print directly
-    // Carefully escaping any quotes in the memo if needed
-    // For simplicity, assume memo has no " in it
     client.print("{\"d\":");
     client.print(d.discNumber);
     client.print(",\"m\":\"");
     client.print(d.memo);
     client.print("\"}");
-
-    flushCounter++;
-    if (flushCounter == FLUSH_BATCH)
-    {
-      flushCounter = 0;
-    }
   }
 
-  // End array
-  client.print("]");
+  client.print("],\"page\":");
+  client.print(page);
+  client.print(",\"limit\":");
+  client.print(limit);
+  client.print(",\"total\":");
+  client.print(total);
+  client.print(",\"hasMore\":");
+  client.print(endIdx < total ? "true" : "false");
+  client.print("}");
 
   client.stop();
 }
 
 void sendIndexHtml(WiFiClient &client)
 {
-  client.println((
+  client.print(F(
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/html\r\n"
       "Connection: close\r\n"
       "\r\n"
       "<!DOCTYPE html>"
       "<html>"
-      "<head><title>JSON Demo</title></head>"
+      "<head><title>Sony CDP-CX355 Remote</title></head>"
       "<body>"
-      "<h1>Disc List (Loaded via fetch)</h1>"
-      "<div id='discList'>Loading discs...</div>"
+      "<h1>Sony CDP-CX355 Remote Control</h1>"
+      
+      "<div style='margin-bottom: 20px;'>"
+      "<h2>Transport Controls</h2>"
+      "<button onclick='sendCommand(\"play\")'>Play</button> "
+      "<button onclick='sendCommand(\"stop\")'>Stop</button> "
+      "<button onclick='sendCommand(\"pause\")'>Pause</button> "
+      "<button onclick='sendCommand(\"next\")'>Next</button> "
+      "<button onclick='sendCommand(\"prev\")'>Previous</button> "
+      "<button onclick='sendCommand(\"power\")'>Power</button>"
+      "</div>"
+      
+      "<h2>Disc Collection</h2>"
+      "<form id='discForm'>"
+      "<input type='hidden' name='command' value='bulkUpdate'>"
+      "<div id='discList'></div>"
+      "<div style='margin: 20px 0;'>"
+      "<button type='button' id='loadMoreBtn'>Load First 25 Discs</button>"
+      "</div>"
+      "<div style='margin-top: 20px;'>"
+      "<button type='submit'>Update All Titles</button>"
+      "</div>"
+      "</form>"
 
       "<script>"
-      "  window.addEventListener('DOMContentLoaded', () => {"
-      "    fetch('/discs')"
-      "      .then(response => response.json())"
-      "      .then(discData => {"
-      "        const container = document.getElementById('discList');"
-      "        let html = '';"
-      "        discData.forEach(item => {"
-      "          html += 'Disc ' + item.d + ': ' + item.m;"
-      "          html += ' <button onclick=\"playDisc(' + item.d + ')\">Play</button><br>';"
-      "        });"
-      "        container.innerHTML = html;"
-      "      })"
-      "      .catch(err => {"
-      "        console.error('Error fetching discs:', err);"
-      "        document.getElementById('discList').textContent = 'Error loading discs.';"
-      "      });"
+      "let currentPage = 0;"
+      "let allDiscsLoaded = false;"
+      
+      "function sendCommand(cmd) {"
+      "  fetch('/', {"
+      "    method: 'POST',"
+      "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
+      "    body: 'command=' + cmd"
       "  });"
+      "}"
+      
+      "function playDisc(num) {"
+      "  fetch('/', {"
+      "    method: 'POST',"
+      "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
+      "    body: 'command=bulkUpdate&disc=' + num"
+      "  });"
+      "}"
+      
+      "function loadDiscs() {"
+      "  if (allDiscsLoaded) return;"
+      "  currentPage++;"
+      "  document.getElementById('loadMoreBtn').textContent = 'Loading...';"
+      
+      "  fetch('/discs?page=' + currentPage + '&limit=25')"
+      "    .then(response => response.json())"
+      "    .then(data => {"
+      "      const container = document.getElementById('discList');"
+      "      let html = '';"
+      "      data.discs.forEach(item => {"
+      "        html += '<div style=\"margin-bottom: 5px;\">';"
+      "        html += 'Disc ' + item.d + ': ';"
+      "        html += '<input type=\"text\" name=\"m_' + item.d + '\" value=\"' + item.m + '\" style=\"width: 200px; margin-right: 10px;\">';"
+      "        html += '<button type=\"button\" onclick=\"playDisc(' + item.d + ')\">Play</button>';"
+      "        html += '</div>';"
+      "      });"
+      "      container.innerHTML += html;"
+      
+      "      if (data.hasMore) {"
+      "        document.getElementById('loadMoreBtn').textContent = 'Load Next 25 Discs (' + (currentPage * 25) + '/' + data.total + ')';"
+      "      } else {"
+      "        document.getElementById('loadMoreBtn').style.display = 'none';"
+      "        allDiscsLoaded = true;"
+      "      }"
+      "    })"
+      "    .catch(err => {"
+      "      console.error('Error fetching discs:', err);"
+      "      document.getElementById('loadMoreBtn').textContent = 'Error - Try Again';"
+      "    });"
+      "}"
 
-      "  function playDisc(num) {"
+      "document.addEventListener('DOMContentLoaded', () => {"
+      "  document.getElementById('loadMoreBtn').addEventListener('click', loadDiscs);"
+      
+      "  document.getElementById('discForm').addEventListener('submit', function(e) {"
+      "    e.preventDefault();"
+      "    const formData = new FormData(this);"
+      "    const params = new URLSearchParams(formData);"
       "    fetch('/', {"
       "      method: 'POST',"
       "      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
-      "      body: 'command=selectDisc&disc=' + num"
+      "      body: params.toString()"
+      "    }).then(() => {"
+      "      alert('Disc titles updated successfully!');"
+      "    }).catch(err => {"
+      "      alert('Error updating titles: ' + err);"
       "    });"
-      "    alert('Playing disc ' + num);"
-      "  }"
+      "  });"
+      "});"
       "</script>"
-
       "</body></html>"));
 }
 
@@ -294,10 +375,10 @@ void loop()
       // Serve the index page
       sendIndexHtml(client);
     }
-    else if (request.url == "/discs")
+    else if (request.url.startsWith("/discs"))
     {
-      // Serve JSON
-      sendDiscsJsonStream(client);
+      // Serve JSON with pagination support
+      sendDiscsJsonStream(client, request.url);
     }
     else
     {
