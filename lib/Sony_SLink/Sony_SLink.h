@@ -110,6 +110,7 @@
 #define SLINK_CMD_CD_COMBINE_TRACK 0x43      // Combine with Track TT
 
 // Query Operations
+#define SLINK_CMD_CD_DOWNLOAD_TITLE 0x40   // Download Title (Answer: 40 dsk ascii_text) - CDP-CX250 or higher
 #define SLINK_CMD_CD_QUERY_DISC 0x44       // Query Disc Info (Answer 60)
 #define SLINK_CMD_CD_QUERY_TRACK 0x45      // Query Track Info (Answer 62)
 #define SLINK_CMD_CD_QUERY_DISC_NAME 0x58  // Query Disc Name (Answer 16 if no disc name)
@@ -171,8 +172,26 @@ public:
     void sendCommand(unsigned int deviceId = 0x00, unsigned int commandId1 = 0x00, int commandId2 = -1, int commandId3 = -1);
     // New method to send a larger payload:
     void sendLongCommand(uint8_t deviceId, const uint8_t *data, size_t length);
+    // Method to receive S-Link responses
+    String receiveResponse(unsigned long timeoutMs = 5000);
+    // Method specifically for receiving title responses
+    String receiveTitle(unsigned long timeoutMs = 5000);
+    // Send command and immediately listen for response (no padding delay)
+    String sendCommandAndReceive(unsigned int deviceId, unsigned int commandId1, int commandId2 = -1, unsigned long timeoutMs = 5000);
+    // Send command and capture response using working inputMonitor approach
+    String sendCommandAndCapture(unsigned int deviceId, unsigned int commandId1, int commandId2 = -1, unsigned long timeoutMs = 3000);
+    // Send command and capture response using exact inputMonitor approach
+    String sendCommandAndMonitor(unsigned int deviceId, unsigned int commandId1, int commandId2 = -1);
+    // Capture response using inputMonitor logic but return the result
+    String captureInputMonitor(unsigned long uSecTimeout = 3000000UL);
+    // Simple capture method that processes data bits directly without sync detection
+    String captureDataBits(unsigned long uSecTimeout = 3000000UL);
+    // Modified inputMonitor that returns the captured hex string instead of printing
+    String inputMonitorCapture(unsigned long uSecTimeout = 3000000UL);
 #if !defined(__AVR_ATtiny85__)
     void inputMonitor(int type = 0, boolean idle = false, unsigned long uSecTimeout = 10000000UL, unsigned long serialSpeed = 115200UL);
+    // Version of inputMonitor that returns the buffer instead of printing it
+    String inputMonitorWithReturn(int type = 2, boolean idle = false, unsigned long uSecTimeout = 3000000UL);
 #endif
     int pin();
 
@@ -181,6 +200,10 @@ private:
     void _lineReady();
     void _writeSync();
     void _writeByte(byte value);
+    // Private methods for receiving data
+    uint8_t _readByte(unsigned long timeoutMs);
+    bool _waitForSync(unsigned long timeoutMs);
+    unsigned long _readBitTiming();
 };
 
 #endif

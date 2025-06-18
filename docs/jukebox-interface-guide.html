@@ -1,0 +1,429 @@
+<body bgcolor="#E0E0E0" text="202020" link="#FF2020" vlink="#D02020" alink="#FFFFFF"><!-- BEGIN WAYBACK TOOLBAR INSERT -->
+<script>__wm.rw(0);</script>
+<div id="wm-ipp-base" lang="en" style="display: block; direction: ltr; height: 127px;" toolbar-mode="auto">
+</div><div id="wm-ipp-print">The Wayback Machine - http://web.archive.org/web/20030414200645/http://www.upl.cs.wisc.edu:80/~orn/jukebox/guide.html</div>
+<script type="text/javascript">//<![CDATA[
+__wm.bt(750,27,25,2,"web","http://www.upl.cs.wisc.edu/~orn/jukebox/guide.html","20030414200645",1996,"https://web-static.archive.org/_static/",["https://web-static.archive.org/_static/css/banner-styles.css?v=1B2M2Y8A","https://web-static.archive.org/_static/css/iconochive.css?v=1B2M2Y8A"], false);
+  __wm.rw(1);
+//]]></script>
+<!-- END WAYBACK TOOLBAR INSERT -->
+ 
+<center>
+<h1>Jukebox Interface Guide</h1>
+<h4><font color="blue">Warning:</font> the work for this was done in June, 1997.  So it's dated, now.</h4>
+<h4><a href="index.html">Main page and links to more current stuff</a></h4>
+</center>
+Sony CDP-CX200<p>
+<img src="/web/20030414200645im_/http://www.upl.cs.wisc.edu/~orn/jukebox/cdp-cx200.gif" width="234" height="189" alt="[CDP-CX200 image]">
+</p><h3>Scope</h3>
+This document is a reference to the content of the CDP Control-A1
+messages.  It describes the known messages and their responses.  These
+commands can be sent directly to the RS232&lt;-&gt;Control-A1 interface
+board.  All information was reverse engineered from a CDP-CX200.  I
+suspect that other players in the line use a subset or a superset
+of these commands.<p>
+
+Please e-mail me any new codes that you discover.  I'm also very
+interested in any software that you write to control the CD player.
+Finally, drop me a line if this is useful to you - I could use the
+kudos.  :)</p><p>
+
+</p><h3>Addressing</h3>
+Addressing consists of a single byte.  The first nibble for most
+commands is 0x9.  Bit 3 of the second nibble sets the direction of
+the command and bits 2-0 are the address.  Address 7 is reserved as
+a broadcast command.  Ie. all CDs could be turned off by sending 
+<i>97 2F</i>.<p>
+</p><pre>	9     A
+1  0  0  1   1  0  1  0
+	        ^^^^^^^ &lt;- address
+	    ^^^ &lt;- 1 = report from CD player; 0 = message to CD player
+
+address		cd-player
+000		CD1
+001		CD2
+010		CD3
+111		All CDs
+</pre>
+
+
+<h3>Variables</h3>
+
+Certain fields require numerical input from the controlling software
+or return information.  As a rule (with a couple of exceptions) numbers
+are represented as Binary Coded Decimal (BCD).  When a number greater
+then 99 is required, things get a little strange.  100 can be represented
+by either 9A or 00.  After that, 101 is 9B, 102 is 9C and so on.<p>
+
+Text on the CD players is represented by ASCII strings.  The strings
+are not null terminated in most cases, nor do they have length fields
+associated with them.  Instead, the string is finished when the data
+stops coming in - a short delay of a 10th of a second or so should be
+adequate for end determination in the few cases where this might be a 
+problem.  A new packet from the converter always begins with a linefeed
+(0x0A), so in back to back transmissions the end of one packet and the
+beginning of the next can be easily determined.</p><p>
+
+</p><h3>The Commands</h3>
+
+The following commands are used to control the CD jukebox.  The commands
+are listed in numerical order.<p>
+
+All commands should be preceeded by an address byte and all responses will
+start with an address byte, except where noted.  For example, to send the
+play command to CD1, issue:
+</p><pre>90 00
+</pre>
+The CD player will respond with:
+<pre>98 00
+</pre>
+
+
+
+
+<table border="1" align="center" width="100%">
+
+<tbody><tr><th valign="top" rowspan="5"><b>Play</b></th></tr>
+<tr><td><i>call:</i> 00</td></tr>
+<tr><td><i>response:</i> 00</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> The CD player will load and play the
+current CD.  As soon as track information is loaded, it will return that
+information.  See <b>track info</b>.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Stop</b></th></tr>
+<tr><td><i>call:</i> 01</td></tr>
+<tr><td><i>response:</i> 01</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> This stops the current CD.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Pause</b></th></tr>
+<tr><td><i>call:</i> 02</td></tr>
+<tr><td><i>response:</i> 02</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> This puts the current CD into Pause.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Pause Queue</b></th></tr>
+<tr><td><i>call:</i> 03</td></tr>
+<tr><td><i>response:</i><br>02 - if previously playing<br>
+00 - if previously paused</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> The CD player is toggled between a 
+paused state and playing the current CD.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Track Forward</b></th></tr>
+<tr><td><i>call:</i> 08</td></tr>
+<tr><td><i>response:</i> see <b>Track Info</b>.</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Skip forward one track.  The CD player
+must be queued with a Pause command or actually playing for this
+command to work.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Track Back</b></th></tr>
+<tr><td><i>call:</i> 09</td></tr>
+<tr><td><i>response:</i> see <b>Track Info</b>.</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Skip back to the beginning of this
+track or, if already there, to the previous track.  The CD player
+must be queued with a Pause command or actually playing for this
+command to work.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Scan Forward</b></th></tr>
+<tr><td><i>call:</i> 10</td></tr>
+<tr><td><i>response:</i> none</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> The CD player scans forward from the current position.
+The CD must be in a play or pause mode.  Normal cross track boundary messages
+are returned (see <b>Track Info</b>).  Stop scanning forward with the <b>Resume</b>
+command.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Scan Backward</b></th></tr>
+<tr><td><i>call:</i> 11</td></tr>
+<tr><td><i>response:</i> none</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> The CD player scans backward from the current position.
+The CD must be in a play or pause mode.  Normal cross track boundary messages
+are returned (see <b>Track Info</b>).  Stop scanning forward with the <b>Resume</b>
+command.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Scan Forward</b></th></tr>
+<tr><td><i>call:</i> 12</td></tr>
+<tr><td><i>response:</i> none</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> The CD player scans forward from the current position.
+The CD must be in a play or pause mode.  Normal cross track boundary messages
+are returned (see <b>Track Info</b>).  Stop scanning forward with the <b>Resume</b>
+command.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Scan Backward</b></th></tr>
+<tr><td><i>call:</i> 13</td></tr>
+<tr><td><i>response:</i> none</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> The CD player scans backward from the current position.
+The CD must be in a play or pause mode.  Normal cross track boundary messages
+are returned (see <b>Track Info</b>).  Stop scanning forward with the <b>Resume</b>
+command.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Resume</b></th></tr>
+<tr><td><i>call:</i> 1F</td></tr>
+<tr><td><i>response:</i> ??</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Resumes normal play mode operation after a scan
+forward or back.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Remote On</b></th></tr>
+<tr><td><i>call:</i> 20</td></tr>
+<tr><td><i>response:</i> 70 00 80 00 dsk trk</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Puts the CD player into "Remote" mode.  This amounts
+to turning off the display and disabling the buttons (except power).</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Remote Off</b></th></tr>
+<tr><td><i>call:</i> 21</td></tr>
+<tr><td><i>response:</i> 70 00 C0 00 dsk trk</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Puts the CD player into Normal operating mode.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Time Report</b></th></tr>
+<tr><td><i>call:</i> 25</td></tr>
+<tr><td><i>response:</i> 51 trk index min sec</td></tr>
+<tr><td><i>variables:</i><br>dsk - the current disk number<br>
+trk - the current track being played<br>
+index - the index in the current track
+min,sec - the length of the track in minutes and seconds</td></tr>
+<tr><td><i>description:</i> Sends an update every second.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Report Off</b></th></tr>
+<tr><td><i>call:</i> 26</td></tr>
+<tr><td><i>response:</i> none</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Stops reporting second updates..</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Power On</b></th></tr>
+<tr><td><i>call:</i> 2E</td></tr>
+<tr><td><i>response:</i> 2E</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Powers up the CD player.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Power Off</b></th></tr>
+<tr><td><i>call:</i> 2F</td></tr>
+<tr><td><i>response:</i> 2F</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> Turns off the CD player.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Download Title</b></th></tr>
+<tr><td><i>call:</i> 40 dsk</td></tr>
+<tr><td><i>response:</i> 40 dsk ascii_text</td></tr>
+<tr><td><i>variables:</i><br>dsk - the disk need not be loaded for this to work<br>
+ascii_text - the title information that the CD player has for this disk<br></td></tr>
+<tr><td><i>description:</i> The CD player sends the title information
+for a particular CD.  Only works for CDP CX250 or higher.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Get CD Info</b></th></tr>
+<tr><td><i>call:</i> 44 dsk</td></tr>
+<tr><td><i>response:</i> 60 dsk mintrk maxtrk min sec ???</td></tr>
+<tr><td><i>variables:</i><br>dsk - the disk number currently loaded<br>
+mintrk - the lowest track on the disk<br>
+maxtrk - the highest track on the disk<br>
+min,sec - the length of the CD in minutes and seconds<br>
+??? - unknown, seems fairly unique... frame offset?</td></tr>
+<tr><td><i>description:</i> Retrieves information about a CD that is currently loaded.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Get Track Info</b></th></tr>
+<tr><td><i>call:</i> 45 dsk trk</td></tr>
+<tr><td><i>response:</i><br>
+62 dsk trk min sec<br>
+15 - the disk isn't loaded or the track doesn't exist</td></tr>
+<tr><td><i>variables:</i><br>dsk - the disk number currently loaded<br>
+trk - the track you're interested in<br></td></tr>
+<tr><td><i>description:</i> Get information about a particular track on
+the currently loaded CD.  The disk <b>must</b> be loaded before using
+this command.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Play Disk</b></th></tr>
+<tr><td><i>call:</i> 50 dsk trk</td></tr>
+<tr><td><i>response:</i> see <b>Track Info</b>.</td></tr>
+<tr><td><i>variables:</i><br>dsk - the disk number to be played<br>
+trk - the track to be played<br>
+</td></tr><tr><td><i>description:</i> Jumps to the given track on the given
+disk and begins playing.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Set Disk</b></th></tr>
+<tr><td><i>call:</i> 51 dsk trk</td></tr>
+<tr><td><i>response:</i> see <b>Track Info</b>.</td></tr>
+<tr><td><i>variables:</i><br>dsk - the disk number to be played<br>
+trk - the track to be played<br>
+</td></tr><tr><td><i>description:</i> Queues the CD player to the given disk
+and track number, but does not start playing it.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Track Info</b></th></tr>
+<tr><td><i>call:</i> none </td></tr>
+<tr><td><i>response:</i> 50 dsk trk min sec</td></tr>
+<tr><td><i>variables:</i><br>dsk - the current disk number<br>
+trk - the current track being played<br>
+min,sec - the length of the track in minutes and seconds</td></tr>
+<tr><td><i>description:</i>This information is returned whenever a new
+track is about to be played.  This can either be the result of a command
+or it could have happened naturally as play continues from the end of
+one track and on to the next.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>CD Data Loaded</b></th></tr>
+<tr><td><i>call:</i> none</td></tr>
+<tr><td><i>response:</i> 52 dsk</td></tr>
+<tr><td><i>variables:</i><br>
+dsk - the disk number currently loaded</td></tr>
+<tr><td><i>description:</i>The CD Player now has data for the disk
+available.  Use <b>Get CD Info</b> to retrieve it.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Finding CD</b></th></tr>
+<tr><td><i>call:</i> none</td></tr>
+<tr><td><i>response:</i> 54 dsk</td></tr>
+<tr><td><i>variables:</i><br>
+dsk - the disk number currently loaded</td></tr>
+<tr><td><i>description:</i>This message is sent when the CD player starts
+moving to a new disk location.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Loading CD</b></th></tr>
+<tr><td><i>call:</i> none</td></tr>
+<tr><td><i>response:</i> 58 dsk</td></tr>
+<tr><td><i>variables:</i>
+dsk - the disk number currently loaded</td></tr>
+<tr><td><i>description:</i>This message is returned when
+a CD is spinning up inside the player.</td></tr>
+
+<tr><th valign="top" rowspan="5"><b>Blank</b></th></tr>
+<tr><td><i>call:</i> 00</td></tr>
+<tr><td><i>response:</i> 00</td></tr>
+<tr><td><i>variables:</i> none</td></tr>
+<tr><td><i>description:</i> description.</td></tr>
+
+</tbody></table>
+
+<h3>Surrogate Keyboard</h3>
+
+The CD players accept special commands that act exactly as if the keys on the front
+panel are being pressed.  No response is generated to these commands on the Control-A1
+interface, except those responses that are generated due to events that occur - such
+as playing a new CD or changing disks.<p>
+
+The track switching control codes were deciphered by me directly.  The other codes
+supplied by <a href="http://web.archive.org/web/20030414200645/mailto:mj@rain.org">Maciej Jesmanowicz</a>.  The Control-A1
+interface requires each command to be preceeded by the nibble 0xE.</p><p>
+
+These codes are only for the CX200.  The other models have keys that are not listed
+in this table.  The listed key codes are probably identical between the products in
+a family, however.</p><p>
+
+<table border="1" align="center">
+
+<tbody><tr><th valign="top" width="25%"><b>Power</b></th>
+<td><i>call:</i> EA 91</td>
+<th valign="top" width="25%"><b>Track 1</b></th>
+<td><i>call:</i> E0 11</td></tr>
+
+<tr><th valign="top"><b>Continue</b></th>
+<td><i>call:</i> EB 91</td>
+<th valign="top"><b>Track 2</b></th>
+<td><i>call:</i> E8 11</td></tr>
+
+<tr><th valign="top"><b>Shuffle</b></th>
+<td><i>call:</i> EA D1</td>
+<th valign="top"><b>Track 3</b></th>
+<td><i>call:</i> E4 11</td></tr>
+
+<tr><th valign="top"><b>Program</b></th>
+<td><i>call:</i> EF 91</td>
+<th valign="top"><b>Track 4</b></th>
+<td><i>call:</i> EC 11</td></tr>
+
+<tr><th valign="top"><b>Disk</b></th>
+<td><i>call:</i> E5 31</td>
+<th valign="top"><b>Track 5</b></th>
+<td><i>call:</i> E2 11</td></tr>
+
+<tr><th valign="top"><b>Track</b></th>
+<td><i>call:</i> ED 31</td>
+<th valign="top"><b>Track 6</b></th>
+<td><i>call:</i> EA 11</td></tr>
+
+<tr><th valign="top"><b>Block</b></th>
+<td><i>call:</i> E3 31</td>
+<th valign="top"><b>Track 7</b></th>
+<td><i>call:</i> E6 11</td></tr>
+
+<tr><th valign="top"><b>Repeat</b></th>
+<td><i>call:</i> E3 51</td>
+<th valign="top"><b>Track 8</b></th>
+<td><i>call:</i> EE 11</td></tr>
+
+<tr><th valign="top"><b>Check</b></th>
+<td><i>call:</i> EB 51</td>
+<th valign="top"><b>Track 9</b></th>
+<td><i>call:</i> E1 11</td></tr>
+
+<tr><th valign="top"><b>Play</b></th>
+<td><i>call:</i> E4 D1</td>
+<th valign="top"><b>Track 0/10</b></th>
+<td><i>call:</i> E0 51</td></tr>
+
+<tr><th valign="top"><b>Pause</b></th>
+<td><i>call:</i> E9 D1</td>
+<th valign="top"><b>Track &gt;10</b></th>
+<td><i>call:</i> EE 51</td></tr>
+
+<tr><th valign="top"><b>Stop</b></th>
+<td><i>call:</i> E1 D1</td>
+<th valign="top"><b>Enter</b></th>
+<td><i>call:</i> ED 11</td></tr>
+
+<tr><th valign="top"><b>Skip Back</b></th>
+<td><i>call:</i> E0 D1</td>
+<th valign="top"><b>Skip Forward</b></th>
+<td><i>call:</i> E8 D1</td></tr>
+
+<tr><th valign="top"><b>Scan Back</b></th>
+<td><i>call:</i> EC D1</td>
+<th valign="top"><b>Scan Forward</b></th>
+<td><i>call:</i> E2 D1</td></tr>
+
+<tr><th valign="top"><b>Disk Back</b></th>
+<td><i>call:</i> EB D1</td>
+<th valign="top"><b>Disk Forward</b></th>
+<td><i>call:</i> E7 D1</td></tr>
+
+<tr><th valign="top"><b>Clear</b></th>
+<td><i>call:</i> EF 11</td></tr>
+
+</tbody></table>
+
+
+</p><h3>History</h3>
+The basis of these commands is described in the <a href="controla1.html">original Control-A1
+document</a>, but is a bit more cryptic.
+
+<hr>
+<address><a href="http://web.archive.org/web/20030414200645/http://www.upl.cs.wisc.edu/~orn">
+<img border="0" src="/web/20030414200645im_/http://www.upl.cs.wisc.edu/~orn/Rudy-tiny.Jpeg" align="middle" alt="[]">Rudy Moore</a></address>
+
+
+<img width="1" height="1" src="http://web.archive.org/web/20030414200645im_/http://www.upl.cs.wisc.edu/cgi-bin/orn?C=guide">
+<!--
+     FILE ARCHIVED ON 20:06:45 Apr 14, 2003 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:04:04 Jun 17, 2025.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+-->
+<!--
+playback timings (ms):
+  captures_list: 0.552
+  exclusion.robots: 0.026
+  exclusion.robots.policy: 0.015
+  esindex: 0.01
+  cdx.remote: 1135.782
+  LoadShardBlock: 205.051 (3)
+  PetaboxLoader3.datanode: 195.573 (4)
+  load_resource: 132.734
+  PetaboxLoader3.resolve: 49.461
+--></body>

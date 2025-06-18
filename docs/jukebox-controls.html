@@ -1,0 +1,199 @@
+<html><head></head><body>The bus is held high (4.72 V) with what appears to be a weak pullup.
+Signals pass by at what looks like 1.667 KHz, which is a 600 uSec
+bit time.<p>
+
+
+Commands recorded:</p><p>
+
+<table border="1" width="100%">
+
+<tbody><tr>
+<td>1</td>
+<td>Off</td>
+<td>09 52 55 52 92 4F</td>
+<td>0000 1001 0101 0010 0101 0101 0101 0010 1001 0010 0100</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Off</td>
+<td>09 52 54 A9 49 27</td>
+<td>0000 1001 0101 0010 0101 0100 1010 1001 0100 1001 0010 0</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Off</td>
+<td>09 52 52 A9 49 27</td>
+<td>0000 1001 0101 0010 0101 0010 1010 1001 0100 1001 0010 0</td>
+</tr>
+
+</tbody></table>
+
+
+(any trailing 1s are indistinguishable from background bits and are included for readability.)</p><p>
+
+
+This is a good start.  I <b>really</b> didn't like that the three sequences, which
+by rights should <b>only</b> differ in their address, but are actually different lengths.
+Also, while the header looks the same, they look like completely different bit
+streams.  Finally, I couldn't find their address in plain text anywhere within
+their sequences.</p><p>
+
+The first clue is that these bit sequences aren't really as different as they look.
+In fact, the tail half of the message lines up as well!  The second two sequences
+just have an extra 0.  So now I'm thinking code...  Add to that that there are
+no 11 sequences anywhere and I'm sure they're encoding the data.</p><p>
+
+So here's the simplest solution: count the number of zeroes.  One zero is the
+bit 0, two zeroes is the bit 1.  There are no three bit sequences and the only
+four bit sequence could be a start bit sequence.  Here's what the three code
+sequences become:</p><p>
+
+<table border="1" width="100%">
+<tbody><tr>
+<td>1</td>
+<td>Off</td>
+<td>start 98 2F</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Off</td>
+<td>start 99 2F</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Off</td>
+<td>start 9A 2F</td>
+</tr>
+
+</tbody></table></p><p>
+
+This sequence looks <b>much</b> better!  Nice 16 bit values with a clearly
+defined address.  By the way, this is the sequence that appears when I
+turn the CD player off.  Here's a few more commands with the same encoding
+scheme.</p><p>
+
+<table border="1" width="100%">
+
+<tbody><tr><td>3</td></tr>
+<tr><td>On - with CD in various positions:</td></tr>
+<tr><td>disk 123 </td><td> start 9A 2E -12.75 mS- start 9A 58 B1 -980 mS- 9A 58 B1 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk 124 </td><td> start 9A 2E -12.75 mS- start 9A 58 B2 -980 mS- 9A 58 B2 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk 125 </td><td> start 9A 2E -12.75 mS- start 9A 58 B3 -980 mS- 9A 58 B3 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk 106 </td><td> start 9A 2E -12.75 mS- start 9A 58 A0 -980 mS- 9A 58 A0 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk   1 </td><td> start 9A 2E -12.75 mS- start 9A 58 B2 -980 mS- 9A 58 B2 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk   1 </td><td> start 9A 2E -12.75 mS- start 9A 58 01 -980 mS- 9A 58 01 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk 101 </td><td> start 9A 2E -12.75 mS- start 9A 58 9B -980 mS- 9A 58 9B -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk 100 </td><td> start 9A 2E -12.75 mS- start 9A 58 9A -980 mS- 9A 58 9A -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk  99 </td><td> start 9A 2E -12.75 mS- start 9A 58 99 -980 mS- 9A 58 99 -10.8 mS- 9A 61 FE 00</td></tr>
+<tr><td>disk  31 </td><td> start 9A 2E -12.75 mS- start 9A 58 31 -980 mS- 9A 58 31 -10.8 mS- 9A 61 FE 00</td></tr>
+
+<tr><td>after a long pause while the CD spins up I receive</td></tr>
+<tr><td></td><td>start 9A 52 FE -11.68 mS- start 9A 08</td></tr><tr>
+
+</tr><tr><td>moveto 2 (with shuttle + enter)</td></tr>
+<tr><td>disk   2</td><td>start 9A 54 02 -12.75 mS- start 9A 06</td></tr>
+
+<tr><td>Play</td></tr>
+<tr><td>disk 1 track 1 2:53</td><td>start 9A 00 -1.7 S- start 9A 50 01 01 02 53</td></tr><tr>
+</tr><tr><td>disk 1 track 2 2:08</td><td>start 9A 00 -2.28 S- start 9A 50 01 01 02 11</td></tr><tr>
+</tr><tr><td>disk 99 track 13 1:21</td><td>start 9A 00 -2.28 S- start 9A 50 99 13 01 25</td></tr><tr>
+
+</tr><tr><td>Last track of a disk</td></tr>
+<tr><td>disk 99 next = 100</td><td>start 9A 54 9A -10.8 mS- start 9A 06</td></tr><tr>
+
+</tr><tr><td>first "program" keypress /td&gt;</td></tr>
+<tr><td>disk 100</td><td>start 9A 70 01 C2 00 9A 01</td></tr><tr>
+
+</tr><tr><td>first "enter" inside program /td&gt;</td></tr>
+<tr><td>disk 100</td><td>start 9A 70 01 C0 00 9A 01</td></tr><tr>
+
+</tr><tr><td>shuffle</td></tr>
+<tr><td>disk 28</td><td>start 9A 52 28 -10.8 mS- 9A 08 -1.28 S- 9A 70 00 81 00 28 00</td></tr><tr>
+
+</tr>
+</tbody></table>
+
+</p><hr>
+
+
+<center>
+<h2>known messages</h2>
+all messages for address 3<p>
+</p></center>
+<table border="1" width="100%">
+<tbody><tr><td>CD player off</td><td>start 9A 2F</td></tr>
+<tr><td>CD player on</td><td>start 9A 2E</td></tr>
+<tr><td>CD position</td><td>start 9A 58 xx</td><td>xx = # &lt; 100 ? BCD(#) : (# - 100) + 0x9A</td></tr>
+<tr><td>CD position 2</td><td>start 9A 52 xx</td><td>message after spinup during powerup sequence</td></tr>
+<tr><td>Play</td><td>start 9A 00</td><td></td></tr>
+<tr><td>track header</td><td>start 9A 50 dsk trk min sec</td><td>all using standard xx notation.</td></tr>
+<tr><td>Stop</td><td>start 9A 01</td><td></td></tr>
+<tr><td>Pause</td><td>start 9A 02</td><td></td></tr>
+<tr><td>Shuffle</td><td>start 9A 08</td></tr>
+<tr><td>Shuffle (one disk)</td><td>start 9A 70 00 81 00 dsk 00</td></tr>
+<tr><td>Bad Command</td><td>start 9A 0F</td><td></td></tr>
+<tr><td>Still Going??</td><td>Start 9A 0C</td><td>Seen while scanning past tracks.. but only occasionally</td></tr>
+<tr><td>No CD</td><td>start 9A 53 dsk</td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+</tbody></table><p>
+
+</p><hr>
+
+<table border="1" width="100%">
+<tbody><tr><td>00</td><td>Play</td><td></td></tr>
+<tr><td>01</td><td>Stop</td><td></td></tr>
+<tr><td>02</td><td>Pause</td><td></td></tr>
+<tr><td>03</td><td>Pause Cue</td><td>First time sets the CD player into pause, second starts the track.</td></tr>
+<tr><td>04 thisdsk ??</td><td>No response</td><td></td></tr>
+<tr><td>05 this-dsk</td><td>no response</td><td></td></tr>
+<tr><td>06 this-dsk</td><td>no response</td><td></td></tr>
+<tr><td>07</td><td>Bad Command</td><td></td></tr>
+<tr><td>08</td><td>One Track Forward</td><td>(must be in a play mode)</td></tr>
+<tr><td>09</td><td>One Track Back</td><td>(must be in a play mode)</td></tr>
+<tr><td>0A-0D</td><td>Bad Command</td><td></td></tr>
+<tr><td>0E</td><td>??? (returns 9A 71 00)</td><td></td></tr>
+<tr><td>0F</td><td>status? (returns 9A 70 01 C0 00 dsk trk)</td><td></td></tr>
+<tr><td>10,12</td><td>scan forward</td><td></td></tr>
+<tr><td>11,13</td><td>scan backward</td><td></td></tr>
+<tr><td>14-1D</td><td>Bad Command</td><td></td></tr>
+<tr><td>1F</td><td>Null?</td><td></td></tr>
+<tr><td>20</td><td>Remote Mode (returns 9A 70 00 80 00 dsk trk)</td><td>Turns display off...</td></tr>
+<tr><td>21</td><td>Remote Off (returns 9A 70 00 C0 00 dsk trk)</td><td>Turns display back on...</td></tr>
+<tr><td>22</td><td>??? (returns 9A 61 dsk 00)</td><td></td></tr>
+<tr><td>23-26</td><td>Null?</td><td></td></tr>
+<tr><td>27-2D</td><td>Bad Command</td><td></td></tr>
+<tr><td>2E</td><td>Power On (returns 9A 58 dsk, 9A 58 dsk, 9A 61 FE 00)</td><td></td></tr>
+<tr><td>2F</td><td>Power Off (returns 9A 2F)</td><td></td></tr>
+<tr><td>30,31</td><td>Null?</td><td></td></tr>
+<tr><td>32-43</td><td>Bad Command</td><td></td></tr>
+<tr><td>44 dsk</td><td>disk information returns 60 dsk mintrk maxtrk min sec ??</td></tr>
+<tr><td>45 dsk trk<byte></byte></td><td>??? (returns 9A 15)</td><td></td></tr>
+<tr><td>45 dsk trk<byte></byte></td><td>track info of current disk - returns 62 dsk trk min sec</td><td></td></tr>
+<tr><td>45 dsk 00<byte></byte></td><td>track info of current disk (currently playing track) - returns 62 dsk trk min sec</td><td></td></tr>
+<tr><td>36-4F</td><td>Bad Command</td><td></td></tr>
+<tr><td>50 dsk trk<byte></byte></td><td>Play dsk at trk. (returns info about track)</td><td></td></tr>
+<tr><td>51 dsk trk<byte></byte></td><td>Queue up dsk at trk. (returns info about track)</td><td></td></tr>
+<tr><td>52-5D</td><td>Bad Command</td><td></td></tr>
+<tr><td>5E byte</td><td>???? (returns 9A 0E)</td><td></td></tr>
+<tr><td>5E this-dsk</td><td>???? (returns nothing if you're on that disk))</td><td></td></tr>
+<tr><td>5F this-dsk</td><td>???? </td><td></td><td></td></tr>
+<tr><td>5F-FF</td><td>Bad Command</td><td></td></tr>
+
+<tr><td></td><td></td><td></td></tr>
+</tbody></table><p>
+
+Notes:</p><p>
+
+
+The off pattern appears to be repeated twice. But only occasionally.</p><p>
+
+CD positioning, at first glance appears to work like this: Between 1 and 99
+the CD position is encoded as BCD.  Disk 100 is 0x9A.  All disk numbers between
+100 and 200 are then calculated from (0x9A + (CDnum - 100)).</p><p>
+
+<img width="1" height="1" src="http://www.upl.cs.wisc.edu/cgi-bin/orn?C=controla1">
+</p></body></html>

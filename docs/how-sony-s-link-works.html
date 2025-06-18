@@ -1,0 +1,1319 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta name="keywords" content="S-Link, SLINK, CTRL-A, CTRL-AII, SONY" />
+    <meta
+      name="description"
+      content="Info über den Aufbau und Codes des SONY S-LINK/CTRL-A(II) Protokolls / Info and codes about the SONY S-LINK/CTRL-A(II) protocol"
+    />
+    <link rel="SHORTCUT ICON" href="slink.ico" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+
+    <title>
+      So funktioniert das SONY S-LINK/CTRL-A(II) Protokoll / How SONY's
+      S-LINK/CTRL-A(II) protocol works
+    </title>
+  </head>
+
+  <body>
+    <div class="center">
+      <table class="form">
+        <tbody>
+          <tr>
+            <td style="width: 48%">
+              <img
+                src="flagdt.gif"
+                alt="Deutsch"
+                align="left"
+                hspace="4"
+                width="84"
+                height="53"
+              />
+            </td>
+            <td>&nbsp;</td>
+            <td style="width: 48%">
+              <img
+                src="flaguk.gif"
+                alt="English"
+                align="left"
+                hspace="4"
+                width="84"
+                height="53"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h1>So funktioniert das SONY S-LINK/CTRL-A(II) Protokoll</h1>
+            </td>
+            <td>&nbsp;</td>
+            <td><h1>How SONY's S-LINK/CTRL-A(II) protocol works</h1></td>
+          </tr>
+          <tr>
+            <td class="formleft">
+              Dies ist eine kurze Beschreibung des Protokolls basierend auf
+              BigDave's und
+              <a href="http://web2.airmail.net/will/">William Hollingworth</a>'s
+              Ausführungen. S-LINK oder CTRL-A(II) ist ein zweiadriges
+              bidirektionales Bussystem vorwiegend im Hifi-Bereich, an das viele
+              Geräte gleichzeitig angeschlossen sein können.<br />
+              Vielen Dank an Jesper Nygaard in Kopenhagen (Dänemark) für seine
+              Verstärker-, Tuner- und Surround Codes!
+            </td>
+            <td>&nbsp;</td>
+            <td class="formleft">
+              This is a short description of the protocol based on BigDave's and
+              <a href="http://web2.airmail.net/will/">William Hollingworth</a>'s
+              informations. S-LINK or CTRL-A(II) is a two-wire bidirectional bus
+              system mostly used in audio equipment, where many devices can be
+              connected together.<br />
+              Many thanks to Jesper Nygaard, Copenhagen (Denmark) for his great
+              help finding amplifier, tuner and surround codes!
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table class="form">
+        <tbody>
+          <tr>
+            <td>
+              <img
+                src="slink.gif"
+                alt="S-LINK (CTRL-A) Protocol - Timing Diagram"
+                border="2"
+                vspace="2"
+                width="600"
+                height="45"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>S-LINK (CTRL-A) protocol<br /><br /><br /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="form">
+        <tbody>
+          <tr>
+            <td>
+              <img
+                src="slinklog.gif"
+                alt="S-LINK(tm) Symbol"
+                hspace="8"
+                vspace="4"
+                width="140"
+                height="50"
+              />
+            </td>
+            <td>
+              Send a command to the device (I used here my MD recorder), it will
+              send back a reply message.<br />
+              Example: "get device name"<br />
+              you send: B0 6A<br />
+              you receive: B8 6A 4D 44 53 2D 4A 45 36 34 30 20 20 20 20 00 00 00
+              00<br />
+              The device replies with its prefix, repeats the command and tells
+              you "MDS-JE640".<br />
+              Great and easy bus system, eh? But <i>you</i> have to check for
+              collissions!
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table class="form">
+        <tbody>
+          <tr>
+            <td>
+              <table width="400">
+                <tbody>
+                  <tr class="num">
+                    <td class="num" colspan="2"><b>Known Device Codes</b></td>
+                  </tr>
+                  <tr class="num">
+                    <th class="num">code</th>
+                    <th class="num">device</th>
+                  </tr>
+                  <tr class="num">
+                    <td class="num">90</td>
+                    <td class="num">CD Player</td>
+                  </tr>
+                  <tr class="num">
+                    <td class="num">B0</td>
+                    <td class="num">MiniDisc Recorder</td>
+                  </tr>
+                  <tr class="num">
+                    <td class="num">C0</td>
+                    <td class="num">Amplifier</td>
+                  </tr>
+                  <tr class="num">
+                    <td class="num">C1</td>
+                    <td class="num">Tuner</td>
+                  </tr>
+                  <tr class="num">
+                    <td class="num">C3</td>
+                    <td class="num">Surround</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td class="formleft">
+              <b
+                >Device Code composition:<br /><br />
+                n n n n X y y y</b
+              ><br /><br />
+              <b>nnnn</b> = device number<br />
+              <b>X</b> = 0 &nbsp; write to device<br />
+              <b>X</b> = 1 &nbsp; read from device<br />
+              <b>yyy</b> = sub-device number<br />
+              <b>yyy</b> = 111 &nbsp; all devices <b>nnnn</b>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b>MD Send Commands (to MD recorder) prefix 10110000b = B0h</b>
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">00</td>
+            <td class="num">play</td>
+            <td class="num">or start recording from record pause</td>
+          </tr>
+          <tr class="num">
+            <td class="num">01</td>
+            <td class="num">stop</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">02</td>
+            <td class="num">pause</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">03</td>
+            <td class="num">pause toggle</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">04</td>
+            <td class="num">eject</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">07</td>
+            <td class="num">record pause</td>
+            <td class="num">(answer 07)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">08</td>
+            <td class="num">skip +</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">09</td>
+            <td class="num">skip -</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0E</td>
+            <td class="num">query stored</td>
+            <td class="num">??? (answer 71)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0F</td>
+            <td class="num">setup info</td>
+            <td class="num">prog.-mode, switches (answer 70)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">10</td>
+            <td class="num">fwd fast</td>
+            <td class="num">end with play or normal</td>
+          </tr>
+          <tr class="num">
+            <td class="num">11</td>
+            <td class="num">rew fast</td>
+            <td class="num">end with play or normal</td>
+          </tr>
+          <tr class="num">
+            <td class="num">12</td>
+            <td class="num">fwd slow</td>
+            <td class="num">end with play or normal</td>
+          </tr>
+          <tr class="num">
+            <td class="num">13</td>
+            <td class="num">rew slow</td>
+            <td class="num">end with play or normal</td>
+          </tr>
+          <tr class="num">
+            <td class="num">1F</td>
+            <td class="num">normal</td>
+            <td class="num">end from fwd or rew</td>
+          </tr>
+          <tr class="num">
+            <td class="num">20</td>
+            <td class="num">disable remote control</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">21</td>
+            <td class="num">enable remote control</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">22</td>
+            <td class="num">device type</td>
+            <td class="num">device type code (answer 61)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">23</td>
+            <td class="num">auto pause off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">24</td>
+            <td class="num">auto pause on</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">25</td>
+            <td class="num">time update on</td>
+            <td class="num">
+              updates time every second until end of track (answer 51)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">26</td>
+            <td class="num">time update off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2E</td>
+            <td class="num">power on</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2F</td>
+            <td class="num">power off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">32</td>
+            <td class="num">divide</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">33</td>
+            <td class="num">menu yes</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">34</td>
+            <td class="num">menu no</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">35</td>
+            <td class="num">undo</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">3E</td>
+            <td class="num">device keys disabled</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">3F</td>
+            <td class="num">device keys enabled</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">40 TT</td>
+            <td class="num">erase track</td>
+            <td class="num">without request!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">41 TT TT</td>
+            <td class="num">move track</td>
+            <td class="num">from TT to TT, without request!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">42 TT</td>
+            <td class="num">combine with previous track</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">43 TT</td>
+            <td class="num">combine with track TT</td>
+            <td class="num">without request!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">44 DD</td>
+            <td class="num">query disc</td>
+            <td class="num">disc info (answer 60)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">45 DD TT</td>
+            <td class="num">query track</td>
+            <td class="num">track info (answer 62)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">46 DD</td>
+            <td class="num">split adjust</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">50 DD TT</td>
+            <td class="num">play direct track</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">51 DD TT</td>
+            <td class="num">pause (before start) direct track</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">54 DD</td>
+            <td class="num">remain time disc</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">58 DD 00</td>
+            <td class="num">query disc name</td>
+            <td class="num">no disc name: answer 16</td>
+          </tr>
+          <tr class="num">
+            <td class="num">5A TT 00</td>
+            <td class="num">query track name</td>
+            <td class="num">no track name: answer 17</td>
+          </tr>
+          <tr class="num">
+            <td class="num">6A</td>
+            <td class="num">device name</td>
+            <td class="num">answer 6A</td>
+          </tr>
+          <tr class="num">
+            <td class="num">72 TT</td>
+            <td class="num">record date</td>
+            <td class="num">no date rec.: answer 72 TT 00 00 00 00 00 00</td>
+          </tr>
+          <tr class="num">
+            <td class="num">76 DD TT</td>
+            <td class="num">combine track a+b</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">78</td>
+            <td class="num">a-b erase, set point a</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">79</td>
+            <td class="num">a-b erase, set point b</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">7A</td>
+            <td class="num">adjust point a</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">7B</td>
+            <td class="num">adjust point b</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">7C</td>
+            <td class="num">a-b erase, confirm point a</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">7D</td>
+            <td class="num">confirm a-b erase</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">97 01 00</td>
+            <td class="num">disc info</td>
+            <td class="num">also 97 00 00 (answer 97) ???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">98 DD 00 00 [14d x CC]</td>
+            <td class="num">write disc text</td>
+            <td class="num">if CC&lt;14d, fill with 00 (ok, answer 1F)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">99 BB [16d x CC]</td>
+            <td class="num">write disc more text</td>
+            <td class="num">
+              BB&gt;1 (block), if CC&lt;16d, fill with 00 (ok, answer 1F)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">9A TT 00 00 [14d x CC]</td>
+            <td class="num">write track text</td>
+            <td class="num">if CC&lt;14d, fill with 00 (ok, answer 1F)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">9B BB [16d x CC]</td>
+            <td class="num">write track more text</td>
+            <td class="num">
+              BB&gt;1 (block), if CC&lt;16d, fill with 00 (ok, answer 1F)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num" colspan="3">
+              titling characters: ascii 20..5A + 5F..7A and japanese A6..AF +
+              B1..DF
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b
+                >MD Receive Messages (from MD recorder) prefix 10111000b =
+                B8h</b
+              >
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">00</td>
+            <td class="num">play</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">01</td>
+            <td class="num">stop</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">02</td>
+            <td class="num">pause</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">03</td>
+            <td class="num">TOC updated</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">04</td>
+            <td class="num">record play</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">05</td>
+            <td class="num">ignored</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">06</td>
+            <td class="num">seeking</td>
+            <td class="num">CD Player: unloading or moving carosel</td>
+          </tr>
+          <tr class="num">
+            <td class="num">07</td>
+            <td class="num">record pause</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">08</td>
+            <td class="num">ready</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">09</td>
+            <td class="num">start of track</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0C</td>
+            <td class="num">30 sec to end of track</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0E</td>
+            <td class="num">unavailable</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0F</td>
+            <td class="num">error</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">10</td>
+            <td class="num">no memo</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">11</td>
+            <td class="num">no delete file</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">12</td>
+            <td class="num">no group</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">14</td>
+            <td class="num">invalid disc #</td>
+            <td class="num">used in disc info query</td>
+          </tr>
+          <tr class="num">
+            <td class="num">15</td>
+            <td class="num">invalid disc or track #</td>
+            <td class="num">used in track info query</td>
+          </tr>
+          <tr class="num">
+            <td class="num">16</td>
+            <td class="num">no disc name on disc</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">17</td>
+            <td class="num">no track name on disc</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">18</td>
+            <td class="num">door open</td>
+            <td class="num">only CD-Changer</td>
+          </tr>
+          <tr class="num">
+            <td class="num">19</td>
+            <td class="num">no group</td>
+            <td class="num">only CD-Changer</td>
+          </tr>
+          <tr class="num">
+            <td class="num">1D</td>
+            <td class="num">no cd text</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">1F</td>
+            <td class="num">title written to memory</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2E</td>
+            <td class="num">power on</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2F</td>
+            <td class="num">power off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">31</td>
+            <td class="num">???</td>
+            <td class="num">(answer to command 42)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">33</td>
+            <td class="num">complete</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">50 DD TT MM SS</td>
+            <td class="num">track status</td>
+            <td class="num">disk, track, min, sec (all bcd)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">51 TT DD MM SS</td>
+            <td class="num">time update status</td>
+            <td class="num">
+              track, disk, min, sec (all bcd) (answer to command 25)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">54 DD MM SS</td>
+            <td class="num">remain time disc</td>
+            <td class="num">
+              disk, min, sec (all bcd) (if min=100d, byte=a0) (if min&gt;255d,
+              byte=wrong value)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">58 DD 00 00 [14d x CC]</td>
+            <td class="num">disc text</td>
+            <td class="num">if CC&lt;14d, filled with 00</td>
+          </tr>
+          <tr class="num">
+            <td class="num">59 BB [16d x CC]</td>
+            <td class="num">disc more text</td>
+            <td class="num">BB&gt;1 (block), if CC&lt;16d, filled with 00</td>
+          </tr>
+          <tr class="num">
+            <td class="num">5A TT 00 00 [14d x CC]</td>
+            <td class="num">track text</td>
+            <td class="num">if CC&lt;14d, filled with 00</td>
+          </tr>
+          <tr class="num">
+            <td class="num">5B BB [16d x CC]</td>
+            <td class="num">track more text</td>
+            <td class="num">BB&gt;1 (block), if CC&lt;16d, filled with 00</td>
+          </tr>
+          <tr class="num">
+            <td class="num">60 01 01 TT MM SS 00</td>
+            <td class="num">disc info</td>
+            <td class="num">
+              # of Discs Tracks (HEX), Total Playing Time Minutes, Seconds (all
+              BCD)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">61 DD ID</td>
+            <td class="num">disc capacity, model identifier</td>
+            <td class="num">after power on, 07 for MDS-JE530, 0B for CD...</td>
+          </tr>
+          <tr class="num">
+            <td class="num">62 DD TT MM SS</td>
+            <td class="num">track info</td>
+            <td class="num">
+              Track (HEX), Playing Time Minutes, Seconds (all BCD)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">6A</td>
+            <td class="num">device name</td>
+            <td class="num">
+              answer: 6A [17d x CC], if CC&lt;17d, filled with 00
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">70 S1 S2 S3 DD TT</td>
+            <td class="num">status</td>
+            <td class="num">
+              S1: 00=stop, 01=play, 02=pause, 04=rec, 05=rec-pause<br />
+              S2: bit0=shuffle, bit1=program, bit2=(only CD: 0=one disc, 1=all
+              discs), bit3=repeat-all,<br />
+              bit4=repeat1, bit5=writable (while playing), bit6= , bit7= <br />
+              S3: bit2..0 input (001 analog, 011 optical, 101 coax), bit7=mono
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">71</td>
+            <td class="num">00 01 00 00 (oder 01) 00</td>
+            <td class="num">after TOC-read, inserting disc</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b>AMP Send Commands (to amplifier) prefix 11000000b = C0h</b>
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">06</td>
+            <td class="num">mute</td>
+            <td class="num">answer 70</td>
+          </tr>
+          <tr class="num">
+            <td class="num">07</td>
+            <td class="num">unmute</td>
+            <td class="num">answer 70</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0C</td>
+            <td class="num">5.1 input on</td>
+            <td class="num">answer 70</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0D</td>
+            <td class="num">5.1 input off</td>
+            <td class="num">answer 70</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0E</td>
+            <td class="num">status request 2nd Audio</td>
+            <td class="num">answer 71</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0F</td>
+            <td class="num">status request Source</td>
+            <td class="num">answer 70</td>
+          </tr>
+          <tr class="num">
+            <td class="num">14</td>
+            <td class="num">master volume +</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">15</td>
+            <td class="num">master volume -</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">22</td>
+            <td class="num">status request ???</td>
+            <td class="num">answer 61</td>
+          </tr>
+          <tr class="num">
+            <td class="num">23</td>
+            <td class="num">status request ???</td>
+            <td class="num">answer 62</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2C</td>
+            <td class="num">???</td>
+            <td class="num">answer 2C</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2D</td>
+            <td class="num">???</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2E</td>
+            <td class="num">power on</td>
+            <td class="num">answer 61, C3, 87, 0F, 1F, 3F, 7F</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2F</td>
+            <td class="num">power off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">30</td>
+            <td class="num">??? on</td>
+            <td class="num">answer 70 (Byte3, Bit5=0)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">31</td>
+            <td class="num">??? off</td>
+            <td class="num">answer 70 (Byte3, Bit5=1)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">32</td>
+            <td class="num">??? on</td>
+            <td class="num">answer 71 (Byte3, Bit5=0)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">33</td>
+            <td class="num">??? off</td>
+            <td class="num">answer 71 (Byte3, Bit5=1)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">40 VV</td>
+            <td class="num">Master volume set direct</td>
+            <td class="num">(no answer, only some amp's)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">43</td>
+            <td class="num">Status request input type</td>
+            <td class="num">answer 43 (Byte2, L-N), see also command 83</td>
+          </tr>
+          <tr class="num">
+            <td class="num">48 NN</td>
+            <td class="num">Status Source name</td>
+            <td class="num">
+              answer 48 NN [8 x CC] 00 00 00 00 00, see also command 88
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">50 SS</td>
+            <td class="num">Set Source</td>
+            <td class="num">
+              00=Tuner (answer C8 70, CB 70)<br />
+              01=Phono (answer C8 70, CB 70)<br />
+              02=CD (answer C8 70, C8 E1)<br />
+              03=DAT (answer C8 70, C8 E1)<br />
+              04=MD (answer C8 70, C8 E1)<br />
+              05=Tape (answer C8 70, C8 E1)<br />
+              07=Digital Audio (answer C8 70)<br />
+              10=Video 1 (answer C8 70, CB 70)<br />
+              11=Video 2 (answer C8 70, CB 70)<br />
+              12=Video 3 (answer C8 70, CB 70)<br />
+              15=LD (answer C8 70, CB 70)<br />
+              16=SAT (answer C8 70, CB 70)<br />
+              17=TV (answer C8 70, CB 70)<br />
+              19=DVD (answer C8 70, CB 70)<br />
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">52 SS</td>
+            <td class="num">Set 2nd Audio</td>
+            <td class="num">
+              00=Tuner, 02=CD, 03=DAT, 04=MD, 05=Tape, 0F=Source (answer 71)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">6A</td>
+            <td class="num">Device name</td>
+            <td class="num">answer 6A</td>
+          </tr>
+          <tr class="num">
+            <td class="num">83 TT</td>
+            <td class="num">Set input type</td>
+            <td class="num">01=optical, 02=coax, 04=analog, answer 43</td>
+          </tr>
+          <tr class="num">
+            <td class="num">88 SS [8 x CC]</td>
+            <td class="num">Set Source name</td>
+            <td class="num">SS=Source (see command 50)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b
+                >AMP Receive Messages (from amplifier) prefix 11001000b = C8h</b
+              >
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">06</td>
+            <td class="num">mute</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">07</td>
+            <td class="num">unmute</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0C</td>
+            <td class="num">5.1 input on</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0D</td>
+            <td class="num">5.1 input off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0E</td>
+            <td class="num">unavailable</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0F</td>
+            <td class="num">error</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2E</td>
+            <td class="num">power on</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">2F</td>
+            <td class="num">power off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">43 TT XX</td>
+            <td class="num">Status input type</td>
+            <td class="num">01=optical, 02=coax, 04=analog</td>
+          </tr>
+          <tr class="num">
+            <td class="num">70 AA AV CC</td>
+            <td class="num">Status source</td>
+            <td class="num">
+              AA=Status Audio, AV=Status Video (see command 50)<br />
+              CC: Bit4=5.1 input, Bit3=tapeloop, Bit1=mute
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">71 AA XX XX (XX)</td>
+            <td class="num">Status 2nd Audio</td>
+            <td class="num">AA=Status 2nd Audio (see command 50)</td>
+          </tr>
+          <tr class="num">
+            <td class="num">E1 XX TT XX XX...</td>
+            <td class="num">Status</td>
+            <td class="num">
+              TT: Bit2=0 after SLINK-command, Bit2=1 after IR-command
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b>TUNER Send Commands (to tuner) prefix 11000001b = C1h</b>
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">03 BB</td>
+            <td class="num">Band</td>
+            <td class="num">BB=00: FM, BB=01: AM, answer 70</td>
+          </tr>
+          <tr class="num">
+            <td class="num">06</td>
+            <td class="num">scan +</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">07</td>
+            <td class="num">scan -</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">08</td>
+            <td class="num">preset +</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">09</td>
+            <td class="num">preset -</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0A</td>
+            <td class="num">mono</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0B</td>
+            <td class="num">stereo</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">50 BB HH LL</td>
+            <td class="num">Direct Tune</td>
+            <td class="num">
+              BB=00: FM, (HH*256+LL)/100= frequency [MHz] in 50 kHz steps (value
+              rounded down)<br />
+              BB=01: AM, HH*256+LL= frequency [kHz] in 9 kHz (USA: 10 kHz) steps
+              (value rounded down)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">51 BB NN</td>
+            <td class="num">Preset Station</td>
+            <td class="num">
+              BB=[01..03] Bank A..C, NN=[00..09] Station number, answer 70, E1
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">52 PP</td>
+            <td class="num">PTY Search</td>
+            <td class="num">
+              00=None, 01=News, 02=Current Affairs, 03=Information, 04=Sports,
+              05=Education, 06=Drama, 07=Culture...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b>TUNER Receive Messages (from tuner) prefix 11001001b = C9h</b>
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">48 BB NN [8 x CC] 00 00 00 00 00</td>
+            <td class="num">Station Status</td>
+            <td class="num">
+              BB: Bank [01..03], NN: Number [00..09], CC: Name
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">70 BB NN XX XX</td>
+            <td class="num">Tuner Status</td>
+            <td class="num">BB: Bank [01..03], NN: Number [00..09]</td>
+          </tr>
+          <tr class="num">
+            <td class="num">E1 XX (XX...)</td>
+            <td class="num">Tuner Status</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b>SUR Send Commands (to surround) prefix 11000011b = C3h</b>
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">04</td>
+            <td class="num">surround</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">05</td>
+            <td class="num">2ch stereo</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">06</td>
+            <td class="num">EQ on</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">07</td>
+            <td class="num">EQ off</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0B</td>
+            <td class="num">next sound field</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0C</td>
+            <td class="num">2ch stereo</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">0D</td>
+            <td class="num">AFD</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+          <tr class="num">
+            <td class="num">10</td>
+            <td class="num">rear volume +</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">11</td>
+            <td class="num">rear volume -</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">12</td>
+            <td class="num">center volume +</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">13</td>
+            <td class="num">center volume -</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">14</td>
+            <td class="num">sub volume +</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">15</td>
+            <td class="num">sub volume -</td>
+            <td class="num">no answer!</td>
+          </tr>
+          <tr class="num">
+            <td class="num">51 YY</td>
+            <td class="num">sound field</td>
+            <td class="num">
+              00=2ch stereo, 01=AFD, ... 1C=Game (list as on remote)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">53 YY ZZ</td>
+            <td class="num">front speaker</td>
+            <td class="num">
+              YY: 00=large 01=small, ZZ: 00=front 01=center 02=rear 03=sub
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">80 YY</td>
+            <td class="num">rear level</td>
+            <td class="num">value in dB, MSB=sign</td>
+          </tr>
+          <tr class="num">
+            <td class="num">81 YY</td>
+            <td class="num">center level</td>
+            <td class="num">value in dB, MSB=sign</td>
+          </tr>
+          <tr class="num">
+            <td class="num">83 YY</td>
+            <td class="num">rear balance</td>
+            <td class="num">
+              00=center, 01..08=right (08-&gt;max), F7..FF=left (F7-&gt;max)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">86 YY</td>
+            <td class="num">D.Range Comp</td>
+            <td class="num">00=off, 01=0.1dB, 02=0.2dB, ...</td>
+          </tr>
+          <tr class="num">
+            <td class="num">87 YY</td>
+            <td class="num">LFE mix</td>
+            <td class="num">00=0dB, FF=-1dB, ... EC=-20dB, EB..80=off</td>
+          </tr>
+          <tr class="num">
+            <td class="num">90</td>
+            <td class="num">Front bass</td>
+            <td class="num">??? answer 50</td>
+          </tr>
+          <tr class="num">
+            <td class="num">95 YY</td>
+            <td class="num">Units</td>
+            <td class="num">01=meter, 02=feet</td>
+          </tr>
+          <tr class="num">
+            <td class="num">97 YY</td>
+            <td class="num">Crossover frequency</td>
+            <td class="num">
+              00..4B=60Hz, 4C..69=90Hz, 6A..87=120Hz, 88..A5=150Hz, A6..FF=180Hz
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">96 YY ZZ</td>
+            <td class="num">Rear placement</td>
+            <td class="num">
+              YY: 00=side 01=mid 02=behind, ZZ: 00=low 01=high
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">99 YY</td>
+            <td class="num">Front balance</td>
+            <td class="num">
+              00=center, 01..08=right (08=max), F7..FF=left (F7=max)
+            </td>
+          </tr>
+          <tr class="num">
+            <td class="num">9F YY</td>
+            <td class="num">dts LFE mix</td>
+            <td class="num">value in dB</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br /><br />
+
+      <table width="740">
+        <tbody>
+          <tr class="num">
+            <td class="num" colspan="3">
+              <b>SUR Receive Messages (from surround) prefix 11001011b = CBh</b>
+            </td>
+          </tr>
+          <tr class="num">
+            <th class="num">command (hex)</th>
+            <th class="num">description</th>
+            <th class="num">remark</th>
+          </tr>
+          <tr class="num">
+            <td class="num">40 RR XX</td>
+            <td class="num">Status Rear volume</td>
+            <td class="num">RR=dB in two's complement</td>
+          </tr>
+          <tr class="num">
+            <td class="num">50 XX...</td>
+            <td class="num">Status Front volume</td>
+            <td class="num">???</td>
+          </tr>
+          <tr class="num">
+            <td class="num">70 XX XX XX XX</td>
+            <td class="num">Status Surround</td>
+            <td class="num">&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <br />
+
+    <table class="form">
+      <tbody>
+        <tr>
+          <td>
+            <a href="protocl.htm">Zurück zur Protokollübersicht<br /><br /></a>
+          </td>
+          <td>
+            <a href="protocl.htm">Back to protocol overview<br /><br /></a>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="index.htm">Zurück zur Hauptseite</a></td>
+          <td><a href="index2.htm">Back to Main Page</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="right">updated: 2020-11-08</div>
+
+    <div class="center100">
+      <iframe
+        src="legend.htm"
+        style="
+          width: 100%;
+          height: 170px;
+          background-color: transparent;
+          border-style: none;
+        "
+      ></iframe>
+    </div>
+  </body>
+</html>

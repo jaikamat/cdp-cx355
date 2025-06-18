@@ -1,0 +1,197 @@
+          Slink Send and Receive Commands for Sony MiniDisc Recorders
+          -----------------------------------------------------------
+         		by William Hollingworth
+	            http://web2.airmail.net/will/
+			   will@airmail.net
+  		       last updated: April 11 1999
+ 
+
+
+
+About this document
+-------------------
+
+This lists the slink commands I have discovered for my Sony MD recorder. It is aimed 
+at sharing the information I have discovered and also in the hopes that anyone who 
+has determined some of the commands that I haven't figured out yet will share this
+information. Please email me at: will@airmail.net
+
+This list assumes you already have the necessary hardware and software to send and 
+receive slink commands. This is not a tutorial in slink protocol or how to connect
+your system together.
+
+I am using the Nirvis Systems "Slink-e" controller and their Active-X Slink-e server 
+software. Find out more about this excellent device at:
+
+http://www.nirvis.com
+
+
+Notices
+-------
+
+These commands were derived from extensive trial and error with the Sony MDS-JB920.
+All commands that the recorder responds to are listed. Those of unknown function are 
+listed as such.
+
+At the end of this page, I have listed all the functions that I have not yet been able
+to fully decode. Some of these may not even be possible using Slink with the MD.
+
+Copyrights, brand names and trademarks are properties of their respective owners.
+
+I am not responsible for any damage or erased discs!!!! Always use a "junk" MD when
+trying different commands.
+
+
+Off we go..!
+------------
+
+Sony Slink MD recorder commands have the prefix "B0"
+
+
+How to read the command format
+------------------------------
+
+Example of a 2 byte command:
+
+Track erase command - The first byte is the function, followed by a parameter (track umber you want to erase)
+
+
+01000000dddddddd:erase_track			#40H TRACK#
+^^^^^^^^---------------------------------------------------- binary value of command
+        ^^^^^^^^-------------------------------------------- binary format of parameter (e.g. 8 bits)
+                 ^^^^^^^^^^^-------------------------------- name of command
+                                                 ^^--------- hex value of command
+                                                     ^^^^^^- function of parameter value or description
+
+So to erase track 3, you would send:
+
+	B04003 in Hex (prefix+erase+track)
+
+The recorder will then respond with a message telling if the track was erased or not.
+See "MD Receive Messages" below.
+
+
+MD Send Commands (to MD recorder)
+-------------------------------------
+
+Single Byte Commands:
+
+00000000:play 			#00H
+00000001:stop 			#01H
+00000010:pause 			#02H
+00000011:pause_toggle 		#03H
+00000100:eject			#O4H
+00000111:record			#07H
+00001000:>>|			#08H
+00001001:|<<			#09H
+00001010:record_start		#0AH starts recording from rec-pause mode. sends [cf00]????
+00001110:query_stored 		#OEH
+00001111:mode 			#0FH causes player mode to be reported
+00010010:>> 			#12H fwd until play command
+00010011:<< 			#13H rew until play command
+00011111:normal 		#1FH ends << >> modes
+00100000:remote_off 		#20H this stops play, disables the remote control,
+00100001:remote_on 		#21H enable user control
+00100010:player_type 		#22H causes player to report type
+00100011:auto_pause_off		#23H
+00100100:auto_pause_on		#24H
+00100101:timecode_on 		#25H starts second by second timecode reporting (play mode)
+00100110:timecode_off 		#26H stop reporting
+00101001:unknown_2	#29H - no response?
+00101010:unknown_3	#2AH
+00101011:unknown_4	#2BH
+00101100:unknown_5	#2CH
+00101101:unknown_6	#2DH
+00101110:power_on 		#2EH
+00101111:power_off 		#2FH
+00110010:unknown_7 	#32H - split rehearsal?
+00110011:unknown_8	#33H - split yes?
+00110100:unknown_9	#34H - split no?
+00110101:unknown_10	#35H
+00111110:unknown_11	#3EH - replies 3e
+00111111:unknown_12	#3FH - replies 3f
+01101010:player_name 		#6AH returns name string 
+01111000:unknown_13  	#78H - ab erase? - point a ok?
+01111001:unknown_14	#79H
+01111100:unknown_15	#7CH - point b set?
+01111101:unknown_16	#7DH
+
+Double Byte Commands:
+
+01000000dddddddd:erase_track			#40H TRACK#
+01000010dddddddd:unknown_17 		#42H - combine with previous track?
+01000011dddddddd:unknown_18 		#43H
+01000100dddddddd:query_disc 			#44H reports disc info
+01000110dddddddd:unknown_19 		#46H
+01010100dddddddd:unknown_20 		#54H - returns [54010121] [54010000]
+01110010tttttttt:record_date 		#72H - record date eg.[721063021B031822]
+01111010dddddddd:unknown_22 		#7AH
+01111011dddddddd:unknown_23 		#7BH
+
+
+Triple Byte Commands:
+
+01000001ddddddddtttttttt:move_track 		#41H track from + track to
+01000101ddddddddtttttttt:query_track 		#45H disc# TRACK#
+01010000aaaaaaaatttttttt:play_dt		#50H emulates key direct track access
+01010001aaaaaaaatttttttt:pause_dt 		#51H emulates key direct track access
+01011000ddddddddtttttttt:query_disc_name 	#58H either 0100 or 0000
+01011010ddddddddtttttttt:query_track_name 	#5AH track,01
+01011100ddddddddtttttttt:unknown_24  	#5CH - 0001 returns [4C]
+01110110ddddddddtttttttt:combine_tracks 	#76H track a + track b 
+10010111ddddddddtttttttt:unknown_25 	#97H - disc info 00, trk returns eg.[9700100612]
+10110010ddddddddtttttttt:unknown_26 	#B2H - no response from player
+
+
+Very Long Commands:
+
+10011000ddddddddttttttttttttttttcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:set_disc_text 		#98 01, 00, 00, ASCII text
+10011001llllllllcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:set_disc_more_text 	#99 line#, ASCII text
+10011010ttttttttoooooooooooooooocccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:set_track_text 	#9A track#, 00, 00 , ASCII text
+10011011llllllllcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:set_track_more_text 	#9B line#, ASCII text
+
+
+
+MD Receive Messages (from MD recorder)
+--------------------------------------
+
+Note - some of these are not used
+
+00000000:play
+00000001:stop
+00000010:pause
+00000101:eject
+00001000:ready
+00001001:start_of_track
+00001100:30s_to_eot
+00001110:already_did_that 
+00001111:error
+00010000:no_memo 
+00010001:no_delete_file 
+00010011:no_group 
+00010100:invalid_disc # used in disc info query
+00010101:invalid_disc_or_track # used in track info query 
+00011101:no_cd_text
+00011111:memo_written
+00101110:power_on
+00101111:power_off
+00000111:record_pause
+00000100:record_play
+01110000ppppppppooWrRoPSooooooooddddddddtttttttt:mode # p=playing(1), stop(0), pause (2), record (4), record pause (5) | W = writable | r=repeat1 | R=repeat all | P=program | S=shuffle
+00110011:complete #33h 
+01010000ddddddddttttttttmmmmmmmmssssssss:playing # [disk id] [bcd track] [bcd min] [bcd sec]
+01010001iiiiiiiittttttttmmmmmmmmssssssss:time # [bcd index] [bcd track] [bcd min] [bcd sec]
+01100010ddddddddttttttttmmmmmmmmssssssss:track_info # [disk id]  [bcd track] [bcd  min] [bcd  sec] 
+
+00010111:no_name #no track name stored
+01011010ttttttttxxxxxxxxxxxxxxxxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:track_text
+01011011ttttttttxxxxxxxxxxxxxxxxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:track_more_text
+01011000ttttttttxxxxxxxxxxxxxxxxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:disc_text
+01011001ttttttttxxxxxxxxxxxxxxxxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:disc_more_text
+01101010cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:player_name
+
+
+
+by William Hollingworth
+http://web2.airmail.net/will/
+will@airmail.net

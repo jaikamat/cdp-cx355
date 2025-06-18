@@ -1,0 +1,167 @@
+Reverse Engineered Control-A1 codes (Using the Sony CDP-CX250)
+	Written by BigDave (2/19/98)
+
+Best Viewed with a Fixed Pitch character set (not a TrueType, etc.)
+(use Notepad or something)
+
+---------------------------------------------------------------------
+Let's review the actual format being sent from the CD player
+
+The Control-A1 line is normally held high (5v)
+There are 3 data bit types (held low at 0v) of a Control-A1 packet.
+Every bit is separated by a gap (5v) of 625us.  The data bits are:
+Start bit (2500us), '0' bit (650us), and '1' bit (1240us).
+
+The above timings were given to me from someone else (I haven't
+hooked my player to an actual oscilloscope to verify the exact
+timings).  But the lengths relative to each other match my
+findings.
+
+Each packet is in the form of: S[byte1][byte2][byte3]...
+Bytes are Most Significant Bit first.
+
+---------------------------------------------------------------------
+Now the codes themselves (written in hex unless otherwise noted):
+
+The first byte tells the controller which CD player is talking:
+98 = CDP-1
+99 = CDP-2
+9A = CDP-3
+
+Bytes 2 onward tell you what information or command is being given.
+When they are commands:
+00 = Play
+01 = Stop
+02 = Pause
+
+When they are "Status" or information bytes:
+06 = Moving the CD Carosel
+08 = Ready
+0C = 29 seconds left on current track (Displayed during play)
+18 = Door Open
+2E = Power On
+2F = Power Off
+50 <Disc#> <Track#> <Length min> <Length sec> = Playing Track
+	- <Disc#>: 1 byte  Discs 1-99 are Binary Coded Decimal (BCD)
+			   Discs 100-200 are HEX-54d
+	- <Track#>: 1 byte  Tracks are BCD
+	- <Length minutes>: 1 byte  Minutes are BCD
+	- <Length seconds>: 1 byte  Seconds are BCD
+
+52 <Disc#> = Displaying on front panel the track/time/memo info for <Disc#>
+	- <Disc#>: 1 byte  Discs 1-99 are BCD
+			   Discs 100-200 are HEX-54d
+
+54 <Disc#> = Retrieving <Disc#>, or Loading <Disc#>
+	- <Disc#>: 1 byte  Discs 1-99 are BCD
+			   Discs 100-200 are HEX-54d
+
+58 <Disc#> = Retrieved <Disc#>, or Loaded <Disc#>
+	- <Disc#>: 1 byte  Discs 1-99 are BCD
+			   Discs 100-200 are HEX-54d
+
+61 <Disc Capacity> <something else> = Tells the controller something
+				      about the CDplayer itself.
+				      I call it the "CD Model
+				      Identifiers."
+	- <Disc Capacity>: 1 byte  100 Disc Player is 00 hex
+			   	   200 Disc Player is FE hex
+				   50+1 Disc Player (I am speculating
+				      it will be 50 or 51 hex)
+	- <Something else>: 1 byte  usually 0B hex
+
+70 <00hex> <CD Playing status> <00hex> <Disc#> <00hex>
+	- <00hex>: 1 byte  Could mean something...but for me it never
+			   changes.
+	- <CD Playing status>: 1 byte (divided into 2 half bytes)
+		- Half byte 1: (4 Most Significant bits) b1b2b3b4
+			- bit 1: 0 = Scanning Discs (happens when you
+				     open, then close the CD door)
+				 1 = Discs known (knows which discs
+				     are loaded and which are not)
+			- bit 2: 0 = Play mode: 1 Disc
+				 1 = Play mode: All Discs
+			- bits 3,4: 00 = Play mode: Repeat Off
+				    01 = Play mode: Repeat All
+				    10 = Play mode: Repeat 1
+		- Half byte 2: (4 Least Significant bits) b1b2b3b4
+			- bits 1-4: 0000 = Normal
+				    0001 = Shuffle
+				    0010 = Program
+---------------------------------------------------------------------
+Format for commands to send to the CD Player (in hex unless otherwise
+noted).
+
+The first byte tells which of the 3 possible CD players to execute
+the command.  The format is as follows:
+
+90 = Sends command to CD-1
+91 = Sends command to CD-2
+92 = Sends command to CD-3
+
+Bytes 2 onward give the specific command to the CD player
+
+00 = Play
+01 = Stop
+02 = Pause
+03 = Toggle Pause
+08 = Next Track
+09 = Previous Track
+20 = Front Panel Display Off
+21 = Front Panel Display On
+25 = Output Status Continously
+26 = Stop Continuous Status Output
+2E = Power On
+2F = Power Off
+50 <Disc#> <Track#> = Play the song on Disc#, Track#
+	- <Disc#>: 1 byte  Discs 1-99 are BCD
+			   Discs 100-200 are HEX-54d
+	- <Track#>: 1 byte  Tracks are BCD
+51 <Disc#> <Track#> = Same as 50, except enables the Pause function
+---------------------------------------------------------------------
+NOTES:
+
+<Disc#>:  1 byte can have 256 unique numbers.  Sony ignores disc 00
+	  on the 200 Disc Players.  Disc 100 on the 100 Disc Players
+	  is represented as 00 hex.  Also, their "hacked" format for
+	  200 discs (their format for the 100 disc players is simple,
+	  just BCD) allows a total of 201 possible discs.  This
+	  explains Discs 100-200 being equal to the
+	  hex value - 54(base 10) while Discs 1-99 are in BCD.  The
+	  algorithm to take the byte given for disc# and printing it
+	  on a computer screen in base 10 is as follows:
+
+	  //Comment: (hb1 = 4MSB and hb2 = 4LSB of the byte)
+	  if (hb1 > 9)
+	     print("Disc #" + (16*hb1 + hb2 - 54))
+	  else
+	     print("Disc #" + (10*hb1 + hb2))
+
+<Track#>,<Length min>,<Length sec>: Simple BCD.  Algorithm to print
+	  in base 10 is as follows:
+
+	  print( 10*hb1 + hb2 )
+
+Let's say that CD-1 is playing Disc 148, Track 3, which is 3m 48s
+long.  The output from the player is (hex): 98 50 CA 03 03 48
+Now for Disc 62, Track 14, which is 2m 14s long: 98 50 62 14 02 14
+
+When the unit is first given power, the following information is
+given:
+
+-Power Off
+-CD Model Identifiers: <Disc Capacity> 0B
+
+When the On button is first pressed, the following information is
+given:
+
+-Power On
+-Retrieved (or Loaded) Disc Number <Disc#>
+-Retrieved (or Loaded) Disc Number <Disc#>
+-CD Model Identifiers: <Disc Capacity> 0B
+-Displaying on Front Panel the time/track/memo info for: <Disc#>
+-Ready
+
+
+Please update information above, or fix possible errors.
+-----------------------------------------------------------------------
