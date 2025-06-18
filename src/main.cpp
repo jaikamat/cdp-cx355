@@ -652,7 +652,8 @@ void setup()
 
   ledController.playAnimation(MatrixAnimation::WifiSearch, true);
   wifiManager.connect();
-  ledController.displayText("wifi connected");
+  String hostname = String(wifiManager.getHostname()) + ".local";
+  ledController.displayText(hostname.c_str());
 
   Serial.println("=== Ready for S-Link commands ===");
 }
@@ -867,6 +868,8 @@ void sendIndexHtml(WiFiClient &client)
 
 void loop()
 {
+  wifiManager.runMDNS(); // Keep mDNS running
+
   WiFiClient client = wifiManager.getServer().available();
   if (!client)
     return;

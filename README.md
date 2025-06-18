@@ -95,9 +95,9 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
    - Watch the LED matrix for WiFi connection status
 
 3. **Find Your Device**
-   - Check the LED matrix display for the IP address
-   - Or check your router's DHCP client list
-   - Navigate to `http://[IP-ADDRESS]` in your web browser
+   - Check the LED matrix display for the hostname (sony-remote.local)
+   - Navigate to `http://sony-remote.local` in your web browser
+   - Alternative: Check the LED matrix or router's DHCP client list for IP address and use `http://[IP-ADDRESS]`
 
 ### Usage
 
@@ -216,8 +216,8 @@ struct DiscInfo {
 ### User Experience Workflows
 
 #### First-Time Setup Workflow
-1. **Connection**: Arduino displays IP address on LED matrix
-2. **Access**: Navigate to IP address in web browser
+1. **Connection**: Arduino displays hostname (sony-remote.local) on LED matrix
+2. **Access**: Navigate to `http://sony-remote.local` in web browser
 3. **Discovery**: Use "Load First 25 Discs" to begin browsing
 4. **Populate**: Use "Auto-Discover" buttons to retrieve disc titles from CDP-CX355
 5. **Customize**: Edit any discovered titles for better organization
@@ -459,6 +459,7 @@ This project implements Sony's proprietary S-Link (Control-A1) protocol for comm
 ### Network Specifications
 - **Protocol**: HTTP/1.1 over TCP/IP
 - **Port**: 80 (standard HTTP)
+- **mDNS**: Responds to `sony-remote.local` for easy access
 - **Concurrent Connections**: Up to 4 simultaneous clients
 - **Response Format**: HTML5 + JSON for API endpoints
 

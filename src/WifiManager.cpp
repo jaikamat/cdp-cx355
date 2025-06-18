@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 WiFiManager::WiFiManager(const char *ssid, const char *password)
-    : ssid(ssid), password(password), server(80) {}
+    : ssid(ssid), password(password), server(80), mdns(udp) {}
 
 void WiFiManager::connect()
 {
@@ -33,6 +33,24 @@ void WiFiManager::connect()
 
     server.begin();
     Serial.println("WiFi connected.");
+
+    // Initialize mDNS
+    Serial.print("Starting mDNS with hostname: ");
+    Serial.println(hostname);
+    if (mdns.begin(WiFi.localIP(), hostname))
+    {
+        Serial.print("mDNS responder started: ");
+        Serial.print(hostname);
+        Serial.println(".local");
+
+        // Add service to mDNS-SD
+        mdns.addServiceRecord("sony-remote._http", 80, MDNSServiceTCP);
+    }
+    else
+    {
+        Serial.println("Error setting up mDNS responder!");
+    }
+
     printStatus();
 }
 
@@ -52,9 +70,22 @@ void WiFiManager::printStatus()
 
     Serial.print("Server running at: http://");
     Serial.println(ip);
+    Serial.print("Also available at: http://");
+    Serial.print(hostname);
+    Serial.println(".local");
 }
 
 WiFiServer &WiFiManager::getServer()
 {
     return server; // Ensure this returns the correct reference
+}
+
+const char *WiFiManager::getHostname()
+{
+    return hostname;
+}
+
+void WiFiManager::runMDNS()
+{
+    mdns.run();
 }
