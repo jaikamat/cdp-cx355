@@ -289,67 +289,51 @@ String queryDiscTitle(int discNumber)
 }
 
 // ------------------ PS/2 KEYBOARD FUNCTIONS ------------------
-/** Write disc title to CD player via PS/2 keyboard simulation 
- *  Based on official Sony documentation:
- *  1. Select disc on player first (via S-Link)
- *  2. Press Enter key (via PS/2) to enter title edit mode
- *  3. Input characters (via PS/2)
- *  4. Press Enter key (via PS/2) to store the information
+/**
+ * Writes a disc title to the CD player using reliable, protocol-compliant
+ * PS/2 keyboard emulation. This function replaces all "Sony-optimized" versions
+ * and follows the report's recommendations using only standard ps2dev library functions.
+ *
+ * @param discNumber The disc slot to select (1-300).
+ * @param title The string to write as the title.
  */
-void writeDiscTitleViaPS2(int discNumber, const String& title) 
+void writeDiscTitle(int discNumber, const String& title) 
 {
-  Serial.print("=== Writing title '");
-  Serial.print(title);
-  Serial.print("' to disc ");
-  Serial.print(discNumber);
-  Serial.println(" via PS/2 keyboard ===");
-  
-  // Step 1: Select the disc on the player using S-Link (CRITICAL!)
-  Serial.print("Step 1: Selecting disc ");
-  Serial.print(discNumber);
-  Serial.println(" via S-Link...");
-  slinkSelectDisc(discNumber);
-  
-  // Wait for disc selection to complete
-  delay(3000);  // Increased wait time 
-  
-  // Step 2: Press Enter via PS/2 to enter title editing mode
-  Serial.println("Step 2: Pressing Enter to enter title edit mode...");
-  ps2Keyboard.sendEnter();
-  
-  // Brief delay for device to enter edit mode
-  delay(1000);  // Increased delay
-  
-  // Step 3: Clear any existing title using Shift+Delete (optional)
-  Serial.println("Step 3: Clearing existing title (Shift+Delete)...");
-  // Send Shift+Delete to clear existing title as per Sony documentation
-  ps2Keyboard.sendByte(0x12); // Left shift make
-  ps2Keyboard.sendByte(0xE0); // Extended key prefix
-  ps2Keyboard.sendByte(0x71); // Delete make
-  ps2Keyboard.sendByte(0xE0); // Extended key prefix  
-  ps2Keyboard.sendByte(0xF0); // Break prefix
-  ps2Keyboard.sendByte(0x71); // Delete break
-  ps2Keyboard.sendByte(0xF0); // Break prefix
-  ps2Keyboard.sendByte(0x12); // Left shift break
-  
-  delay(500);  // Longer delay after clearing
-  
-  // Step 4: Type the new title
-  Serial.print("Step 4: Typing title: ");
-  Serial.println(title);
-  ps2Keyboard.sendString(title);
-  
-  // Brief delay before storing
-  delay(500);  // Increased delay
-  
-  // Step 5: Press Enter to store the title
-  Serial.println("Step 5: Pressing Enter to store title...");
-  ps2Keyboard.sendEnter();
-  
-  delay(500); // Give device time to process and store
-  
-  Serial.println("=== PS/2 title write complete ===");
-  Serial.println("Check your CD player's display to verify the title was stored.");
+    Serial.print("=== Writing title '");
+    Serial.print(title);
+    Serial.print("' to disc ");
+    Serial.print(discNumber);
+    Serial.println(" via PS/2 ===");
+
+    // Step 1: Select the disc on the player using S-Link.
+    Serial.println("Step 1: Selecting disc via S-Link...");
+    slinkSelectDisc(discNumber);
+    delay(5000); // Wait for the mechanical action of disc selection to complete. 8 seconds is also fine.
+
+    // Step 2: Press Enter to enter title editing mode.
+    // Use the standard, protocol-correct make/break function.
+    Serial.println("Step 2: Pressing Enter to enter title edit mode...");
+    ps2Keyboard.keyboard_mkbrk(PS2dev::ENTER);
+    delay(1000); // Wait for the player to switch to edit mode.
+
+    // Step 3: Clear any existing title using the Shift+Delete helper function.
+    Serial.println("Step 3: Clearing existing title with Shift+Delete...");
+    ps2Keyboard.sendShiftDelete();
+    delay(500); // Wait for the clear operation to process.
+
+    // Step 4: Type the new title using the standard sendString function.
+    // The library handles the make/break and shift modifiers automatically.
+    Serial.print("Step 4: Typing title: ");
+    Serial.println(title);
+    ps2Keyboard.sendString(title);
+    delay(500); // Wait for the final character to be processed.
+
+    // Step 5: Press Enter to store the title.
+    Serial.println("Step 5: Pressing Enter to store title...");
+    ps2Keyboard.keyboard_mkbrk(PS2dev::ENTER);
+    delay(1000); // Give the device time to save the title to memory.
+
+    Serial.println("=== PS/2 title write complete ===");
 }
 
 /** Test PS/2 keyboard functionality */
@@ -776,7 +760,7 @@ void handlePS2WriteCommand(const String &args)
       Serial.print(title);
       Serial.print("' to disc ");
       Serial.println(discNum);
-      writeDiscTitleViaPS2(discNum, title);
+      writeDiscTitle(discNum, title);
     } else {
       Serial.println("Invalid disc number or title for PS/2 write");
     }
@@ -1092,26 +1076,22 @@ void setupCommandHandlers()
     Serial.println("Check which delay produced clean 'ABC' without doubles/drops");
   };
   
-  // Sony clock-ratio timing test based on service manual findings
+  // Protocol-compliant PS/2 test using standard library functions
   commandHandlers["ps2Sony"] = [](const String &) {
-    Serial.println("=== PS/2 SONY CLOCK-RATIO TIMING TEST ===");
-    Serial.println("Based on CDP-CX355 service manual analysis:");
-    Serial.println("Sony system clock: 16.9344MHz vs Arduino: 48MHz");
-    Serial.println("Clock ratio: 48/16.9344 = 2.84x faster");
-    Serial.println("Testing clock-ratio-adjusted timing...");
+    Serial.println("=== PS/2 PROTOCOL-COMPLIANT TEST ===");
+    Serial.println("Testing corrected implementation using standard ps2dev library functions");
+    Serial.println("Following the technical report's recommendations:");
+    Serial.println("- No custom clock-ratio timing");
+    Serial.println("- Using standard keyboard_mkbrk() functions");
+    Serial.println("- Reasonable human-like delays for pacing");
+    Serial.println("- Trusting the library's protocol-correct timing");
     
-    // Select disc first (required for text entry mode)
-    Serial.println("Step 1: Selecting disc 3 via S-Link...");
-    slinkSelectDisc(3);
-    delay(8000);
+    // Test the corrected writeDiscTitle function
+    Serial.println("Testing writeDiscTitle() with 'SONY'...");
+    writeDiscTitle(3, "SONY");
     
-    // Test the new Sony timing function
-    Serial.println("Step 2: Using clock-ratio-adjusted writeTitleToSony() function...");
-    ps2Keyboard.writeTitleToSony("SONY");
-    
-    Serial.println("=== CLOCK-RATIO TIMING TEST COMPLETE ===");
-    Serial.println("Expected: Perfect 'SONY' with proper Enter key behavior");
-    Serial.println("This should resolve the timing mismatch issue!");
+    Serial.println("=== PROTOCOL-COMPLIANT TEST COMPLETE ===");
+    Serial.println("Expected: Reliable 'SONY' with proper PS/2 protocol compliance");
   };
 
   // Hardware diagnostic test for electrical issues
@@ -1380,7 +1360,7 @@ void sendIndexHtml(WiFiClient &client)
       "<button onclick='sendCommand(\"ps2HostComm\")' style='background-color: #8b00ff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Host Communication Test</button> "
       "<button onclick='sendCommand(\"ps2Timing\")' style='background-color: #ff1493; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Timing Optimization Test</button> "
       "<button onclick='sendCommand(\"ps2Hardware\")' style='background-color: #dc143c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Hardware Diagnostic</button> "
-      "<button onclick='sendCommand(\"ps2Sony\")' style='background-color: #gold; color: black; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;'>🔬 Sony Clock-Ratio Test (16.9MHz→48MHz)</button><br><br>"
+      "<button onclick='sendCommand(\"ps2Sony\")' style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;'>✅ Protocol-Compliant Test</button><br><br>"
       "<button onclick='sendCommand(\"ps2Robust\")' style='background-color: #228b22; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Robust Retry Test</button> "
       "<button onclick='sendCommand(\"ps2Basic\")' style='background-color: #32cd32; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Basic PS/2 Test</button> "
       "<button onclick='sendCommand(\"ps2Diag\")' style='background-color: #ff6347; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>PS/2 Diagnostics</button>"

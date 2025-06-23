@@ -164,7 +164,6 @@ public:
     int keyboard_press(unsigned char code);
     int keyboard_release(unsigned char code);
     int keyboard_mkbrk(unsigned char code);
-    int keyboard_mkbrk_sony(unsigned char code);  // Human-speed timing for Sony devices
     int keyboard_press_special(unsigned char code);
     int keyboard_release_special(unsigned char code);
     int keyboard_special_mkbrk(unsigned char code);
@@ -184,11 +183,6 @@ public:
     void sendByte(unsigned char data);
     void update();
     
-    // Sony-optimized functions with human-speed timing
-    void sendKeySony(char c);
-    void sendStringSony(const String& str);
-    void sendEnterSony();
-    void writeTitleToSony(const String& title);  // Production-ready Sony title writing
 
 private:
     int _ps2clk;
