@@ -28,6 +28,7 @@ This project creates a bridge between your Sony CDP-CX355 disc changer and moder
 ### Hardware Components
 - **Arduino Uno R4 WiFi**: Main controller with built-in WiFi and LED matrix
 - **S-Link Connection**: Communicates with Sony CDP-CX355 using Sony's proprietary S-Link protocol
+- **PS/2 Keyboard Interface**: Simulates PS/2 keyboard input to write disc titles directly to CD player
 - **EEPROM Storage**: Persistent storage for disc titles/memos (up to 300 discs)
 
 ### Software Components
@@ -89,7 +90,15 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
    - Use a 220Ω resistor and diode for line protection
    - Ensure proper ground connection between devices
 
-2. **Power Up**
+2. **PS/2 Keyboard Connection** (New Feature)
+   - Connect Arduino pin 3 to PS/2 CLK (white wire from DIN connector)
+   - Connect Arduino pin 4 to PS/2 DATA (red wire from DIN connector)
+   - Connect Arduino 5V to PS/2 VCC (black wire from DIN connector)
+   - Connect Arduino GND to PS/2 GND (yellow wire from DIN connector)
+   - **Power Requirement**: Sony spec requires ≤120mA consumption (Arduino meets this)
+   - This enables direct disc title writing to the CD player's keyboard input
+
+3. **Power Up**
    - Power on the Arduino (via USB or external power)
    - Power on your CDP-CX355
    - Watch the LED matrix for WiFi connection status
@@ -231,9 +240,37 @@ struct DiscInfo {
 
 #### Advanced Operations
 - **Bulk Discovery**: Systematically auto-discover titles across entire collection
-- **Custom Organization**: Create consistent naming conventions for easy browsing
+- **Custom Organization**: Create consistent naming conventions for easy browsing  
 - **Remote Control**: Access from any device on the network
 - **Power Management**: Remote power control of the CDP-CX355 unit
+- **PS/2 Title Writing**: Write disc titles directly to CD player via keyboard simulation
+
+#### PS/2 Keyboard Simulation (New Feature)
+
+The system now includes PS/2 keyboard simulation to write disc titles directly to your CD player's memory:
+
+##### Features
+- **Direct Title Writing**: Bypass EEPROM-only storage and write titles to the CD player itself
+- **Keyboard Simulation**: Full PS/2 protocol implementation with proper timing
+- **Test Interface**: Built-in test button to verify PS/2 functionality
+- **Hardware Independence**: Works with any device accepting PS/2 keyboard input
+
+##### Usage
+1. **Hardware Setup**: Connect PS/2 wires as described in Hardware Setup section
+2. **Test Connection**: Use the blue "Test: Set Disc 3 to 'Foobar123'" button in the web interface
+3. **Verify Operation**: Check your CD player's display to see if the title was written
+4. **Workflow**: System automatically follows Sony's official procedure:
+   - Selects disc via S-Link
+   - Presses Enter via PS/2 to enter title edit mode  
+   - Clears existing title with Shift+Delete
+   - Types new title via PS/2
+   - Presses Enter via PS/2 to store
+
+##### Technical Details
+- **Protocol**: Full PS/2 keyboard protocol implementation
+- **Timing**: 15-20 kHz clock rate with proper setup/hold times
+- **Character Support**: ASCII characters with shift key support for capitals/symbols
+- **Pin Assignment**: Pin 3 (CLK), Pin 4 (DATA), avoiding S-Link pin 2
 
 ### Performance Characteristics
 

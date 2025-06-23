@@ -1,0 +1,8909 @@
+
+
+### Page 1
+
+CDP-CX355
+US Model
+Canadian Model
+AEP Model
+UK Model
+E Model
+Australian Model
+SERVICE MANUAL
+COMPACT DISC PLAYER
+Sony Corporation
+Home Audio Company
+Published by Sony Engineering Corporation
+9-873-551-01
+2002B1600-1
+© 2002.02
+SPECIFICATIONS
+Ver 1.0  2002. 02
+Model Name Using Similar Mechanism
+NEW
+CD Mechanism Type
+CDM54-K1BD45
+Base Unit Type
+BU-K1BD45
+Optical Pick-up Type
+KSS-213BFN
+Compact disc player
+Laser
+Semiconductor laser (λ = 780 nm)
+Emission duration: continuous
+Laser output
+Max 44.6 µW*
+* This output is the value measured at
+a distance of 200 mm from the
+objective lens surface on the Optical
+Pick-up block with 7 mm aperture.
+Frequency response
+20 Hz to 20 kHz ±0.5 dB
+Signal-to-noise ratio
+More than 107 dB
+Dynamic range
+More than 86 dB
+Harmonic distortion
+Less than 0.009 %
+Channel separation
+More than 100 dB
+Outputs
+ANALOG OUT
+DIGITAL OUT
+(OPTICAL)
+General
+Where purchased
+USA and Canadian
+Australia
+Load impedance
+Over 10 kilohms
+Wave length:  660 nm
+Maximum
+output
+level
+2 V
+(at 50 kilohms)
+–18 dBm
+Jack
+type
+Phono
+jacks
+Optical
+output
+connector
+Power consumptions
+Power requirements
+120 V AC, 60 Hz
+13 W
+14 W
+13 W
+13 W
+240 V AC, 50/60 Hz
+Europe and Asia
+230 V AC, 50/60 Hz
+Other countries
+Dimensions (approx.)
+430  189  493 mm
+(w/h/d)
+(17 × 
+× 
+× 
+× 
+ 7 1/2  19 3/8 in.)
+incl. projecting parts
+Mass (approx.)
+8.5 kg (18 lbs 12 oz)
+Supplied accessories
+Design and specifications are subject to change without notice.
+• Audio cord (1)
+• Remote commander (remote) (1)
+• Size AA (R6) batteries (2)
+120 V AC, 50/60 Hz
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 2
+
+2
+This appliance is classified as a CLASS 1 LASER product. The
+CLASS 1 LASER PRODUCT MARKING is located on the rear
+exterior.
+The following caution label is located inside the unit.
+Laser component in this product is capable
+of emitting radiation exceeding the limit for
+Class 1.
+CAUTION
+Use of controls or adjustments or performance of procedures
+other than those specified herein may result in hazardous radiation
+exposure.
+Notes on chip component replacement
+• Never reuse a disconnected chip component.
+• Notice that the minus side of a tantalum capacitor may be
+damaged by heat.
+Flexible Circuit Board Repairing
+• Keep the temperature of soldering iron around 270˚C
+during repairing.
+• Do not touch the soldering iron on the same conductor of the
+circuit board (within 3 times).
+• Be careful not to apply force on the conductor when soldering
+or unsoldering.
+CDP-CX355
+SAFETY-RELATED COMPONENT WARNING!!
+COMPONENTS IDENTIFIED BY MARK 0 OR DOTTED LINE WITH
+MARK 0 ON THE SCHEMATIC DIAGRAMS AND IN THE PARTS
+LIST ARE CRITICAL TO SAFE OPERATION. REPLACE THESE
+COMPONENTS WITH SONY PARTS WHOSE PART NUMBERS
+APPEAR AS SHOWN IN THIS MANUAL OR IN SUPPLEMENTS
+PUBLISHED BY SONY.
+ATTENTION AU COMPOSANT AYANT RAPPORT
+À LA SÉCURITÉ!
+LES COMPOSANTS IDENTIFÉS PAR UNE MARQUE 0 SUR LES
+DIAGRAMMES SCHÉMATIQUES ET LA LISTE DES PIÈCES SONT
+CRITIQUES POUR LA SÉCURITÉ DE FONCTIONNEMENT. NE
+REMPLACER CES COMPOSANTS QUE PAR DES PIÈSES SONY
+DONT LES NUMÉROS SONT DONNÉS DANS CE MANUEL OU
+DANS LES SUPPÉMENTS PUBLIÉS PAR SONY.
+    After correcting the original service problem, perform the
+following safety checks before releasing the set to the customer:
+Check the antenna terminals, metal trim, “metallized” knobs, screws,
+and all other exposed metal parts for AC leakage. Check leakage as
+described below.
+LEAKAGE
+    The AC leakage from any exposed metal part to earth ground and
+from all exposed metal parts to any exposed metal part having a
+return to chassis, must not exceed 0.5 mA (500 microamperes).
+Leakage current can be measured by any one of three methods.
+1.
+A commercial leakage tester, such as the Simpson 229 or RCA
+WT-540A. Follow the manufacturers’ instructions to use these
+instruments.
+2.
+A battery-operated AC milliammeter. The Data Precision 245
+digital multimeter is suitable for this job.
+3.
+Measuring the voltage drop across a resistor by means of a
+VOM or battery-operated AC voltmeter. The “limit” indication
+is 0.75 V, so analog meters must have an accurate low-voltage
+scale. The Simpson 250 and Sanwa SH-63Trd are examples of
+a passive VOM that is suitable. Nearly all battery operated
+digital multimeters that have a 2V AC range are suitable. (See
+Fig. A)
+SAFETY  CHECK-OUT
+To Exposed Metal 
+Parts on Set
+0.15 µF
+1.5 kΩ
+AC
+Voltmeter
+(0.75 V)
+Earth Ground
+Fig. A.  Using an AC voltmeter to check AC leakage.
+MODEL IDENTIFICATION
+— BACK PANEL —
+PART NO.
+PARTS No.
+MODEL
+4-238-109-0π
+4-238-109-1π
+4-238-109-2π
+4-238-109-3π
+4-238-109-4π
+4-238-109-5π
+US
+Canadian
+AEP, UK
+Singapore
+Australian
+E
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 3
+
+3
+CDP-CX355
+TABLE OF CONTENTS
+SECTION 1
+SERVICING NOTE
+NOTES ON HANDLING THE OPTICAL PICK-UP BLOCK
+OR BASE UNIT
+The laser diode in the optical pick-up block may suffer electrostatic
+break-down because of the potential difference generated by the
+charged electrostatic load, etc. on clothing and the human body.
+During repair, pay attention to electrostatic break-down and also
+use the procedure in the printed matter which is included in the
+repain parts.
+The flexible board is easily damaged and should be handled with
+care.
+NOTES ON LASER DIODE EMISSION CHECK
+The laser beam on this model is concentrated so as to be focused on
+the disc reflective surface by the objective lens in the optical pick-
+up block. Therefore, when checking the laser diode emission,
+observe from more than 30 cm away from the objective lens.
+The emission check enables continuous checking of the S curve.
+LASER DIODE AND FOCUS SEARCH OPERATION
+CHECK
+Carry out the “S curve check” in “CD section adjustment” and check
+that the S curve waveform is output three times.
+1. SERVICING NOTE·····················································3
+2. GENERAL ···································································6
+3. DISASSEMBLY ··························································7
+3-1. Case··············································································· 8
+3-2. Bracket (F. W. ) ····························································· 8
+3-3. Front Panel Assy ··························································· 9
+3-4. DISP Board, JOG Board, KEYBOARD Board ············ 9
+3-5. LED Board, Guide (Door. T) ······································ 10
+3-6. Table (300) Assy, Cover (P.T.) ···································· 10
+3-7. D. MOTOR Board, Door Motor Assy (M83) ············· 11
+3-8. D. SW Board ······························································· 12
+3-9. Base (Door, Gear) Assy ·············································· 13
+3-10. Pop-up Assy ································································ 13
+3-11. D. SENS (OUT)  Board ·············································· 14
+3-12. T. SENS Board···························································· 14
+3-13. D. SENS (IN)  Board ·················································· 15
+3-14. Back Panel Section ····················································· 15
+3-15. MAIN Board, JACK Board ········································ 16
+3-16. POWER Board ···························································· 16
+3-17. Bracket (Top) , BU Assy ············································· 17
+3-18. BU Holder Assy ·························································· 17
+3-19. BD Board, Optical Device (KSM-213 BFN)·············· 18
+3-20. L. SW (A)  Board, L. SW (B)  Board ························· 19
+3-21. CDM Assy ·································································· 20
+3-22. Motor Assy (Loading) (M82) ,
+Motor Assy (Table) (M81) , L. T. MOTOR Board ····· 20
+4. SERVICE MODE ···························································· 21
+5. TEST MODE ···································································· 25
+5-1. ADJ Mode ··································································· 25
+5-2. Key and Display Check Mode ···································· 25
+6. ADJUSTMENTS ···························································· 26
+6-1. Mechanical Adjustments············································· 26
+6-2. Electrical Adjustment·················································· 28
+7. DIAGRAMS ······································································ 31
+7-1. Block Diagrams – BD Section – ································· 32
+– MAIN Section – ······················································· 33
+7-2. Printed Wiring Board – BD Section – ························ 34
+7-3. Schematic Diagram – BD Section – ··························· 35
+7-4. Printed Wiring Board – MAIN Section – ··················· 36
+7-5. Schematic Diagram – MAIN Section (1/2) – ············· 37
+7-6. Schematic Diagram – MAIN Section (2/2) – ············· 38
+7-7. Printed Wiring Board – T.SENS Section – ················· 39
+7-8. Printed Wiring Board – D.SENS (IN) Section – ········ 39
+7-9. Printed Wiring Board – D.SENS (OUT) Section – ···· 39
+7-10. Schematic Diagram – SENSOR Section – ················· 39
+7-11. Printed Wiring Board – DISPLAY Section – ············· 40
+7-12. Schematic Diagram – DISPLAY Section – ················ 41
+7-13. Printed Wiring Board – JOG Section –······················· 42
+7-14. Schematic Diagram – JOG Section – ························· 43
+7-15. Printed Wiring Board – POWER Section – ················ 44
+7-16. Schematic Diagram – POWER Section – ··················· 44
+7-17. Printed Wiring Board – JACK Section – ···················· 45
+7-18. Schematic Diagram – JACK Section ·························· 45
+7-19. Printed Wiring Board – SWITCH/MOTOR Section – ··· 46
+7-20. Schematic Diagram – SWITCH/MOTOR Section – ····· 46
+7-21. IC Pin Functions ························································· 50
+8. EXPLODED VIEWS ······················································ 54
+8-1. Case Section································································ 54
+8-2. Chassis Section 1 ························································ 55
+8-3. Chassis Section 2 ························································ 56
+8-4. Back Panel Section ····················································· 57
+8-5. Front Panel Section ····················································· 58
+8-6. Mechanism Section 1 (CDM54-K1BD45)
+(Pop-up Assy, Base (Door. Gear) Assy)······················ 59
+8-7. Mechanism Section 2 (CDM54-K1BD45) ················· 60
+8-8. Mechanism Section 3 (CDM54-K1BD45) ················· 61
+8-9. Mechanism Section 4 (CDM54-K1BD45) ················· 62
+8-10. Optical Pick-up Section (BU-K1BD45) ····················· 63
+9. ELECTRICAL PARTS LIST ······································· 64
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 4
+
+4
+CDP-CX355
+CD-TEXT TEST DISC
+This unit is able to display the TEXT data (character information) written in the CD on its fluorescent indicator tube.
+The CD-TEXT TEST DISC (TGCS-313:J-2501-126-A) is used for checking the display.
+To check, perform the following procedure.
+Checking Method:
+1.
+Turn ON the power, set the disc on the disc table with the side labeled as “test disc” as the right side, close the front cover, and chuck the
+disc.
+2.
+The following will be displayed on the fluorescent indicator tube. (The display switches each time the  TIME/TEXT  button is pressed.)
+Display : CD TEXT TEST DISC (Album Title)
+3.
+Press the  ·  button and play back the disc.
+4.
+The following will be displayed on the fluorescent indicator tube. (If nothing is displayed, press the  TIME/TEXT  button.)
+Display : 1kHz/0 dB/ L&R
+5.
+Rotate  ≠ and ±  knob to switch the track. The text data of each track will be displayed.
+For details of the displayed contents for each track, refer to “Table 1 : CD-TEXT TEST DISC Text Data Contents” and “Table 2 : CD-
+TEXT TEST DISC Recorded Contents and Display”.
+Restrictions in CD-TEXT Display
+In this unit, some special characters will not be displayed properly. These will be displayed as a space or a character resembling it. For details,
+refer to “Table 2 : CD-TEXT DISC Recorded Contents and Display”.
+Table 1 : CD-TEXT TEST DISC Text Data Contents (TRACKS No. 1 to 41:Normal Characters)
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+TRACK
+No.
+Displayed Contents
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+TRACK
+No.
+Displayed Contents
+1kHz/0dB/L&R
+20Hz/0dB/L&R
+40Hz/0dB/L&R
+100Hz/0dB/L&R
+200Hz/0dB/L&R
+500Hz/0dB/L&R
+1kHz/0dB/L&R
+5kHz/0dB/L&R
+7kHz/0dB/L&R
+10kHz/0dB/L&R
+16kHz/0dB/L&R
+18kHz/0dB/L&R
+20kHz/0dB/L&R
+1kHz/0dB/L&R
+1kHz/-1dB/L&R
+1kHz/-3dB/L&R
+1kHz/-6dB/L&R
+1kHz/-10dB/L&R
+1kHz/-20dB/L&R
+1kHz/-60dB/L&R
+1kHz/-80dB/L&R
+1kHz/-90dB/L&R
+Infinity Zero w/o emphasis//L&R
+Infinity Zero with emphasis//L&R
+400Hz+7kHz(4:1)/0dB/L&R
+400Hz+7kHz(4:1)/-10dB/L&R
+19kHz+20kHz(1:1)/0dB/L&R
+19kHz+20kHz(1:1)/-10dB/L&R
+100Hz/0dB/L*
+1kHz/0dB/L*
+10kHz/0dB/L*
+20kHz/0dB/L*
+100Hz/0dB/R*
+1kHz/0dB/R*
+10kHz/0dB/R*
+20kHz/0dB/R*
+100Hz  Squer Wave//L&R
+1kHz  Squer Wave//L&R
+1kHz  w/emphasis/-0.37dB/L&R
+5kHz  w/emphasis/-4.53dB/L&R
+16kHz  w/emphasis/-9.04dB/L&R
+NOTE : The contents of Track No. 1 to 41 are the same as those of the current TEST DISC-their titles are displayed.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 5
+
+5
+CDP-CX355
+TRACK
+No.
+Recorded contents
+Display
+N All the same
+N All the same
+N All the same
+N All the same
+N All the same
+N All the same
+N All the same
+X Y Z [ \ ] ^ _ (58····
+N All the same
+N All the same
+N All the same
+x y z { I } ~
+(78····
+ i ¢ £ ¤ ¥
+§
+(A0····   is not displayed
+≥
+(A8···· C ª
+¬PR– are not displayed
+µ
+• (B0····
+• ±
+2
+3 ¶ are not displayed
+†
+¿ (B8····
+1 º
+       are not displayed
+N All the same
+N All the same
+N All the same
+Φ Ù Ú Û Ü Y
+ß (D8····
+N All the same
+N All the same
+o ñ ò ó ô õ ö ÷ (F0····
+N All the same
+N All the same
+N All the same
+to
+N All the same
+′
+*
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+to
+99
+! ” # $ % & ´
+(21h to 27h)1kHz 0dB L&R
+(  )
++ , – . /
+(28h to 2Fh)
+0 1 2 3 4 5 6 7
+(30h to 37h)
+8 9 : ; < = > ?
+(38h to 3Fh)
+@A B C D E F G
+(40h to 47h)
+H I J K L M N O
+(48h to 4Fh)
+P Q R S T U VW
+(50h to 57h)
+X Y Z [ ¥ ] ^ _
+(58h to 5Fh)
+a b c d e f g
+(60h to 57h)
+h i j k l m n o
+(68h to 6Fh)
+p q r s t u v w
+(70h to 77h)
+x y z { I } ~
+(78h to 7Fh)
+i ¢ £ ¤ ¥
+§
+(A0h to A7h) 8859-1
+≥C ª
+¬PR–
+(A8h to AFh)
+• ±
+2
+3
+µ ¶ •
+(B0h to B7h)
+†
+1 º
+¿
+(B8h to BFh)
+À Á Â Ã Ä ÅÆÇ
+(C0h to C7h)
+È É Ê Ë Ì Í Î Ï
+(C8h to CFh)
+D Ñ Ò Ó Ô Õ Ö
+(D0h to D7h)
+Ø Ù Ú Û Ü Y
+ß
+(D8h to DFh)
+à á â ã ä å æ ç
+(E0h to E7h)
+è é ê ë ì í î ï
+(E8h to FFh)
+∂ ñ ò ó ô õ ö ÷
+(F0h to F7h)
+ø ù ú û ü y
+ÿ
+(F8h to FFh)
+No.66
+No.67
+  to
+No.99
+′
+1
+4
+1
+2
+3
+4
+′
+˙
+1
+4
+1
+2
+3
+4
+Table 2: CD-TEXT TEST DISC Recorded Contents and Display
+(In this unit, some special characters cannot be displayed. This is no a fault.)
+´
+˙
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 6
+
+6
+CDP-CX355
+SECTION 2
+GENERAL
+3
+4 5 6 7 8
+9
+10
+11
+12
+1
+2
+15 16 17 18
+13
+14
+23
+24
+25
+26
+38
+39
+19 20 21 22
+31 30 29 28 27
+36 35 34 33 32
+Location of Parts and Controls
+1
+1/u (power) button
+2
+STANDBY indicator
+3
+Display window
+4
+CONTINUE button
+5
+SHUFFLE button
+6
+PROGRAM button
+7
+REPEAT button
+8
+TIME/TEXT button
+9
+Front cover
+10 ≠ AMS ±/PUSH ENTER knob and button
+11 MENU/NO button
+12 +100 button
+13 YES button
+14 DISC/CHARACTER/PUSH ENTER knob and button
+15 EASY PLAY button and indicator
+16 MEMO/SEARCH button
+17 CHECK button
+18 CLEAR button
+19 MEGA CONTROL button and indicator
+20 X-FADE button
+21 NO DELAY button
+22 FADER button
+23 p (stop)/DISC EJECT button
+24 P (pause) button and indicator
+25 · (play) button and indicator
+26 § OPEN/CLOSE button
+27 HIT LIST button and indicator
+28 GROUP 4 button and indicator
+29 GROUP 3 button and indicator
+30 GROUP 2 button and indicator
+31 GROUP 1 button and indicator
+32 GROUP FILE button
+33 GROUP 8 button and indicator
+34 GROUP 7 button and indicator
+35 GROUP 6 button and indicator
+36 GROUP 5 button and indicator
+38 KEYBOARD jack
+39 TIMER OFF/PLAY switch
+* AMS is abbreviation for Automatic Music Sensor.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 7
+
+7
+CDP-CX355
+SECTION 3
+DISASSEMBLY
+BRACKET (F.W.)
+(Page 8)
+SET
+DISP BOARD,
+JOG BOARD,
+KEYBOARD BOARD,
+(Page 9)
+FRONT PANEL ASSY
+(Page 9)
+CASE
+(Page 8)
+LED BOARD,
+GUIDE (DOOR.T)
+(Page 10)
+TABLE (300) ASSY,
+COVER (P.T.)
+(Page 10)
+D. MOTOR BOARD,
+DOOR MOTOR ASSY (M83)
+(Page 11)
+BACK PANEL SECTION
+(Page 15)
+BRACKET (TOP),
+BU ASSY
+(Page 17)
+BD BOARD
+OPTICAL DEVICE
+(KSM-213BFM)
+(Page 18)
+MOTOR ASSY (LOADING) (M82),
+MOTOR ASSY (TABLE) (M81),
+L.T. MOTOR BOARD
+(Page 20)
+BU HOLDER ASSY
+(Page 17)
+MAIN BOARD,
+JACK BOARD
+(Page 16)
+L. SW (A) BOARD,
+L. SW (B) BOARD
+(Page 19)
+D. SW BOARD
+(Page 12)
+POP-UP ASSY
+(Page 13)
+POWER BOARD
+(Page 16)
+BASE (DOOR.GEAR) ASSY
+(Page 13)
+CDM ASSY
+(Page 20)
+D. SENS (IN) BOARD
+(Page 15)
+D. SENS (OUT) BOARD
+(Page 14)
+T. SENS BOARD
+(Page 14)
+• The parts surrounded by square            are included in the solid line square     
+  in the area shown by the dotted line square            .
+Note : Disassemble the unit in the order as shown below.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 8
+
+8
+CDP-CX355
+3-1. Case
+1 two screws (CASE 3 TP2)
+3 two screws (CASE 3 TP2)
+4 two screws (CASE 3 TP2)
+5 case
+2 three screws (CASE 3 TP2)
+3-2. Bracket (F. W. )
+3
+2 wire (flat type) (21 core)
+     (CN501)
+1 connector (CN504)
+6 bracket (F.W.)
+5 two screws
+     (+BVTP 3 x 8)
+4 screw (+BVTP 3 x 8)
+LED board
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 9
+
+9
+CDP-CX355
+3-3. Front Panel Assy
+7 two screws (+BVTP 3 x 8)
+6 three screws (+BVTP 3 x 8)
+5 cover (chassis)
+4 screw (+BVTP 3 x 8)
+3 connector (CN792)
+8 remove the claw
+9 remove the claw
+2
+1
+q; front panel assy
+3-4. DISP Board, JOG Board, KEYBOARD Board
+7 remove two soldrings.
+3 four screws 
+     (+BVTP 2.6 x 8)
+5 two screws 
+     (+BVTP 2.6 x 8)
+6
+qd DISP board
+9 KEYBOARD
+     board
+8 bracket (keyboard)
+4 bracket main
+qh JOG board
+qj front panel assy
+q; eight screws 
+     (+BVTP 2.6 x 8)
+qf five screws 
+     (B+VTP 2.6 x 8)
+qg seven screws 
+     (+BVTP 2.6 x 8)
+2 knob (AMS)
+qs knob (timer)
+1 knob (disc)
+qa wire (flat type)
+     (21 core) (CN701)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 10
+
+10
+CDP-CX355
+3-5. LED Board, Guide (Door. T)
+9 guide (door.T)
+3 screw (+BVTP 3 x 8)
+4
+5
+7
+1 screw 
+ (+BVTP 3 x 16)
+2
+6 LED board
+8 window
+     (internal illumination)
+Note during re-assembling
+When re-assembling,
+align the positions
+as shown.
+3-6. Table (300) Assy, Cover (P.T.)
+3 two screws (+BVTP 3x8)
+4 cover (front)
+6 door (CD)
+      assy
+8 guide (door.B)
+5
+7 three screws 
+     (+BVTP 3x8)
+q; cover (P.T.)
+9 two screws
+      (+BVTP 3 x 8)
+1 table (300) assy
+2 two 10 washers
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 11
+
+11
+CDP-CX355
+3-7. D. MOTOR Board, Door Motor Assy (M83)
+1 remove two soldrings.
+2 D. motor board
+5 door motor assy (M83)
+4 belt
+3 two screws (+B 2.6 x 3)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 12
+
+12
+CDP-CX355
+3-8. D. SW Board
+5 two screws
+     (+BTP 2.6 x 6)
+8 D. SW board
+7 holder (L-SW)
+6 two claws
+2 gear (door.cam)
+gear (door.cam)
+4 gear (door.drive)
+1 Move the slider (pop-up) and the lever (cam.pu) fully
+     in the direction of the arrow A.
+3 When the gear (door.cam) happens to go too deep,
+     return it to the original position
+     in the direction of the arrow C.
+The levers of the two rotary switches on the D. SW board
+are shown in the illustration below.
+slider (pop-up)
+lever (cam.pu)
+A
+B
+C
+1 washer
+3 washer
+Precaution during the gear (door.cam) installation
+D. SW board
+two rotary switches
+2 Install the gear (door.cam) in the direction shown
+     in the illustration and rotate it fully
+     in the direction of the arrow B.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 13
+
+13
+CDP-CX355
+3-9. Base (Door. Gear) Assy
+3-10. Pop-up Assy
+1 step screw
+3 pop-up assy
+2 screw (+PTPWH 3 x 6)
+3 two screws (+BVTP 3 x 8)
+ 2 three screws (+BVTP 3 x 8)
+4 base (door.gear) assy
+1 connector (CN508)
+When re-assembling,
+align the positions as shown.
+Note during re-assembling
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 14
+
+14
+CDP-CX355
+3-11. D. SENS (OUT)  Board
+1 connector (CN83)
+2 screw (+BVTP 3 x 6)
+3
+4 D. SENS (OUT) board
+3-12. T. SENS Board
+1 connector (CN83)
+3 connector (CN81)
+4 connector (CN82)
+2 four screws (+PTPWH 3 x 6)
+5 T. SENS board
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 15
+
+15
+CDP-CX355
+3-13. D. SENS (IN)  Board
+5 D. SENS (IN) board
+3 holder (table sensor)
+1 two screws (+PTPWH 3 x 6)
+2 two claws
+4 screw (+PTPWH 3 x 6)
+3-14. Back Panel Section
+1 connector
+     (CN505)
+4 connector
+     (CN508)
+2 connector
+     (CN902)
+3 connector
+     (CN507)
+9 connector (CN991)
+8 connector (CN901)
+7 connector (CN903)
+6 connector (CN503)
+5 connector (CN509)
+qa four screws (+BVTP 3 x 8)
+q; three screws 
+     (+BVTP 3 x 8)
+qs back panel section
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 16
+
+16
+CDP-CX355
+3-15. MAIN Board, JACK Board
+1 connector (CN510)
+2 connector (CN511)
+8 back panel
+6 MAIN board
+9 JACK board
+4 two screws (+BVTP 3 x 8)
+5
+7 three screws (+BVTP 3 x 8)
+3 two screws (+BVTP 3 x 8)
+3-16. POWER Board
+1 screw 
+     (+BVTP 3 x 8)
+4 POWER board
+2 two screws 
+     (+BVTP 3 x 8)
+3 four screws (+BVTP 3 x 8)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 17
+
+17
+CDP-CX355
+3-17. Bracket (Top) , BU Assy
+1 four screws 
+     (+BVTP 3 x 8)
+2 bracket (top)
+3 BU assy
+4 8 washer
+Note during re-assembling
+When re-assembling,
+align the positions
+as shown.
+3-18. BU Holder Assy
+1 four screws 
+     (PTP WH 2.6 x 8)
+2
+5 BU holder assy
+3 tension spring (F-1)
+4 tension spring (F-2)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 18
+
+18
+CDP-CX355
+3-19. BD Board, Optical Device (KSM-213 BFN)
+2 screw (+B 2 x 5)
+8 two vibration
+     proof rubbers
+7 two vibration
+     proof rubbers
+1 wire (flat type) (23 core)
+     (CN101)
+5 wire (flat type)
+     (16 core) (CN102)
+6 BD board
+9 optical device
+     (KSM-213BFN)
+4 remove two
+     solderings.
+     (spindle)
+3 remove two
+     solderings.
+     (sled)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 19
+
+19
+CDP-CX355
+3-20. L. SW (A)  Board, L. SW (B)  Board
+5 screw 
+     (+BVTP 3 x 8) 
+1 belt
+3 pulley (1)
+2 claw
+q; screw 
+     (+BVTP 3 x 8)
+8 screw 
+     (BVTP 3x8)
+4 rotate the gear (center)
+     in the direction of the
+     arrow  A fully.
+6 rotate the Gear (center)
+     in the direction of the
+     arrow  B fully.
+gear (center)
+7 gear (center)
+claw 
+qs L. SW (B) board
+L. SW (B) board
+qd L. SW (A) board
+L. SW (A) board
+9
+to L. SW (A) board
+to L. SW (B) board
+A
+B
+Note during re-assembling
+When re-assembling the L. SW (A) and
+L. SW (B) boards,
+align the leads position as shown.
+Leads position
+qa
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 20
+
+20
+CDP-CX355
+3-21. CDM Assy
+1 five screws (+BVTP 3 x 8)
+2 four screws (+BVTP 3 x 8)
+3 screw (+PSW 3 x 8)
+4 CDM assy
+3-22. Motor Assy (Loading) (M82) , Motor Assy (Table) (M81) , L. T. MOTOR Board
+1 two belts
+2
+4 claw
+6 remove 
+     two solderings.
+8 remove
+     two solderings.
+9 motor assy (table)
+     (M81)
+7 motor assy (loading)
+     (M82)
+3 three screws (+BVTP 3 x 8)
+q; L.T. MOTOR board
+5
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 21
+
+21
+CDP-CX355
+Remarks
+Note 1
+Used in adjustment
+Note 1
+Note 1
+SECTION 4
+SERVICE MODE
+ALL ERASE
+This mode is used for clearing information such as the title memo.
+Do not execute if information such as the title memo is not to be
+erased.
+Procedure:
+While pressing the  CLEAR  button with the power OFF, press the
+1/u   button and turn on the power.
+The fluorescent display tube displays “ALL ERASE” and all
+memories will be cleared.
+AGING MODE
+• Mode which repeatedly changes and plays back discs automati-
+cally in the unit.
+• It will repeat aging as long as no errors occur.
+• If an error occurs during aging, it will stop all servos, motors, etc.
+instantaneously, display the error number, and stop operations.
+However, the stopping conditions differ according to whether the
+unit is equipped with the “self-protection function during errors”
+described later.
+The function serves to maintain the state of the unit when errors
+occur.
+Mode name
+ALL ERASE
+AGING MODE
+LOARDING AGING MODE
+TABLE AGING MODE
+DOOR POP UP AGING MODE
+TABLE LOTATION MODE
+TITLE MEMO SHIFT MODE
+MODEL NAME DISPLAY
+MICROPROCESSOR VERSION DISPLAY
+ALL LIT MODE
+MECHANISM ADJUSTMENT MODE
+SHIPMENT MODE
+TITLE MEMO RECORDING CHECK MODE
+Power supply state
+OFF
+ON
+ON
+ON
+ON
+ON
+ON
+ON
+ON
+ON
+ON
+ON
+ON
+Button operation
+  CLEAR  +  ?/1
+  GROUP 1  +  § OPEN/CLOSE  +  +100
+  GROUP 2  +  § OPEN/CLOSE  +  +100
+  GROUP 3  +  § OPEN/CLOSE  +  +100
+  GROUP 4  +  § OPEN/CLOSE  +  +100
+  GROUP 5  +  § OPEN/CLOSE  +  +100
+  GROUP 7  +  § OPEN/CLOSE  +  +100
+  GROUP 1  +  ·  +  +100
+  GROUP 2  +  ·  +  +100
+  GROUP 3  +  ·  +  +100
+  GROUP 4  +  ·  +  +100
+  GROUP 5  +  ·  +  +100
+  GROUP 6  +  ·  +  +100
+Note 1
+Do not execute unless with a proper reason, otherwise the memory of the title memo recorded by the customer will be erased.
+The title memo recording check mode is not required for servicing. Do not execute.
+SPECIAL FUNCTION
+This unit is provided with several service modes.
+Details are shown in the following table.
+1. Disc change
+2. Load in
+3. TOC read
+4. Access of last track
+5. 3 second playback
+6. Access of first track
+7. 3 second playback
+8. Load out
+9. FRONT COVER open
+10. FRONT COVER close
+1. No. 60
+2. No. 240
+3. No. 180
+4. No. 300
+5. No. 120
+Sequence of Aging Mode
+$
+$
+$
+$
+$
+$
+$
+$
+$
+Order of Disc Change
+ (1 cycle takes 3 minutes)
+$
+$
+$
+$
+$
+$
+$
+$
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 22
+
+22
+CDP-CX355
+7.
+Press the  ·  button.
+8.
+The  ·  LED blinks, the aging mode is set, and aging is started.
+9.
+The aging cycle lasts 3 minutes. If errors occur during aging,
+the error number will be displayed on the Fluorescent indicator
+tube. (Refer to the following table for the details of the errors.)
+10. Aging will be repeated as long as no errors occur.
+11. After each aging cycle, the number displayed on the Fluorescent
+indicator tube will increase.
+12. To end aging, disconnect the power cord from the outlet.
+NOTE: As an alternative to steps 2 and 3, press the GROUP 1
+button,  §OPEN/CLOSE  button, and  +100  button at the
+same time.
+Err 01
+Err 02
+Err 03
+Err 04
+Err 05
+Err 06
+Err *1
+Err *2
+Err *3
+Err *4
+Err *5
+Err *6
+Err *7
+No disc in the specified slit
+Disc in other slits
+Table motor current over
+No table sensor input
+Load in timeover
+Load out timeover
+Access timeover
+High speed search NG
+Q data read error
+BU operation (from focus search to until signal can be read) timeover
+GFS monitor error
+Focus cannot be imposed by focus search
+Auto focus bias adjustment cannot be performed
+Contents
+Code number
+Name
+DISC sensor check 1
+DISC sensor check 2
+Table operation check 1
+Table operation check 2
+Loading operation check 1
+Loading operation check 2
+BU related check 1
+BU related check 2
+BU related check 3
+BU related check 4
+BU related check 5
+BU related check 6
+BU related check 7
+Error code
+The following * numbers mean according to the state of the unit during aging
+*2 : From chucking to end of TOC read
+*3 : From end of TOC read to end of last track playback
+*4 : From end of last track playback to end of first track playback
+Special Aging Mode Functions
+The aging mode is provided with the following convenient functions
+• Disc setting mode (*1)
+• Selection of presence of protection function during error (*2)
+• Count function of aging cycle (*3)
+*1
+Disc setting mode:
+5 discs are set before setting the aging mode. This mode makes
+the setting of these discs more easy.
+*2
+Self protection function during errors:
+Function which voluntarily corrects errors which occur during
+normal operations by retries.
+If this function is not provided, all operations will be stopped
+without retiring. It is suitable for checking errors with low
+reproducibility.
+If this function is provided, and errors can be corrected by
+retries, aging will be continued without stopping.
+*3
+Aging cycle count function:
+Functions which displays the number of agings carried out on
+the Fluorescent indicator tube  in numbers. One aging cycle
+consists of five discs.
+1DISC
+CD1
+DISC
+120
+AGED 10
+number of agings
+number of disc table
+Aging Procedure
+1.
+Turn ON the power of the unit. Press the  § OPEN/CLOSE
+and open the front cover.
+2.
+Change the  COMMAND MODE  switch (S902) on set to  CD1 .
+3.
+Press the  AGING START  button of the remote commander
+for aging mode (J-2501-123-A).
+4.
+When the disc set mode is set, the  ·  and  P  LEDs blink.
+5.
+Rotate the  DISC/CHARACTER  dial. The slits (No. 60, 120,
+180, 240, 300) for setting the discs will come forward. Insert
+the discs into these slits. Do not set the discs in other slits.
+6.
+Set whether the self-protection function during errors is
+equipped with the unit. Press the  REPEAT  button. If
+“REPEAT” is displayed on the Fluorescent indicator tube, it
+means the function is provided. If “REPEAT” is not displayed,
+it means the function is not provided.
+Error Display
+
+
+
+
+
+
+1 2 0
+E 0 1
+#
+
+
+
+Aging cycle
+number
+Error code
+Disc number
+with error
+Disc number
+when aging
+180
+
+
+
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 23
+
+23
+CDP-CX355
+LOADING AGING MODE
+• This mode is used for repeating loading operations continuously.
+• Aging will be performed continuously unless an error occurs.
+• When an error occurs, the error code will be displayed on the
+fluorescent indicator tube.
+Procedure:
+1.
+Set a disc in the DISC 1 slit.
+2.
+With the power ON, while pressing the  GROUP 2  button and
+§ OPEN/CLOSE  button, press the  +100  button.
+3.
+When the mode is set, both the  ·   and  P   indicators will
+start to blink.
+4.
+When the  ·   button is pressed, only the  ·   indicator will
+blink and aging starts.
+5.
+To end the mode, press the  1/u   button or disconnect the
+power cord from the outlet.
+The error codes displayed during operations and when errors occur
+are the same as the “AGING MODE” described earlier.
+TABLE AGING MODE
+• This mode is used for rotating the table randomly.
+• Aging will be performed continuously unless an error occurs.
+• When an error occurs, the error code will be displayed on the
+fluorescent indicator tube.
+Procedure:
+1.
+Set discs in slits 1, 2, 99, 100, and 200.
+2.
+With the power ON, while pressing the  GROUP 3  button and
+§ OPEN/CLOSE  button, press the  +100  button.
+3.
+When the mode is set, both the  ·   and  P   indicators will
+start to blink.
+4.
+When the  ·   button is pressed, only the  ·   indicator will
+blink and aging starts.
+5.
+To end the mode, press the  1/u   button or disconnect the
+power cord from the outlet.
+During aging, operations will be carried out sequentially in the order
+of No. 1, No. 2, No. 100, No. 99, and No. 200 slits.
+The error codes displayed during operations and when errors occur
+are the same as the “AGING MODE” described earlier.
+DOOR POP UP AGING MODE
+• This mode is used for performing aging of the CD pop up part
+and door open/close.
+It is used for checking if operations are performed normally.
+Method:
+1.
+To select a slot to be aged, press the § OPEN/CLOSE  button
+and rotate the  DISC/CHARACTER  knob with the front door
+opened to select a number.
+2.
+With the power ON, while pressing the  GROUP 4  button and
+§ OPEN/CLOSE  button, press the  +100  button.
+3.
+When the  ·  button is pressed, aging starts, and door open/
+close and up/down operations of the pop up part are performed
+continuously.
+4.
+To end the mode, press the  1/u  button.
+If DISC is not selected at step 1, aging will be performed at the 192
+slot.
+The number of times aging is performed will be displayed on the
+fluorescent indicator tube during operations.
+TABLE ROTATION MODE
+• This mode is used for electrical adjustments. Refer to the section
+on Electrical Adjustments.
+TITLE MEMO SHIFT MODE
+• This mode is used for writing title memo information recorded in
+this unit in a different unit.
+Use it for transferring disc memo contents written by the cus-
+tomer to the new units when replacing the unit, etc.
+Connection:
+Procedure:
+1.
+Connect two units using the  CONTROL A1 II  connection
+cord shown in the figure.
+2.
+Set the  COMMAND MODE  switch of the copy source unit to
+CD3  and the  COMMAND MODE  switch of the copy
+destination unit to  CD1 .
+3.
+With the power on, while pressing the  GROUP 7  button and
+§ OPEN/CLOSE  button of the copy destination unit, press
+the  +100  button.
+4.
+When the data has been transferred, the fluorescent indicator
+tube displays “complete” for about 1 second.
+MODEL NAME DISPLAY
+• Model names can be displayed on the fluorescent indicator tube
+for checking the microprocessor model setting, etc.
+Procedure:
+With the power ON, while pressing the  GROUP 1  and · buttons,
+press the  +100  button.
+The model name is displayed on the fluorescent indicator tube.
+MICROPROCESSOR VERSION DISPLAY
+• The microprocessor version can be displayed on the fluorescent
+indicator tube.
+Procedure:
+With the power ON, while pressing the  GROUP 2  and · buttons,
+press the  +100  button.
+The microprocessor version is displayed on the fluorescent indicator
+tube.
+ALL LIT MODE
+• This mode is used for lighting the whole fluorescent indicator
+tubes and LEDs.
+Procedure:
+With the power ON, while pressing the  GROUP 3  and · buttons,
+press the  +100  button.
+Both the fluorescent indicator tubes and LEDs will light up
+completely.
+To end this mode, press the  1/u  mode.
+CONTROL A1 II connection cord provided
+Flow of data
+This unit
+(Copy source)
+Another unit
+(Copy destination)
+COMMAND MODE: CD3
+COMMAND MODE: CD1
+CONTROL A1 II
+$
+$
+$
+$
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 24
+
+24
+CDP-CX355
+MECHANISM ADJUSTMENT MODE
+• This mode is used for mechanism adjustments. Refer to the sec-
+tion on Mechanism Adjustments.
+SHIPMENT MODE
+• This mode is used for setting the unit to the shipment state.
+Do not execute it without a proper reason as it erases the memory
+of the title memo recorded by the customer.
+Procedure:
+Set the  COMMAND MODE  switch to  CD1  and the  TIMER
+switch to OFF. Next, with the power ON, while pressing the  GROUP
+5  button and · button, press the  +100  button. If the switch state
+is normal, the model name will be displayed on the fluorescent
+indicator tube and the unit will set into the shipment mode.
+If the various switches are not set to their designated positions, error
+codes will be displayed on the fluorescent indicator tube.
+TITLE MEMO RECORDING CHECK MODE
+This mode is not required for servicing. Do not execute without a
+proper reason.
+If executed, the memory of the title memo recorded by the customer
+will be erased.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 25
+
+25
+CDP-CX355
+SECTION 5
+TEST MODE
+5-1. ADJ Mode
+1.
+Turn ON the power of the unit, set disc to disc table, and perform
+chucking.
+2.
+Disconnect the power supply plug from the outlet.
+3.
+To set ADJ mode, connect the test point (ADJ) of the MAIN
+board to Ground, and connect the power supply plug to the
+outlet.
+In this mode, table rotation and loading operations are not performed
+because it is taken that the disc has already been chucked.
+Note: The same operations are also performed in the following when
+the test point (ADJ) is connected to Ground after turning on
+the power.
+• Direct search (movement of sledding motor) is not performed dur-
+ing accessing
+• Ignored even when GFS becomes L
+• Ignored even when the Q data cannot be read
+• Focus gain does not decrease
+ADJ Mode Special Functions Table
+(The buttons shown with (  ) function by using the sup-
+plied remote commander only)
+5-2. Key and Display Check Mode
+To set this mode, connect the test point (AFADJ) on the MAIN
+board to Ground, and connect the power supply plug to the outlet.
+Note: When this mode is executed, all title memos recorded will be
+erased.
+• When this button is pressed, “line # No. #” will be displayed.
+However, these will not be displayed for the following special
+buttons. However, these will not be displayed for the following
+special buttons.
+ p  (stop) button:
+FL segment check
+(Refer to FL Tube Check Patterns)
+ P  (pause) button: FL grid check
+(Refer to FL Tube Check Patterns)
+The  P  LED also light up simultaneously.
+ ·  (play) button: All FL segment and grid will light up.
+All LEDs also light up simultaneously.
+TIMER switch:
+When the switch position is  PLAY , the
+STANDBY  LED light up. It goes off when
+set to OFF.
+Each time this button is pressed, the value of the “Got ## keys”
+increases. Buttons pressed once will not be counted when pressed
+again.
+FL Tube Check Patterns
+Segment check
+A    B    C    D    E    F    G
+• When the jog dial is rotated to the right, the GROUP LEDs light
+up in the order of 1n2..8nHIT LISTnEASY PLAYnMEGA
+CONTROLn1.
+• When the jog dial is rotated to the left, the GROUP LEDs light up
+in the order of 8n 7..1n MEGA CONTROLn EASY
+PLAYnHIT LISTn8.
+• Abbreviation
+  FL: Fluorescent Indicator Tube
+[ MAIN BOARD ] – Cnductor Side –
+Grid check
+Button
+CONTINUE
+SHUFFLE
+PROGRAM
+GROUP 3 (3)
+GROUP 8 (8)
+CHECK
+Function
+Servo average display
+Displays VC, FE, RF, TE and traverse in hexadecimal
+numbers
+Focus bias display
+Each time this is pressed, the focus bias is switched
+between (1) and (2)
+(1)
+Bias actually set     Optimum bias     Minimum jitter
+(2)
+U:Upper aliasing bias     L:Lower aliasing bias
+Auto gain display
+Displays focus, tracking, sledding in hexadecimal
+numbers
+Turns off the tracking and sledding servo
+Turns on the tracking and sledding servo
+S-curve observation mode.
+(Exits this mode when the  1/u  button is pressed.)
+Magnified
+TP (AFADJ)
+TP (ADJ)
+IC504
+IC501
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 26
+
+26
+CDP-CX355
+SECTION 6
+ADJUSTMENTS
+6-1. Mechanical Adjustments
+Pop Up Mechanism Adjustment
+1.
+With the power ON, while pressing the  GROUP 4  and ·
+buttons, press the  +100  button to enter the mechanism
+adjustment mode.
+2.
+Press the  GROUP 1  button to operate the loading mechanism,
+and continue pressing until the disc table locks. (Fig-1)
+3.
+Press the  GROUP 2  button to raise the pop up part.
+4.
+Remove the cover (chassis), loosen the adjusting screw, move
+the screwdriver left and right until the lever (POP UP) does not
+touch the slit wall, and secure the screw. (Fig-2)
+The following buttons have special functions in this mode.
+ GROUP 1  button: Loading mechanism IN operation
+ GROUP 5  button: Loading mechanism OUT operation
+ GROUP 2  button: Pop up part UP operation
+ GROUP 6  button: Pop up part DOWN operation
+Lever (pop up)
+Fix to the center so that the
+lever (POP UP) does not
+touch the slit.
+Cover (chassis)
+FIg-1
+FIg-2
+GROUP1
+GROUP2
+GROUP4
+At this position,this 
+part will be locked.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 27
+
+27
+CDP-CX355
+GROUP1
+GROUP4
+PAUSE button
+PLAY button
+Fixed screws
+Swing
+Holder (table sensor)
+Table assembly
+At this position,this 
+part will be locked.
+Sensor Adjustment
+1.
+With the power ON, while pressing the  GROUP 4  and ·
+buttons, press the  +100  button to enter the mechanism
+adjustment mode.
+2.
+Press the  GROUP 1  button to operate the loading mechanism,
+and continue pressing until the disc table locks. (Fig-3)
+3.
+Loosen the fixing screw, move the holder (TABLE SENSOR)
+slightly, and when the LED (green) of the  PLAY  button
+switches to the LED (orange) of the  PAUSE  button (or vice
+versa), secure the holder (TABLE SENSOR). (Fig-4)
+4.
+Moving the disc table right and left with a hand after the screw
+is fixed, the table will move by the play of a disc table. If the
+LEDs light up alternately, the adjustment will be performed
+correctly. (Fig-4)
+FIg-3
+FIg-4
+PLAY indicator
+Linked with · indicator
+Linked with P indicator
+PAUSE indicator
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 28
+
+28
+CDP-CX355
+6-2. Electrical Adjustment
+Note:
+1.
+CD Block is basically designed to operate without adjustment.
+Therefore, check each item in order given.
+2.
+Use YEDS-18 disc (3-702-101-01) unless otherwise indicated.
+3.
+Use an oscilloscope with more than 10MΩ impedance.
+4.
+Clean the object lens by an applicator with neutral detergent
+when the signal level is low than specified value with the
+following checks.
+S-Curve Check
+Procedure :
+1.
+Chuck the disc (YEDS-18) beforehand, and disconnect the
+power cord from the outlet.
+2.
+Connect oscilloscope to test point TP (FE1) on BD board.
+3.
+Connect test point TP (ADJ) on MAIN board to ground with
+lead wire.
+4.
+The ADJ mode is set when the power cord is inserted into the
+outlet and power is supplied.
+5.
+The fifth track is played automatically.
+6.
+Press the  CHECK  button.
+7.
+Check the oscilloscope waveform (S-curve) is symmetrical
+between A and B. And confirm peak to peak level within 3±1
+Vp-p.
+S-curve waveform
+8.
+Pressing the  1/u  button stops the output of the waveform (s
+curve).
+9.
+After check, remove the lead wire connected in step 3.
+Note : • Try to measure several times to make sure than the ratio of
+A : B or B : A is more than 10 : 7.
+• Take sweep time as long as possible and light up the
+brightness to obtain best waveform.
+Adjustment Location: BD board (See page 30)
+RF Level Check
+Note: A clear RF signal waveform means that the shape “◊” can be
+clearly distinguished at the center of the waveform.
+RF signal waveform
+Adjustment Location: BD board (See page 30)
+E-F Balance Check
+Procedure :
+1.
+Chuck the disc (YEDS-18) beforehand, and disconnect the
+power cord from the outlet.
+2.
+Connect oscilloscpe to test point TP (TE1) on BD board.
+3.
+Connect test point TP (ADJ) on MAIN board to ground with
+lead wire.
+4.
+The ADJ mode is set when the power cord is inserted into the
+outlet and power is supplied.
+5.
+The fifth track is played automatically.
+6.
+Press the  GROUP 3  button. (The tracking servo and the
+sledding servo are turned OFF.) “ TRK Off ” is displayed.
+7.
+Check the level B of the oscilliscope's waveform and the A
+(DC voltage) of the center of the Traverse waveform.
+Confirm the following :
+A/B x 100 = less than ± 22%
+Traverse waveform
+8.
+Press the  GROUP 8  button. (The tracking servo and sledding
+servo are turned ON.) “ TRK On ” is displayed. Confirm the C
+(DC voltage) is almost equal to the A (DC voltage) is step 7.
+Traverse waveform
+Procedure :
+1.
+Connect oscilloscope to test point TP (RFAC) on BD board.
+2.
+Turn Power switch on.
+3.
+Put disc (YEDS-18) in to play the number five track.
+4.
+Confirm that oscilloscope waveform is clear and check RF
+signal level is correct or not.
+oscilloscope
+BD board
+TP (FE1)
+TP (VC)
+symmetry
+A
+B
+Within 3 ± 1 Vp-p
+VOLT/DIV : 1V
+TIME/DIV : 400 µs
+oscilloscope
+BD board
+TP (RFAC)
+TP (VC)
+VOLT/DIV : 500mV
+TIME/DIV : 1 µs
+level : 1.2         Vp-p
++0.25
+–0.20
+oscilloscope
+BD board
+TP (TE1)
+TP (VC)
+0V
+level : 1.3 ± 0.6 mVp-p
+A (DC voltage)
+Center of the waveform
+B
+0V
+C (DC 
+voltage)
+Tracking servo
+Sledding servo
+        OFF
+Tracking servo
+Sledding servo
+        ON
+9.
+After check, disconnect the lead wire of TP (ADJ) connected
+in step 3.
+Adjustment Location: MAIN board (See page 30)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 29
+
+29
+CDP-CX355
+1.
+Connect the oscilloscope to Pins 1, 2, and 3 of CN506 of
+the MAIN board.
+2.
+Check that no discs are loaded in the unit.
+3.
+With the power ON, while pressing the  GROUP 5  and
+§ OPEN/CLOSE  buttons, press the  +100  button. The disc
+table starts to rotate in the clockwise direction.
+4.
+Loosen the fixing screw, move the mounting board (SENSOR),
+and secure the mounting board (SENSOR) at the point the H
+portion of the P.T waveform comes the center of the H portion
+of the D.S waveform.
+Disc Sensor Adjustment
+Be sure to perform this adjustment after sensor adjustment in
+MECHANICAL ADJUSTMENT.
+Connection:
+Waveform:
+5.
+Rotate the  DISC/CHARACTER  knob in the counterclockwise
+direction and the disc table starts to rotate in the same direction.
+Check that the waveform at this time is the same as that in step
+4. If larger by a considerable extent, rotate the  DISC/
+CHARACTER  knob in the clockwise direction and the disc
+table starts to rotate in the same direction. Repeat from step 4.
+6.
+Rotate RV501 of the MAIN board and adjust so that the H and
+L portions of the D.S waveform become the same.
+Fixing screw
+Mounting board (SENSOR)
+D.S: Pin 1
+GND: Pin 2
+T.P: Pin 3
+oscilloscope
+CH1
+CH2
+D.S
+GND
+T.P
+MAIN board
+CN506
+D.S
+P.T
+D.S
+P.T
+Should be at the center
+D.S
+Adjust so that these widths
+become the same.
+Adjustment Location: MAIN board (See page 30)
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 30
+
+30
+CDP-CX355
+Adjustment Location :
+[ BD BOARD ] – Conductor Side –
+TP
+(RFAC)
+TP (TE1)
+TP (FE1)
+TP (VC)
+IC131
+IC101
+[ MAIN BOARD ]
+– Conductor Side –
+– Component Side –
+RV501
+DISC SENSOR 
+ADJUSTMENT
+1
+3
+CN506
+TP (AFADJ)
+TP (ADJ)
+IC504
+IC501
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 31
+
+31
+31
+CDP-CX355
+• Waveform
+For schematic diagrams.
+Note:
+• All capacitors are in µF unless otherwise noted. p : pF. 50
+WV or less are not indicated except for electrolytics and
+tantalums.
+• All resistors are in Ω and 1/4 W or less unless otherwise
+specified.
+•
+f
+: internal component.
+• C : panel designation.
+• A : B+ Line.
+• B : B– Line.
+• H : adjustment for repair.
+• Voltages and waveforms are dc with respect to ground
+under no-signal (detuned) conditions.
+No mark : STOP
+• Voltages are taken with a VOM (Input impedance 10 MΩ).
+Voltage variations may be noted due to normal produc-
+tion tolerances.
+• Waveforms are taken with a oscilloscope.
+Voltage variations may be noted due to normal produc-
+tion tolerances.
+• Circled numbers refer to waveforms.
+• Signal path.
+J
+: CD
+c
+: digital
+For printed wiring boards.
+Note:
+• X : parts extracted from the component side.
+• Y : parts extracted from the conductor side.
+•
+a
+: Through hole.
+•
+: Pattern from the side which enables seeing.
+(The other layers' patterns are not indicated.)
+• Indication of transistor
+THIS NOTE IS COMMON FOR PRINTED WIRING
+BOARDS AND SCHEMATIC DIAGRAMS.
+(In addition to this necessary note is printed in
+each block.)
+Note:
+The components identified by
+mark 0 or dotted line with mark
+0 are critical for safety.
+Replace only with part number
+specified.
+Note:
+Les composants identifiés par
+une marque 0 sont critiques
+pour la sécurité.
+Ne les remplacer que par une
+pièce portant le numéro spécifié.
+C E
+B
+These are omitted.
+5.9Vp-p
+1.3Vp-p
+1 IC101 yj XTAO
+1V/DIV, 20ns/DIV
+500mV/DIV, 1µs/DIV
+200mV/DIV, 20ms/DIV
+200mV/DIV, 4ms/DIV
+1V/DIV, 4µs/DIV
+1V/DIV, 40ns/DIV
+2 IC101 ta (RFAC)
+3 IC101 ra TE
+4 IC101 el FE
+2.4 Vp-p
+5 IC101 wh MDP
+5.9 Vp-p
+6 IC501 qs X'TAL OSC1
+59ns
+7.5 µs
+100ns
+(PLAY)
+2.5V
+APPROX 500mVp-p (PLAY)
+2.5V
+APPROX 200m Vp-p (PLAY)
+• Circuit Board Location
+SECTION 7
+DIAGRAMS
+MAIN board
+POWER board
+JACK board
+LED board
+D. SENS (OUT) board
+D. MOTOR board
+JOG board
+D. SW board
+D. SENS (IN) board
+T. SENS board
+DISP board
+KEYBOARD board
+L. SW (A) board
+L. SW (B) board
+L.T. MOTOR board
+BD board
+C
+B
+These are omitted.
+E
+Q
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 32
+
+32
+32
+CDP-CX355
+7-1.
+Block Diagrams – BD Section –
+• R-CH is omitted due to same as L-CH.
+• Signal Path
+: CD
+: CD DIGITAL
+2
+1
+6
+7
+8
+9
+10
+11
+15
+12
+RF
+SUMMING
+AMP
+RF EQ
+AMP
+16
+18
+27
+FOCUS
+ERROR
+AMP
+TRACKING
+ERROR
+AMP
+48
+51
+49
+43
+41
+38
+42
+40
+39
+14
+66
+67
+30
+27
+31
+ASYMMETRY
+CORRECTION
+ERROR
+CORRECTION
+DIGITAL
+CLV
+MIRR
+DFCT
+FOK
+DETECTOR
+72
+75
+20
+4
+80
+79
+5
+6
+7
+8
+60
+3
+32
+33
+26
+29
+28
+LPF
+Q132
+BUFFER
+LPF
+LPF
+28
+6
+7
+11
+12
+22
+23
+5
+4
+26
+24
+20
+18
+17
+13
+14
+16
+15
+M
+M
+E
+PD1
+PD2
+F
+9
+3
+LOUT
+R-CH
+R-CH
+LMUTE
+DATA  
+CLOK
+SQSO
+SQCK
+XLAT
+AMUTE
+SENS
+SCOR
+MAIN
+SECTION
+XRST
+AGC
+OPTICAL PICK-UP
+BLOCK (KSM-213BFN)
+LASER
+DIODE
+PD
+LD
+LD
+POWER
+DETECTOR
+TRACKING
+COIL
+FOCUS
+COIL
+SLED
+MOTOR
+SPINDLE
+MOTOR
+IC150
+FOCUS/TRACKING COIL DRIVE,
+SPINDLE/SLED MOTOR DRIVE
+T+
+T–
+F–
+F+
+VC
+S101
+LIMIT
+MUTE
+Q131
+LD
+DRIVE
+APC LD
+AMP
+IC131
+RF AMP
+VC
+BUFFER
+14
+DVC
+BUFFER
+TIMING
+LOGIC
+VC
+VC
+TE
+FE
+SW
+RFDCO
+DVC
+VC
+ASYO
+RFAC
+ASYI
+RFDC
+XTAI
+XLON
+XTAO
+TE
+CE
+VC
+SE
+FE
+TFDR
+TRDR
+FFDR
+FRDR
+SRDR
+SFDR
+MDP
+SSTP
+A/D
+CONVERTER
+DIGITAL
+PLL
+DIGITAL
+OUT
+16K
+RAM
+CPU
+INTERFACE
+SERVO
+INTERFACE
+SERVO
+AUTO
+SEQUENCER
+FOK
+DFCT
+MIRR
+SERVO DSP
+FOCUS
+SERVO
+TRACKING
+SERVO
+SLED
+SERVO
+PWM
+GENERATOR
+TRACKING
+PWM
+GENERATOR
+FOCUS
+PWM
+GENERATOR
+SLED
+PWM
+GENERATOR
+SCLK
+XRST
+SENS
+CLOK
+XLAT
+DATA
+2
+SQSO
+SQCK
+SCOR
+SENS
+XLAT
+SQSO
+SQCK
+SCOR
+LMUT
+RMUT
+SYSM
+AMUTE
+LOUT1
+LOUT2
+DOUT
+DIGITAL
+OUT
+OPTICAL
+IC901
+A
+INTERNAL BUS
+IC101
+DIGITAL SIGNAL PROCESSOR
+X191
+16.9MHz
+EFM
+DEMODULATOR
+D/A
+INTERFACE
+SERIAL
+IN
+INTERFACE
+3rd ORDER
+NOISE
+SHAPER
+PWM
+OVER
+SAMPLING
+DIGITAL
+FILTER
+1
+SUBCODE
+PROCESSOR
+PD
+LD
+A
+B
+C
+D
+F
+E
+RFDC
+AMP
+RW/ROM
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 33
+
+33
+33
+CDP-CX355
+– MAIN Section –
+• R-CH is omitted due to same as L-CH.
+• Signal Path
+          : CD
+44
+42
+12
+13
+45
+2
+30
+41
+43
+47
+46
+39
+52
+94
+6
+93
+96
+97
+7
+3
+4
+91
+92
+33
+19
+31
+36
+34
+35
+78
+62
+20
+27
+88
+9
+Q81, D81
+DISC
+SENSOR
+JOG
+DIAL
+JOG
+DIAL
+DISC/
+CHARACTER
+1
+•
+3
+63
+•
+65
+60 - 46
+32 - 41,30 - 6,31
+40 - 54
+5 - 39, 4
+45
+55
+62
+29
+87
+26
+20
+22
+23
+21
+63
+61
+60
+56
+Q701
+BUFFER
+1
+4
+8
+7
+6
+RECTIFIER
+Q940
+–30V REG
+8
+2
+LOADING
+MOTOR
+DRIVE
+DOOR
+MOTOR
+DRIVE
+CONTROL A1 II
+ DATA
+ SCOR
+ SCOR
+ SENS
+ AMUTE
+ XLAT
+ SQCK
+ SENS
+ AMUTE
+ XLAT
+SQCK
+ CLOK
+ LMUTE
+ LOUT
+SQSO
+SQSO
+XRST
+XRST
+AGC
+BD
+SECTION
+A
+7
+6
+5
+1
+3
+2
+2
+3
+IC302(1/2)
+BUFFER
+IC401
+AMP
+IC302(2/2)
+MIX AMP
+J903
+CLK
+DATA
+SENS
+SCOR
+AMUTE
+XLT
+SQCK
+SUBQ
+LDIN
+LDOUT
+DOOROUT
+DOORIN
+98
+99 TBLL
+TBLR
+T1
+T2
+T3
+AGC
+OSC1
+40
+SMUTE
+OSC2
+DOORSW
+INSW
+OUTSW
+D.SENS
+X501
+10MHz
+SW83, 84
+DOOR
+DET
+S81
+LOADING
+DET
++5V
+1        2        3
+CD
+COMMAND MODE
+IC501
+SYSTEM CONTROLLER
+IC703
+REMOTE
+CONTROL RECEIVER
+KBDOUT
+KBCOUT
+KBDIN
+KBCIN
+RESET
+J821
+KEY BOARD
+CS
+ICSW
+WE
+D0
+D7
+A0
+A14
+FL DATA
+FL CLK
+FLLT
+LEDLT
+RM IN
+BUS OUT
+BUS IN
+RM
+DATA
+DATA
+CLK
+RST
+LT
+IC702
+LED DRIVER
+CLK
+Q950
+BUS
+BUFFER
+J901, 902
+VFL
+SEG01     SEG35,AD1
+DIG01     DIG15
+DIG16
+VFL
+IC701
+FL DRIVER
+SCK
+CLK
+DATA
+CLK
+DATA
+DA
+CS
+RESET
+F1
+ F1
+1G-15G
+P1-P36
+16G
+F2
+F2
+FL701 FLUORESCENT INDICATOR TUBE
+Q521
+IC504
+S-RAM
+CE
+WE
+–VCC
+FL701
+D942
+VFL
+T902
+POWER
+TRANSFORMER
+CNP901
+AC IN
+IC81
+IC506
+MOTOR DRIVE
+M81
+LOADING
+MOTOR
+M83
+DOOR
+MOTOR
+M82
+TABLE
+MOTOR
+D940
+LINE
+FILTER
+L901
+1
+M
+M
+M
+L
+ANALOG OUT
+L
+R
+R
+2ND CD IN
+16 - 24
+Q570, 571
+SWITCH
+4
+6
+8
+TABLE
+MOTOR
+DRIVE
+IC505
+MOTOR DRIVE
+2
+24
+RESET OUT
+IC82
+IC83
+28 T4
+IC84
+≠ AMS
+±
+S82
+LOADING
+90
+SW
+89
+CD 2
+CD 3
+F2
+F1
+D910-913
+RECT
++5V REG
+IC910
+VCC
+D802-D806
+INSIDE
+ILLUMINATION
+D0
+D7
+A0
+A14
+48
+LED3
+49
+50
+LED2
+LED1
+18
+AC IN
+ACIN
+ICSW (RELAY ON/OFF)
+D920-923
+RECT
++7V REG
+IC920
++5V REG
+IC921
+VCC
+IC931
++5.2V REG, RESET
+8
+1
+RST
+3 Vo
+Vin
++5V REG
+IC930
+Q930
+RELAY
+DRIVE
+D932-935
+RECT
+D930, 931
+RECTIFIER
+ACIN
+T901
+POWER
+TRANSFORMER
+D710
+STANDBY
+25
+STANDBY-LED
+Q576
+SWITCH
+Q324
+MUTE
+Q322,323
+MUTE
+Q321
+MUTE
+Q325-329
+MUTE
+CONTROL
+SWITCH
+Q572-574
+LED
+DRIVE
+TABLE POSITION SENSOR 1
+TABLE POSITION SENSOR 2
+TABLE POSITION SENSOR 3
+TABLE POSITION SENSOR 4
+Q550-552
+MOTOR
+DRIVE SW
+Q560-562
+MOTOR
+DRIVE SW
+D701-709
+GROUP 1-8
+HIT LIST
+12
+15
+LED
+DRIVE
+D711-716
+·
+P
+MEGA CONTROL
+EASY PLAY
+27
+32
+XRST
+1
+3
+1
+3
+1
+3
+2
+28
+3
++5V
+AVDD
+DVDD
++7V
+(IC150)
++5V
+ICSW
+RY901
++5V
+(Q326-329)
++5.2V
+(IC501, 703)
+81 - 79
+82 - 86
+11 -13
+15 -19
+10 - 3
+25 - 23
+21, 2
+26, 1
+77 - 70
+64 - 67
+69, 63
+68
+g
+4
+5
+6
+7
+8
+FUNCTION
+KEY
+S731 - 737
+FUNCTION
+KEY
+S721 - 728
+FUNCTION
+KEY
+S741 - 745
+FUNCTION
+KEY
+S751 - 756
+FUNCTION
+KEY
+S761 - 766
+KEY1
+KEY2
+KEY3
+KEY4
+KEY5
+RE702
+RE701
+R-CH
+R-CH
+S902
+VDD
+D521
+C520 1F
+RV501
+DISC SENSOR
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 34
+
+34
+34
+CDP-CX355
+7-2.
+Printed Wiring Board – BD Section –
+• See page 31 for Circuit Boards Location.
+IC150
+IC101
+IC131
+TP
+(VC)
+TP
+(RFAC)
+TP(TE1)
+TP(FE1)
+A
+(Page 36)
+Ref. No.
+Location
+IC101
+B-2
+IC131
+B-1
+IC150
+B-3
+Q131
+A-1
+Q132
+B-2
+• Semiconductor
+Location
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 35
+
+35
+35
+CDP-CX355
+7-3.
+Schematic Diagram – BD Section –
+• See page 31 for Waveforms.
+• See page 47, 48 for IC Block Diagrams.
+• See page 50 for IC Pin Function.
+IC B/D
+IC B/D
+RFSW
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 36
+
+36
+36
+CDP-CX355
+7-4.
+Printed Wiring Board – MAIN Section –
+IC921
+IC920
+IC910
+IC302
+IC401
+IC402
+IC931
+IC930
+IC501
+IC504
+IC506
+IC505
+TO  POWER BOARD
+CNP901
+(Page 44)
+TO
+KEYBOARD BOARD
+CNP203
+(Page 46)   
+TO
+LED BOARD
+CN813
+(Page 46)
+T0
+T. SENS BOARD
+CN81
+(Page 39)
+TO
+BD BOARD
+CN101
+(Page 34)
+TO
+DISP BOARD
+CN701
+(Page 40)
+TO
+D. MOTOR
+BOARD
+CNP509
+(Page 46)
+TO
+L. T MOTOR BOARD
+CNP85
+(Page 46)
+TO
+POWER BOARD
+CNP902
+(Page 44)
+TO
+JACK BOARD
+CNP510
+(Page 45)
+TO
+JACK BOARD
+CNP511
+(Page 45)
+TO
+L. SW (A)  BOARD
+CN84
+(Page 46)
+TP (AF ADJ)
+TP (ADJ)
+• See page 31 for Circuit Boards Location.
+Ref. No.
+Location
+D325
+E-9
+D327
+C-8
+D329
+E-8
+D425
+E-9
+D501
+C-7
+D521
+E-4
+D550
+B-2
+D940
+A-3
+D941
+A-5
+D942
+A-6
+• Semiconductor
+Location
+Ref. No.
+Location
+IC302
+C-10
+IC401
+D-11
+IC402
+D-10
+IC501
+D-5
+IC504
+D-4
+IC505
+C-2
+IC506
+C-1
+IC910
+B-10
+IC920
+B-10
+IC921
+B-3
+IC930
+C-7
+IC931
+D-7
+Ref. No.
+Location
+Q321
+C-10
+Q322
+C-9
+Q323
+C-9
+Q324
+C-9
+Q325
+E-8
+Q326
+E-9
+Q327
+C-8
+Q328
+E-8
+Q329
+D-8
+Q421
+E-10
+Q422
+D-9
+Q423
+D-9
+Q424
+D-9
+Q425
+E-8
+Q426
+E-9
+Ref. No.
+Location
+Q521
+D-3
+Q550
+D-3
+Q551
+D-3
+Q552
+D-3
+Q559
+C-2
+Q560
+D-2
+Q561
+D-2
+Q562
+D-3
+Q570
+B-7
+Q571
+B-7
+Q572
+B-5
+Q573
+C-6
+Q574
+C-6
+Q576
+C-7
+Q940
+A-5
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 37
+
+37
+37
+CDP-CX355
+7-5.
+Schematic Diagram – MAIN Section (1/2) –
+• See page 31 for Waveform.   • See page 48 for IC Block Diagrams.   • See page 52 for IC Pin Function.
+IC B/D
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 38
+
+38
+38
+CDP-CX355
+7-6.
+Schematic Diagram – MAIN Section (2/2) –
+• See page 49 for IC Block Diagrams.
+IC B/D
+IC B/D
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 39
+
+39
+39
+CDP-CX355
+7-7.
+Printed Wiring Board – T.SENS Section –
+7-8.
+Printed Wiring Board – D.SENS (IN) Section –
+7-9.
+Printed Wiring Board – D.SENS (OUT) Section –
+7-10. Schematic Diagram – SENSOR Section –
+IC84
+IC82
+IC83
+IC81
+TO
+MAIN BOARD
+CN507
+(Page 36)
+1
+• See page 31 for Circuit Boards Location.
+• See page 31 for Circuit Boards Location.
+• See page 31 for Circuit Boards Location.
+5
+4
+3
+2
+1
+5
+4
+3
+2
+1
+5
+4
+3
+2
+1
+5
+4
+3
+2
+1
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 40
+
+40
+40
+CDP-CX355
+7-11. Printed Wiring Board – DISPLAY Section –
+IC703
+IC701
+IC702
+TO
+JOG  BOARD
+CN705
+(Page 42)
+TO
+MAIN BOARD
+CN502
+(Page 36)
+• See page 31 for Circuit Boards Location.
+Ref. No.
+Location
+D701
+D-4
+D702
+D-3
+D703
+D-2
+D704
+D-2
+D705
+D-1
+D706
+E-4
+D707
+E-3
+D708
+E-2
+D709
+E-2
+D710
+C-5
+IC701
+B-2
+IC702
+C-1
+IC703
+A-2
+Q701
+C-3
+• Semiconductor
+Location
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 41
+
+41
+41
+CDP-CX355
+7-12. Schematic Diagram – DISPLAY Section –
+• See page 49 for IC Block Diagrams.
+IC B/D
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 42
+
+42
+42
+CDP-CX355
+7-13. Printed Wiring Board – JOG Section –
+p/DISC EJECT
+TO
+DISP BOARD
+CN704
+(Page 40)
+Ref. No.
+Location
+D771
+D-4
+D712
+E-2
+D713
+D-4
+D714
+D-4
+D715
+D-4
+D716
+D-4
+• Semiconductor
+Location
+• See page 31 for Circuit Boards Location.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 43
+
+43
+43
+CDP-CX355
+7-14. Schematic Diagram – JOG Section –
+/DISC EJECT
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 44
+
+44
+44
+CDP-CX355
+7-15. Printed Wiring Board – POWER Section –
+7-16. Schematic Diagram – POWER Section –
+TO  MAIN  BOARD
+CN901, 903
+(Page 36)
+TO
+MAIN  BOARD
+CN902
+(Page 36)
+CNP901
+• See page 31 for Circuit Boards Location.
+Ref. No.
+Location
+Q930
+C-5
+D901
+C-5
+D910
+C-1
+D911
+C-1
+D912
+B-1
+D913
+B-1
+D920
+B-1
+D921
+B-1
+D922
+B-1
+D923
+A-1
+D930
+B-6
+D931
+B-6
+D932
+B-6
+D933
+B-6
+D934
+B-6
+D935
+B-6
+D939
+B-6
+• Semiconductor
+Location
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 45
+
+45
+45
+CDP-CX355
+7-17. Printed Wiring Board – JACK Section –
+7-18. Schematic Diagram – JACK Section –
+IC901
+COMMAND
+MODE
+CD
+(Page 36)
+(Page 36)
+• See page 31 for Circuit Boards Location.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 46
+
+46
+46
+CDP-CX355
+7-19. Printed Wiring Board – SWITCH/MOTOR Section –
+7-20. Schematic Diagram – SWITCH/MOTOR Section –
+TO
+MAIN BOARD
+CN509
+(Page  36)
+TO
+MAIN BOARD
+CN503
+(Page 36)
+TO
+MAIN BOARD
+CN508
+(Page 36)
+CNP85
+TO
+MAIN BOARD
+CN504
+(Page  36)
+TO
+MAIN BOARD
+CN505
+(Page  36)
+L.SW (A) BOARD
+L.SW (B) BOARD
+• See page 31 for Circuit Boards Location.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 47
+
+47
+CDP-CX355
+• IC Block Diagrams
+IC101  CXD2587Q (BD Section)
+TE
+RFDC
+CE
+IGEN 
+AVSS0 
+ADIO 
+AVDD0
+CLTV
+FILO
+AVSS3
+VSS
+AVDD3
+DOUT
+VDD
+PCO
+FILI
+ASYO
+ASYI
+RFAC
+BIAS
+SSTP
+DFCT
+MIRR
+MDP
+LOCK
+FOK
+SFDR
+VSS
+TEST
+FRDR
+FE
+VC
+COUT
+SE
+XTSL
+TES1
+SRDR
+TFDR
+FFDR
+TRDR
+2
+1
+70
+71
+68
+69
+66
+67
+64
+65
+62
+61
+63
+73
+74
+72
+75
+76
+77
+78
+79
+80
+4
+XRST
+3
+SQCK
+SQSO
+5
+9
+8
+7
+6
+56
+60
+53
+54
+55
+59
+57
+58
+51
+52
+48
+49
+50
+47
+44
+45
+46
+43
+41
+42
+XLAT
+CLOK
+SENS
+SYSM
+DATA
+XUGF
+XPCK
+GFS
+C2PO
+WFCK
+10 11
+12 13 14
+15 16 17 18
+19 20
+21
+22
+23
+24
+25
+26
+32
+33
+30
+31
+36
+37
+34
+35
+39
+40
+38
+28
+27
+29
+SPOA
+ATSK
+SCLK
+VDD
+SCOR
+SPOB
+XLON
+XTAI
+XVDD
+EMPH
+AVDD1
+AOUT1
+AIN1
+XTAO
+XVSS
+AIN2
+AOUT2
+AVDD2
+RMUT
+LOUT2
+LOUT1
+BCK
+LRCK
+PCMD
+LMUT
+AVSS1
+AVSS2
+CPU
+INTERFACE
+SERVO AUTO
+SEQUENCER
+SERIAL IN
+INTERFACE
+OVER SAMPLING
+DIGITAL FILTER
+3rd ORDER
+NOISE SHAPER
+PWM
+PWM
+EFM
+DEMODULATOR
+TIMING
+LOGIC
+DIGITAL
+OUT
+D/A
+INTERFACE
+DIGITAL
+PLL
+ASYMMETRY
+CORRECTION
+CLOCK
+GENERATOR
+MIRR, DFCT,
+FOK
+DETECTOR
+DIGITAL
+CLV
+SUBCODE
+PROCESSOR
+SERVO
+INTERFACE
+SERVO DSP
+FOCUS
+SERVO
+TRACKING
+SERVO
+SLED
+SERVO
+PWM GENERATOR
+FOCUS PWM
+GENERATOR
+TRACKING
+PWM GENERATOR
+SLED PWM
+GENERATOR
+16K
+RAM
+ERROR
+CORRECTOR
+INTERNAL BUS
+A/D
+CONVERTER
+OPERATIONAL
+AMPLIFIER
+ANALOG SWITCH
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 48
+
+48
+CDP-CX355
+IC131  CXA2581N-T4 (BD Section)
+RW/ROM
+RW/ROM
+EQ ON/OFF
+VOFST
+VOFST
+DVC
+VC
+VC
+VC
+RW/ROM
+VC
+DVC
+30
+29
+28
++
+–
++
+–
+DVC
+VCC
+DVC
+27
+26
+25
+24
+RW/ROM
+EQ
+23
+22
+21
+20
+19
+RFAC
+VCA
+VCC
++
+–
+DVC
++
+–
++
+–
+RW/ROM
+VC
+RW/ROM
+DVC
++
+–
+3
+A
+B
+C
+D
+B
+C
+A
+A
+A
+B
+C
+D
+B
+C
+D
+D
++
+–
+1
+2
+APC AMP
+5
+6
+7
+8
+9
+4
+RFAC
+SUMMING
+AMP
+RW/ROM
+APC-OFF
+(Hi-Z)
+RW/ROM
+(H/L)
+VOFST
+VC
+RW/ROM
++
+–
+10
+11
+GM
+GM
+18
+17
+16
+B
+D
+A
+C
+13
+14
+15
+12
+EQ IN
+LD
+PD
+GND
+A
+B
+C
+D
+AC SUM
+E
+F
+DVCC
+DVC
+RFAC
+SW
+DC OFST
+RFDCI
+RFDCO
+VC
+RFC
+VFC
+BST
+RFG
+VCC
+CEI
+CE
+TE BAL
+TE
+FEI
+FE
+IC504  M5M5256DFP-70XL (MAIN Section)
+VCC
+W
+A13
+A8
+A9
+A11
+OE
+A10
+SI
+DQ8
+DQ7
+DQ6
+DQ5
+DQ4
+A12
+A6
+A5
+A4
+A3
+A2
+A1
+A0
+DQ1
+DQ2
+DQ3
+GND
+A7
+A14
+CLOCK
+GENERATOR
+OUTPUT
+BUFFER
+SENSE
+AMP
+32768 WORD
+x 8 BIT
+RAM
+(512 x 512)
+ROW
+ADDRESS
+DECODER
+ROW INPUT BUFFER
+COLUMN INPUT BUFFER
+COLUMN
+ADDRESS
+DECODER
+INPUT
+DATA
+CONTROL
+1
+2
+3
+4
+5
+6
+7
+8
+9 10
+11 12 13 14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 49
+
+49
+CDP-CX355
+IC505  LA6510 (MIAN Section)
+VOUT1
++VIN1
+VSENCE1
+–VIN1
+–VIN2
+VCC
++VIN2
+VOUT2
+VSENCE2
+VEE
+1
+2
+3
+4
+5
+6
+7
+8
+9 10
++
+–
++
+–
+IC931  LA5601 (MAIN Section)
+3
+6
+7
+2
+5
+1
+4
+9
+8
+10
+ON/OFF
+AMP
+V REF
+AMP
+RESET
+VOMUTE
+CD
+VIN
+VO
+RES
+CN
+GND
+EN
+VID
+VOD
+IC702  M66310FP (DISPLAY Section)
+24
+0
+D
+R
+CK
+23
+0
+D
+R
+CK
+22
+0
+D
+R
+CK
+21
+0
+D
+R
+CK
+20
+0
+D
+R
+CK
+19
+0
+D
+R
+CK
+18
+0
+D
+R
+CK
+17
+0
+D
+R
+CK
+16
+0
+D
+R
+CK
+15
+0
+D
+R
+CK
+14
+0
+D
+R
+CK
+13
+4
+5
+6
+7
+8
+9
+10
+11
+12
+0
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+1
+D
+R
+CK
+D
+1
+R
+CK
+D
+1
+0
+0
+R
+CK
+D
+R
+CK
+D
+R
+CK
+1
+2
+3
+D
+1
+R
+CK
+D
+1
+0
+0
+R
+CK
+D
+R
+CK
+D
+R
+CK
+QC
+QD
+QE
+QF
+QG
+QH
+QI
+QJ
+QK
+QL
+QM
+QN
+QA
+QB
+VCC
+DATA
+OE
+LT
+RST
+CLK
+GND
+SQP
+QO
+QP
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 50
+
+50
+CDP-CX355
+7-21. IC Pin Functions
+• IC101 DIGITAL SIGNAL PROCESSOR (CXD2587Q) (BD Section)
+Pin No.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+I/O
+O
+I
+I
+I
+I
+I
+I
+O
+I
+—
+I/O
+I
+I
+O
+O
+O
+O
+O
+O
+O
+I/O
+I/O
+I/O
+I/O
+I/O
+O
+I
+O
+O
+O
+O
+O
+O
+—
+I
+I
+I
+I
+I
+I
+I
+I
+I
+O
+—
+I
+—
+Pin Name
+SQSO
+SQCK
+XRST
+SYSM
+DATA
+XLAT
+CLOK
+SENS
+SCLK
+VDD
+ATSK
+SPOA
+SPOB
+XLON
+WFCK
+XUGF
+XPCK
+GFS
+C2PO
+SCOR
+COUT
+MIRR
+DFCT
+FOK
+LOCK
+MDP
+SSTP
+SFDR
+SRDR
+TFDR
+TRDR
+FFDR
+FRDR
+VSS
+TEST
+TES1
+XTSL
+VC
+FE
+SE
+TE
+CE
+RFDC
+ADIO
+AVSS0
+IGEN
+AVDD0
+Description
+Sub-Q 80-bit and PCM peak level data output (CD text data output)
+Clock input for SQSO read-out
+System reset “L” : reset
+Muting input “H” : mute
+Serial data input, supplied from CPU
+Latch input, supplied from CPU
+Serial data transfer clock input, supplied from CPU
+SENS signal output to CPU
+SENS serial data read-out clock input
+Digital power supply
+Input pin for anti-shock (Connected to ground)
+Microcomputer escape interface input A
+Microcomputer escape interface input B
+Microcomputer escape interface output (Not used)
+WFCK output (Not used)
+Not used
+Not used
+Not used
+Not used
+Sub-code sync output
+Numbers of track counted signal input/output (Not used)
+Mirror signal input/output (Not used)
+Defect signal input/output (Not used)
+Focus OK input/output (Not used)
+GFS is sampled by 460 Hz. H when GFS is H (Not used)
+Output to control spindle motor servo
+Input signal to detect disc inner most track
+Sled drive output
+Sled drive output
+Tracking drive output
+Tracking drive output
+Focus drive output
+Focus drive output
+Digital ground
+TEST pin connected normally to ground
+TEST pin connected normally to ground
+X’tal selection input (Connected to ground)
+Center voltage input pin
+Focus error signal input
+Sled error signal input
+Tracking error signal input
+Center servo analog input
+RF signal input
+Test pin (Not used)
+Analog ground
+Stabilized current input for operational amplifiers
+Analog power supply
+• Abbreviation
+GFS : Guarded Frame Sync
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 51
+
+51
+CDP-CX355
+Pin No.
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+I/O
+O
+I
+I
+I
+—
+I
+O
+I
+O
+—
+—
+—
+O
+O
+O
+O
+O
+—
+I
+O
+—
+—
+O
+I
+O
+—
+—
+O
+I
+O
+—
+O
+O
+Pin Name
+ASYO
+ASYI
+BIAS
+RFAC
+AVSS3
+CLTV
+FILO
+FILI
+PCO
+AVDD3
+VSS
+VDD
+DOUT
+LRCK
+PCMD
+BCK
+EMPH
+XVDD
+XTAI
+XTAO
+XVSS
+AVDD1
+AOUT1
+AIN1
+LOUT1
+AVSS1
+AVSS2
+LOUT2
+AIN2
+AOUT2
+AVDD2
+RMUT
+LMUT
+Description
+EFM full swing output
+Asymmetry comparate voltage input
+Asymmetry circuit constant current input
+EFM signal input
+Analog ground
+Control voltage input for master VCO1
+Filter output for master PLL
+Filter input for master PLL
+Charge-pump output for master PLL
+Analog power supply
+Digital ground
+Digital power supply
+Digital-out output pin
+D/A interface LR clock output (ƒ = Fs) (Not used)
+D/A interface serial data output (Not used)
+D/A interface bit clock output (Not used)
+Playback disc output in emphasis mode (Not used)
+Power supply for master clock
+X’tal oscillator circuit input (16.9344MHz)
+X’tal oscillator circuit output (16.9344MHz)
+Ground for master clock
+Analog power supply
+L-ch analog output
+L-ch operational amplifiers input
+L-ch line output
+Analog ground
+Analog ground
+R-ch line output
+R-ch operational amplifiers input
+R-ch analog output
+Analog power supply
+R-ch “0” detection flag output
+L-ch “0” detection flag output
+• Abbreviation
+EFM : Eight to Fourteen Modulation
+PLL : Phase Locked Loop
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 52
+
+52
+CDP-CX355
+• IC501 SYSTEM CONTROL (MN101C49GSA) (MAIN Section)
+Pin No.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+I/O
+—
+I
+I
+I
+I
+I
+I
+I
+I
+—
+—
+O
+I
+—
+I
+O
+—
+I
+O
+O
+O
+O
+O
+O
+O
+I
+I
+I
+I
+I
+I
+I
+I
+O
+O
+I
+O
+O
+O
+O
+I
+O
+O
+O
+I
+I
+O
+O
+O
+O
+Pin Name
+GND
+DOOR SW
+GND
+KEY1
+KEY2
+KEY3
+KEY4
+KEY5
+D.SENS
+VREF
+VDD
+OSC2
+OSC1
+VSS
+XI
+XO
+GND
+AC IN
+ ICSW (RELAY ON/OFF)
+LEDLT
+FLDATA
+FLLT
+FLCLK
+RESET OUT
+STAND-BY LED
+RMIN
+T2
+T4
+BUSIN
+SCOR
+KBCIN
+T1
+RESET
+KBCOUT
+KBDOUT
+KBDIN
+TEST-PULSE2
+TEST PULSE
+AGC
+SMUTE
+AMUTE
+DATA
+XLT
+CLK
+SENS
+SUBQ
+SQCK
+LED3
+LED2
+ LED1
+Description
+Ground
+Door panel SW (5V: OPEN)
+Digital filter  (not used)
+Key A/D input
+Disc sensor input
+A/D standard power terminal
+Power supply terminal (+5V)
+Main clock (10MHz) Output
+Main clock (10MHz) Input
+Ground terminal
+Not used
+Not used
+Ground terminal
+Power monitor input
+Power terminal for circumference IC
+Latch for LED driver output
+Data for fluorescent indicator driver output
+Latch for fluorescent indicator output
+Clock for fluorescent indicator output
+Reset output for circumference IC
+LED output for STANDBY
+Remote control input
+Table sensor input
+CONTROL A1 input
+Sub code Q synchronous signal
+Keyboard clock input
+Table sensor input
+System reset signal input
+Keyboard clock output
+Keyboard data output
+Keyboard data input
+DISC detection test output
+TSENS1, 2 output
+CXD2587Q LPH output
+Mute on output
+Mute on input
+CXD2587Q D/F data output
+CXD2587Q Latch output
+CXD2587Q D/F clock output
+CXD2587Q Servo sensor signal input
+CXD2587Q Q data input
+CXD2587Q Q data clock output
+interior illumination
+interior illumination
+ interior illumination
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 53
+
+53
+CDP-CX355
+Pin No.
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+I/O
+I
+I
+I
+I
+I
+O
+O
+O
+O
+I
+I
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+O
+I/O
+I/O
+I/O
+I/O
+I/O
+I/O
+I/O
+I/O
+O
+I
+I
+I
+I
+I
+O
+O
+—
+O
+O
+O
+O
+—
+Pin Name
+SELECT
+T2
+SELECT
+SELECT
+SELECT
+2WAY-LT
+CX5/CX6
+CX3/CX4
+2WAYLT
+AFADJ
+ADJ
+WE
+A13
+A8
+A9
+A10
+A11
+A14
+A12
+A7
+A6
+A5
+A4
+A3
+A2
+A1
+A0
+CS
+D2
+D1
+D0
+D3
+D4
+D5
+D6
+D7
+BUSOUT
+CD2
+CD3
+SW
+INSW
+OUTSW
+DOOROUT
+DOORIN
+GND
+LDOUT
+LDIN
+TBLR
+TBLL
+DVDD
+Description
+CX691 select port (H: CX691 L: Other)
+Table sensor input
+J select port (H: J L: Other)
+ES select port (H: ES L: HiFi)
+2WAY select port (H: 2WAY L: 1WAY)
+U-COM chip enable output (Not used)
+Not used
+Not used
+Reset output (Not used)
+AFADJ select port
+ADJ mode select port
+SRAM write enable output
+SRAM address output
+SRAM chip select output
+SRAM data input/output
+CONTROL-A1 output
+Remote control mode select input (CD2)
+Remote control mode select input (CD3)
+Table close switch input
+Loading in switch input
+Loading out switch input
+Door open output
+Door close output
+Ground terminal
+Loading motor PWM output for outside direction
+Loading motor PWM output for inside direction
+Table motor PWM output for right turn
+Table motor PWM output for left turn
+D/A converter standard power terminal
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 54
+
+NOTE:
+•
+-XX, -X mean standardized parts, so they may
+have some differences from the original one.
+•
+Items marked “*” are not stocked since they
+are seldom required for routine service. Some
+delay should be anticipated when ordering these
+items.
+•
+The mechanical parts with no reference number
+in the exploded views are not supplied.
+•
+Hardware (# mark) list and accessories and
+packing materials are given in the last of this
+parts list.
+•
+Abbreviation
+CND : Canadian model
+AUS : Australian model
+SP
+: Singapore model
+The components identified by mark 0 or
+dotted line with mark 0 are critical for safety.
+Replace only with part number specified.
+Les composants identifiés par une marque
+0 sont critiques pour la sécurité.
+Ne les remplacer que par une pièce portant
+le numéro spécifié.
+SECTION 8
+EXPLODED VIEWS
+54
+CDP-CX355
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+8-1. Case Section
+5
+12
+13
+4
+3
+#1
+#1
+chassis section 1
+2
+2
+2
+#1
+#1
+#1
+#1
+front panel section
+2
+1
+10
+10
+#1
+#1
+not supplied
+not supplied
+#3
+#1
+8
+6
+7
+9
+#1
+11
+A
+A
+1
+4-215-970-11
+CASE
+2
+4-210-291-01
+SCREW (CASE 3 TP2)
+3
+4-215-954-01
+COVER (FRONT)
+4
+4-215-952-01
+GUIDE (DOOR.B)
+5
+4-215-960-01
+COVER (CHASSIS)
+6
+X-4950-902-1
+TABLE (300) ASSY
+7
+1-672-633-11
+LED BOARD
+8
+4-215-953-01
+GUIDE (DOOR.T)
+9
+4-215-968-01
+WINDOW (INTERNAL ILLUMINATION)
+10
+4-985-553-11
+CUSHION
+11
+4-215-967-01
+COVER (P.T.)
+12
+3-701-447-21
+WASHER, 10
+13
+X-4950-889-1
+DOOR (CD) ASSY
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+#3
+7-685-650-79
+SCREW +BVTP 3X16 TYPE2 N-S
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 55
+
+55
+CDP-CX355
+8-2. Chassis Section 1
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+#1
+#1
+#4
+#1
+#4
+#8
+#8
+#4
+not supplied
+not supplied
+not supplied
+56
+53
+51
+51
+51
+58
+55
+57
+57
+59
+52
+60
+54
+mechanism section 1
+(CDM54-K1BD45)
+(base (door.gear) assy)
+mechanism section 1
+(CDM54-K1BD45)
+(pop-up assy)
+chassis section 2
+51
+3-703-249-01
+SCREW, S TIGHT, +PTTWH 3X6
+52
+1-672-641-11
+D.SENS(OUT) BOARD
+53
+4-216-089-01
+SHAFT (CENTER)
+54
+4-931-169-01
+FOOT
+55
+1-672-640-11
+D.SENS(IN) BOARD
+56
+1-672-639-11
+T.SENS BOARD
+57
+4-216-096-01
+SCREW (T1), STEP
+58
+4-216-091-01
+HOLDER (TABLE SENSOR)
+59
+3-356-601-11
+SCREW, STEP
+60
+3-970-608-01
+SUMITITE (B3), +BV
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+#4
+7-685-903-11
+SCREW +PTPWH 3X6 (TYPE2)
+#8
+7-682-948-01
+SCREW +PSW 3X8
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 56
+
+56
+CDP-CX355
+8-3. Chassis Section 2
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+#1
+#1
+#1
+#1
+#1
+#8
+#1
+not supplied
+103
+102
+mechanism section 2
+(CDM54-K1BD45)
+back panel section
+104
+105
+T901
+T902
+#1
+#1
+101
+106
+101
+101
+102
+4-216-092-01
+HOLDER (ROLLER)
+103
+4-216-093-01
+ROLLER
+104
+3-703-249-01
+SCREW, S TIGHT, +PTTWH 3X6
+105
+1-672-638-11
+POWER BOARD
+106
+4-215-971-01
+CUSHION (FOOT)
+0T901
+1-433-666-11
+TRANSFORMER, POWER (SUB) (US, CND, E)
+0T901
+1-433-668-11
+TRANSFORMER, POWER (SUB) (AEP, UK, SP)
+0T901
+1-433-877-11
+TRANSFORMER, POWER (SUB) (AUS)
+0T902
+1-433-663-11
+TRANSFORMER, POWER (MAIN) (US, CND, E)
+0T902
+1-433-665-11
+TRANSFORMER, POWER (MAIN)
+ (AEP, UK, SP, AUS)
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+#8
+7-682-948-01
+SCREW +PSW 3X8
+The components identified by
+mark 0 or dotted line with mark
+0 are critical for safety.
+Replace only with part number
+specified.
+Les composants identifiés par
+une marque 0 sont critiques
+pour la sécurité.
+Ne les remplacer que par une
+pièce portant le numéro spécifié.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 57
+
+57
+CDP-CX355
+8-4. Back Panel Section
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+152
+153
+151
+155
+156
+157
+#1
+#1
+#1
+#1
+#1
+CNP901
+#1
+#1
+#1
+#1
+not supplied
+not supplied
+not supplied
+154
+151
+A-4727-794-A MAIN BOARD, COMPLETE
+152
+1-790-420-11
+WIRE (FLAT TYPE) (21 CORE)
+153
+1-773-183-11
+WIRE (FLAT TYPE) (23 CORE)
+154
+1-672-629-12
+JACK BOARD
+155
+4-238-109-01
+PANEL, BACK (US)
+155
+4-238-109-11
+PANEL, BACK (CND)
+155
+4-238-109-21
+PANEL, BACK (AEP, UK)
+155
+4-238-109-32
+PANEL, BACK (SP)
+155
+4-238-109-42
+PANEL, BACK (AUS)
+155
+4-238-109-51
+PANEL, BACK (E)”
+* 156
+4-982-807-01
+COVER (FFC)
+* 157
+3-703-244-00
+BUSHING (2104), CORD
+0CNP901 1-696-845-11
+CORD, POWER (AUS)
+0CNP901 1-777-071-61
+CORD, POWER (AEP, UK, SP)
+0CNP901 1-783-531-31
+CORD, POWER (US, CND, E)
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+The components identified by
+mark 0 or dotted line with mark
+0 are critical for safety.
+Replace only with part number
+specified.
+Les composants identifiés par
+une marque 0 sont critiques
+pour la sécurité.
+Ne les remplacer que par une
+pièce portant le numéro spécifié.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 58
+
+58
+CDP-CX355
+8-5. Front Panel Section
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+204
+205
+203
+212
+212
+209
+213
+213
+213
+213
+not supplied
+not supplied
+not supplied
+not supplied
+208
+FL701
+211
+213
+206
+201
+202
+207
+207
+210
+201
+4-215-818-01
+KNOB (DISC)
+202
+4-215-819-01
+KNOB (AMS)
+203
+X-4954-417-1
+PANEL ASSY, FRONT (US, CND)
+203
+X-4954-470-1
+PANEL ASSY, FRONT (AUS, UK, AEP, E, SP)
+204
+4-996-698-61
+EMBLEM, SONY
+205
+4-977-358-01
+CUSHION
+206
+3-917-216-21
+KNOB (TIMER)
+207
+4-219-323-01
+RING (DIA. 50-CX300)
+208
+4-982-811-11
+HOLDER (FL)
+209
+1-672-632-12
+KEYBOARD BOARD
+210
+A-4727-728-A JOG BOARD, COMPLETE
+211
+A-4727-729-A DISP BOARD, COMPLETE
+212
+4-985-553-21
+CUSHION
+213
+4-951-620-01
+SCREW (2.6X8), +BVTP
+FL701
+1-517-861-11
+INDICATOR TUBE, FLUORESCENT
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 59
+
+59
+CDP-CX355
+8-6. Mechanism Section 1 (CDM54-K1BD45)
+(Pop-up Assy, Base (Door. Gear) Assy)
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+#6
+#6
+M83
+#9
+#7
+#7
+269
+265
+267
+266
+262
+264
+265
+267
+268
+257
+257
+257
+257
+257
+255
+256
+252
+254
+253
+259
+260
+261
+258
+251
+263
+251
+X-4950-888-1
+BRACKET (DOOR.GEAR) ASSY
+252
+4-215-959-01
+LEVER (CAM.PU)
+253
+4-215-955-01
+GEAR (DOOR.PULLEY)
+254
+4-215-956-01
+GEAR (DOOR.CENTER)
+255
+4-215-957-01
+GEAR (DOOR.DRIVE)
+256
+4-215-958-01
+GEAR (DOOR.CAM)
+257
+3-325-697-21
+WASHER
+258
+4-219-324-01
+HOLDER (L-SW)
+259
+4-219-326-01
+BELT (DIA. 42X1.2)
+260
+1-672-637-11
+D.MOTOR BOARD
+261
+1-672-634-11
+D.SW BOARD
+262
+4-216-099-01
+SLIDER (POP-UP)
+263
+4-216-100-01
+HOLDER (POP-UP)
+264
+4-216-098-01
+LEVER (POP-UP)
+265
+3-701-441-21
+WASHER
+266
+4-216-102-01
+SHAFT (POP-UP FULCRUM)
+267
+4-216-103-01
+SPRING (POP-UP), COMPRESSION
+268
+4-216-104-01
+SPRING (POP-UP), TENSION
+269
+4-998-716-01
+SCREW, BU FITTING
+M83
+X-4950-062-1
+MOTOR ASSY (DOOR)
+#6
+7-685-533-19
+SCREW +BTP 2.6X6 TYPE2 N-S
+#7
+7-624-106-04
+STOP RING 3.0, TYPE -E
+#9
+7-621-775-00
+SCREW +B 2.6X3
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 60
+
+60
+CDP-CX355
+8-7. Mechanism Section 2 (CDM54-K1BD45)
+Ref. No.
+Part No.
+Description
+Remarks
+305
+302
+301
+303
+306
+307
+308
+309
+310
+310
+not supplied
+optical pick-up section
+(BU-K1BD45)
+mechanism section 3
+(CDM54-K1BD45)
+not supplied
+#1
+#5
+304
+not supplied
+301
+4-216-081-01
+SPRING (MG), TORSION
+302
+3-701-441-21
+WASHER
+303
+3-701-446-21
+WASHER, 8
+304
+4-216-088-02
+GUIDE (DISC)
+305
+4-216-082-01
+HOLDER (MAGNET), TORSION
+306
+A-4672-768-A MAGNET ASSY
+307
+X-4950-901-4
+HOLDER ASSY, BU
+308
+4-216-086-01
+SPRING (F-2), TENSION
+309
+4-216-085-01
+SPRING (F-1), TENSION
+310
+4-957-577-01
+SCREW PTP WH (2.6X8) (DIA. 10)
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+#5
+7-685-645-79
+SCREW +BVTP 3X6 TYPE2 N-S
+Ref. No.
+Part No.
+Description
+Remarks
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 61
+
+61
+CDP-CX355
+8-8. Mechanism Section 3 (CDM54-K1BD45)
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+367
+354
+355
+353
+352
+351
+358
+359
+357
+361
+364
+357
+365
+366
+366
+362
+363
+360
+352
+353
+356
+#7
+#1
+#7
+mechanism section 4
+(CDM54-K1BD45)
+351
+4-216-070-01
+LEVER (LOCK)
+352
+4-216-067-01
+SPRING (CLAMP), COMPRESSION
+353
+3-701-441-21
+WASHER
+354
+X-4950-885-1
+HOLDER (DISC L) ASSY
+355
+X-4950-886-1
+HOLDER (DISC R) ASSY
+356
+4-216-066-01
+SHAFT (CLAMP)
+357
+3-325-697-21
+WASHER
+358
+4-216-076-01
+HOLDER (R)
+359
+4-216-077-01
+SPRING (HOLDER FR), TORSION
+360
+4-216-075-01
+HOLDER (F)
+361
+X-4950-900-1
+BRACKET (LEVER) ASSY
+362
+4-216-080-01
+SPRING (LIMITTER), TORSION
+363
+4-216-079-01
+LIMITTER (LEVER)
+364
+4-216-078-01
+LEVER (LOADING)
+365
+4-216-061-01
+BELT
+366
+4-216-060-01
+PULLEY (1)
+367
+4-998-716-01
+SCREW, BU FITTING”
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+#7
+7-624-106-04
+STOP RING 3.0, TYPE -E
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 62
+
+62
+CDP-CX355
+8-9. Mechanism Section 4 (CDM54-K1BD45)
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+#1
+#1
+#8
+#1
+M82
+M81
+402
+410
+409
+401
+401
+404
+405
+403
+407
+411
+408
+406
+401
+4-216-058-01
+GEAR (CENTER)
+402
+4-216-059-01
+GEAR (TABLE)
+403
+4-216-063-02
+SLIDER
+404
+4-216-062-01
+LEVER (FULCRUM)
+405
+1-672-643-11
+L.SW(B) BOARD
+406
+A-4672-676-A CAM ASSY
+407
+4-216-057-01
+GEAR (CENTER 2)
+408
+1-672-642-11
+L.SW(A) BOARD
+409
+1-672-636-11
+L.T.MOTOR BOARD
+410
+4-216-054-01
+BASE (CDM)
+411
+4-951-620-01
+SCREW (2.6X8), +BVTP
+M81
+A-4672-675-A MOTOR ASSY (TABLE)
+M82
+A-4672-675-A MOTOR ASSY (LOADING)
+#1
+7-685-646-79
+SCREW +BVTP 3X8 TYPE2 N-S
+#8
+7-682-948-01
+SCREW +PSW 3X8
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 63
+
+63
+CDP-CX355
+8-10. Optical Pick-up Section (BU-K1BD45)
+Ref. No.
+Part No.
+Description
+Remarks
+451
+1-792-024-11
+WIRE (FLAT TYPE) (16 CORE)
+452
+A-4727-737-A BD BOARD, COMPLETE
+* 453
+4-992-054-01
+RUBBER, VIBRATION PROOF
+0454
+A-3328-818-A OPTICAL PICK-UP KSM-213BFN/C2NP
+#2
+7-621-772-21
+SCREW +B 2X5
+452
+453
+453
+454
+451
+#2
+The components identified by
+mark 0 or dotted line with mark
+0 are critical for safety.
+Replace only with part number
+specified.
+Les composants identifiés par
+une marque 0 sont critiques
+pour la sécurité.
+Ne les remplacer que par une
+pièce portant le numéro spécifié.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 64
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+NOTE:
+•
+Due to standardization, replacements in the
+parts list may be different from the parts
+specified in the diagrams or the components
+used on the set.
+•
+-XX, -X mean standardized parts, so they
+may have some difference from the original
+one.
+•
+Items marked “*” are not stocked since they
+are seldom required for routine service.
+Some delay should be anticipated when
+ordering these items.
+•
+CAPACITORS:
+uF: µF
+•
+RESISTORS
+All resistors are in ohms.
+METAL: metal-film resistor
+METAL OXIDE: Metal Oxide-film resistor
+F: nonflammable
+•
+COILS
+uH: µH
+•
+SEMICONDUCTORS
+In each case, u: µ, for example:
+uA...: µA... , uPA... , µPA... ,
+uPB... , µPB... , uPC... , µPC... ,
+uPD..., µPD...
+When indicating parts by reference number,
+please include the board name.
+•
+Abbreviation
+CND
+: Canadian model
+AUS
+: Australian model
+SP
+:Singapore model
+The components identified by mark 0 or
+dotted line with mark 0 are critical for safety.
+Replace only with part number specified.
+Les composants identifiés par une marque
+0 sont critiques pour la sécurité.
+Ne les remplacer que par une pièce portant
+le numéro spécifié.
+64
+SECTION 9
+ELECTRICAL PARTS LIST
+CDP-CX355
+A-4727-737-A BD BOARD, COMPLETE
+*******************
+< CAPACITOR >
+C101
+1-164-315-11
+CERAMIC CHIP
+470PF
+5.00%
+50V
+C102
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C103
+1-164-315-11
+CERAMIC CHIP
+470PF
+5.00%
+50V
+C110
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C111
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C112
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C120
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C121
+1-162-970-11
+CERAMIC CHIP
+0.01uF
+10%
+25V
+C122
+1-117-863-11
+CERAMIC CHIP
+0.47uF
+10.00% 6.3V
+C123
+1-162-927-11
+CERAMIC CHIP
+100PF
+5%
+50V
+C124
+1-162-967-11
+CERAMIC CHIP
+0.0033uF
+10%
+50V
+C125
+1-162-966-11
+CERAMIC CHIP
+0.0022uF
+10%
+50V
+C126
+1-107-826-11
+CERAMIC CHIP
+0.1uF
+10.00% 16V
+C127
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C128
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C130
+1-164-505-11
+CERAMIC CHIP
+2.2uF
+16V
+C131
+1-164-505-11
+CERAMIC CHIP
+2.2uF
+16V
+C132
+1-164-505-11
+CERAMIC CHIP
+2.2uF
+16V
+C134
+1-124-589-11
+ELECT
+47uF
+20%
+16V
+C135
+1-124-589-11
+ELECT
+47uF
+20%
+16V
+C136
+1-107-826-11
+CERAMIC CHIP
+0.1uF
+10.00% 16V
+C137
+1-124-584-00
+ELECT
+100uF
+20%
+10V
+C138
+1-162-964-11
+CERAMIC CHIP
+0.001uF
+10%
+50V
+C139
+1-162-915-11
+CERAMIC CHIP
+10PF
+5.00%
+50V
+C142
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C145
+1-162-908-11
+CERAMIC CHIP
+3PF
+8.33%
+50V
+C150
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C151
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C152
+1-107-826-11
+CERAMIC CHIP
+0.1uF
+10.00% 16V
+C158
+1-162-966-11
+CERAMIC CHIP
+0.0022uF
+10%
+50V
+C171
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C172
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C173
+1-162-927-11
+CERAMIC CHIP
+100PF
+5%
+50V
+C174
+1-115-412-11
+CERAMIC CHIP
+680PF
+5.00%
+25V
+C181
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C182
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C183
+1-162-927-11
+CERAMIC CHIP
+100PF
+5%
+50V
+C184
+1-115-412-11
+CERAMIC CHIP
+680PF
+5.00%
+25V
+C191
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C192
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+C193
+1-162-920-11
+CERAMIC CHIP
+27PF
+5%
+50V
+C194
+1-162-919-11
+CERAMIC CHIP
+22PF
+5%
+50V
+C195
+1-164-156-11
+CERAMIC CHIP
+0.1uF
+25V
+< CONNECTOR >
+CN101
+1-784-745-11
+CONNECTOR, FFC 23P
+CN102
+1-793-907-11
+CONNECTOR, FFC/FPC 16P
+< FERRITE BEAD >
+FB191
+1-414-234-22
+FERRITE
+0UH
+FB192
+1-414-234-22
+FERRITE
+0UH
+< IC >
+IC101 
+8-752-386-85 IC   CXD2587Q
+IC131 
+8-752-089-74 IC   CXA2581N-T4
+IC150 
+8-759-677-90 IC   BA5947FP-E2
+< TRANSISTOR >
+Q131
+8-729-010-08
+TRANSISTOR
+MSB710-RT1
+Q132
+8-729-600-22
+TRANSISTOR
+2SA1235TP-1EF
+< RESISTOR >
+R101
+1-216-833-11
+METAL CHIP
+10K
+5%
+1/16W
+R102
+1-216-845-11
+METAL CHIP
+100K
+5%
+1/16W
+R103
+1-216-833-11
+METAL CHIP
+10K
+5%
+1/16W
+R110
+1-216-821-11
+METAL CHIP
+1K
+5%
+1/16W
+R111
+1-216-821-11
+METAL CHIP
+1K
+5%
+1/16W
+R112
+1-216-845-11
+METAL CHIP
+100K
+5%
+1/16W
+R113
+1-216-864-11
+METAL CHIP
+0
+5%
+1/16W
+R120
+1-216-839-11
+METAL CHIP
+33K
+5%
+1/16W
+R121
+1-216-833-11
+METAL CHIP
+10K
+5%
+1/16W
+R122
+1-216-845-11
+METAL CHIP
+100K
+5%
+1/16W
+R123
+1-216-857-11
+METAL CHIP
+1M
+5%
+1/16W
+R125
+1-216-825-11
+METAL CHIP
+2.2K
+5%
+1/16W
+R126
+1-216-833-11
+METAL CHIP
+10K
+5%
+1/16W
+R127
+1-216-821-11
+METAL CHIP
+1K
+5%
+1/16W
+R129
+1-216-815-11
+METAL CHIP
+330
+5%
+1/16W
+R131
+1-216-845-11
+METAL CHIP
+100K
+5%
+1/16W
+R132
+1-216-841-11
+METAL CHIP
+47K
+5%
+1/16W
+R134
+1-216-853-11
+METAL CHIP
+470K
+5%
+1/16W
+R135
+1-216-833-11
+METAL CHIP
+10K
+5%
+1/16W
+R136
+1-216-833-11
+METAL CHIP
+10K
+5%
+1/16W
+BD
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 65
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+65
+CDP-CX355
+R137
+1-216-797-11
+METAL CHIP
+10
+5%
+1/16W
+R138
+1-216-797-11
+METAL CHIP
+10
+5%
+1/16W
+R139
+1-216-849-11
+METAL CHIP
+220K
+5%
+1/16W
+R140
+1-216-857-11
+METAL CHIP
+1M
+5%
+1/16W
+R141
+1-216-841-11
+METAL CHIP
+47K
+5%
+1/16W
+R142
+1-216-845-11
+METAL CHIP
+100K
+5%
+1/16W
+R143
+1-216-841-11
+METAL CHIP
+47K
+5%
+1/16W
+R144
+1-216-846-11
+METAL CHIP
+120K
+5%
+1/16W
+R145
+1-216-829-11
+METAL CHIP
+4.7K
+5%
+1/16W
+R146
+1-216-841-11
+METAL CHIP
+47K
+5%
+1/16W
+R149
+1-216-821-11
+METAL CHIP
+1K
+5%
+1/16W
+R151
+1-216-853-11
+METAL CHIP
+470K
+5%
+1/16W
+R152
+1-216-849-11
+METAL CHIP
+220K
+5%
+1/16W
+R153
+1-216-864-11
+METAL CHIP
+0
+5%
+1/16W
+R155
+1-216-864-11
+METAL CHIP
+0
+5%
+1/16W
+R171
+1-216-835-11
+METAL CHIP
+15K
+5%
+1/16W
+R172
+1-216-835-11
+METAL CHIP
+15K
+5%
+1/16W
+R173
+1-216-835-11
+METAL CHIP
+15K
+5%
+1/16W
+R181
+1-216-835-11
+METAL CHIP
+15K
+5%
+1/16W
+R182
+1-216-835-11
+METAL CHIP
+15K
+5%
+1/16W
+R183
+1-216-835-11
+METAL CHIP
+15K
+5%
+1/16W
+R191
+1-216-818-11
+METAL CHIP
+560
+5%
+1/16W
+R192
+1-216-809-11
+METAL CHIP
+100
+5%
+1/16W
+< SWITCH >
+S101
+1-572-085-11
+SWITCH, LEAF (LIMIT IN)
+< VIBRATOR >
+X191
+1-795-152-21
+VIBRATOR, CRYSTAL (10MHz)
+**************************************************************
+1-672-637-11
+D.MOTOR BOARD
+***************
+**************************************************************
+1-672-640-11
+D.SENS(IN) BOARD
+****************
+*
+4-985-300-01
+HOLDER (P-T)
+< TRANSISTOR >
+Q81
+8-729-921-53
+PHOTO TRANSISTOR ISTOR PT483F1
+ (DISC SENSOR)
+**************************************************************
+1-672-641-11
+D.SENS(OUT) BOARD
+******************
+< DIODE >
+D81
+8-719-055-84
+DIODE   GL528VS1 (DISC SENSOR)
+**************************************************************
+1-672-634-11
+D.SW BOARD
+***********
+< RESISTOR >
+R82
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R83
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R84
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+< SWITCH >
+SW83
+1-571-300-21
+SWITCH, LEVER SLIDE (CLOSE/OPEN)
+SW84
+1-571-300-11
+SWITCH, ROTARY (DOWN/UP)
+**************************************************************
+A-4727-729-A DISP BOARD, COMPLETE
+*********************
+4-982-811-11
+HOLDER (FL)
+< CAPACITOR >
+C701
+1-162-294-31
+CERAMIC
+0.001uF
+10%
+50V
+C702
+1-162-215-31
+CERAMIC
+47PF
+5%
+50V
+C703
+1-162-306-11
+CERAMIC
+0.01uF
+20.00% 16V
+C704
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C706
+1-162-282-31
+CERAMIC
+100PF
+10%
+50V
+C707
+1-162-282-31
+CERAMIC
+100PF
+10%
+50V
+C708
+1-162-282-31
+CERAMIC
+100PF
+10%
+50V
+C709
+1-162-288-31
+CERAMIC
+330PF
+10%
+50V
+C710
+1-124-584-00
+ELECT
+100uF
+20%
+10V
+C711
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C781
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C791
+1-124-584-00
+ELECT
+100uF
+20%
+10V
+< CONNECTOR >
+CN701
+1-568-838-11
+CONNECTOR, FFC 21P
+< DIODE >
+D701
+8-719-046-39
+DIODE   SEL5821A-TP15
+D702
+8-719-046-39
+DIODE   SEL5821A-TP15
+D703
+8-719-046-39
+DIODE   SEL5821A-TP15
+D704
+8-719-046-39
+DIODE   SEL5821A-TP15
+D705
+8-719-046-39
+DIODE   SEL5821A-TP15
+D706
+8-719-046-39
+DIODE   SEL5821A-TP15
+D707
+8-719-046-39
+DIODE   SEL5821A-TP15
+D708
+8-719-046-39
+DIODE   SEL5821A-TP15
+D709
+8-719-046-39
+DIODE   SEL5821A-TP15
+D710
+8-719-046-44
+DIODE   SEL5221S-TP15
+< FLUORESCENT INDICATOR >
+FL701
+1-517-861-11
+INDICATOR TUBE, FLUORESCENT
+< IC >
+IC701
+8-759-498-92
+IC   MSM9202-03GS-K
+IC702
+8-759-183-47
+IC   M66310FP
+IC703
+8-759-827-70
+IC   NJL64H400A-1
+< TRANSISTOR >
+Q701
+8-729-116-02
+TRANSISTOR
+BA1A4M-TP
+BD
+D. MOTOR
+D. SENS (IN)
+D. SENS (OUT)
+D. SW
+DISP
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 66
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+66
+CDP-CX355
+< RESISTOR >
+R701
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R702
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R703
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R704
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R705
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R706
+1-247-843-11
+CARBON
+3.3K
+5%
+1/4W
+R707
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R708
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R709
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R711
+1-249-411-11
+CARBON
+330
+5%
+1/4W
+R712
+1-249-411-11
+CARBON
+330
+5%
+1/4W
+R713
+1-249-413-11
+CARBON
+470
+5%
+1/4W
+F
+R714
+1-249-413-11
+CARBON
+470
+5%
+1/4W
+F
+R721
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R722
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R723
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R724
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R725
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R726
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R727
+1-249-437-11
+CARBON
+47K
+5%
+1/4W
+R731
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R732
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R733
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R734
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R735
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R736
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R742
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R791
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R792
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+< SWITCH >
+S721
+1-762-875-21
+SWITCH, KEYBOARD (GROUP FILE)
+S722
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 8)
+S723
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 7)
+S724
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 6)
+S725
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 5)
+S726
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 1)
+S727
+1-762-875-21
+SWITCH, KEYBOARD (I/O STANDBY)
+S728
+1-570-157-51
+SWITCH, SLIDE (PLAY/OFF TIMER-SW)
+S731
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 2)
+S732
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 3)
+S733
+1-762-875-21
+SWITCH, KEYBOARD (GROUP 4)
+S734
+1-762-875-21
+SWITCH, KEYBOARD (CONTINUE)
+S735
+1-762-875-21
+SWITCH, KEYBOARD (SHUFFLE)
+S736
+1-762-875-21
+SWITCH, KEYBOARD (PROGRAM)
+S737
+1-762-875-21
+SWITCH, KEYBOARD (REPEAT)
+S741
+1-762-875-21
+SWITCH, KEYBOARD (HITLIST)
+S742
+1-762-875-21
+SWITCH, KEYBOARD (TIME/TEXT)
+**************************************************************
+1-672-629-12
+JACK BOARD
+***********
+< CAPACITOR >
+C327
+1-124-282-00
+ELECT
+22uF
+20.00% 25V
+C328
+1-162-290-31
+CERAMIC
+470PF
+10%
+50V
+C427
+1-124-282-00
+ELECT
+22uF
+20.00% 25V
+C428
+1-162-290-31
+CERAMIC
+470PF
+10%
+50V
+C951
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C952
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C953
+1-104-665-11
+ELECT
+100uF
+20.00% 10V
+C954
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+< IC >
+IC901 
+8-749-921-12 IC   GP1F32T(DIGITAL OUT OPTICAL)
+< JACK >
+* J901
+1-764-188-11
+JACK (SMALL TYPE) (DIA. 3.5)
+ (S-LINK CONTROL A1)
+* J902
+1-764-188-11
+JACK (SMALL TYPE) (DIA. 3.5)
+ (S-LINK CONTROL A1)
+J903
+1-784-429-11
+JACK, PIN 4P (2ND CD IN/LINE OUT)
+< COIL >
+L950
+1-410-503-11
+INDUCTOR
+3.3uH
+< TRANSISTOR >
+Q950
+8-729-620-05
+TRANSISTOR
+2SC2603TP-EF
+< RESISTOR >
+R339
+1-215-485-00
+METAL
+470K
+1%
+1/4W
+R340
+1-215-405-00
+METAL
+220
+1%
+1/4W
+R439
+1-215-485-00
+METAL
+470K
+1%
+1/4W
+R440
+1-215-405-00
+METAL
+220
+1%
+1/4W
+R950
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R951
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R952
+1-249-393-11
+CARBON
+10
+5%
+1/4W
+F
+< SWITCH >
+S902
+1-762-910-11
+SWITCH, SLIDE (COMMAND MODE CD)
+**************************************************************
+A-4727-728-A JOG BOARD, COMPLETE
+********************
+< DIODE >
+D711
+8-719-046-40
+DIODE   SEL5521C-TH8F (G)
+D712
+8-719-046-38
+DIODE   SEL5821A-TH8F (X)
+D713
+8-719-033-06
+DIODE   SEL5920A-TP15 (MEGA CONTROL)
+D714
+8-719-032-86
+DIODE   SEL5420E-TP15 (EASY PLAY)
+D715
+8-719-033-06
+DIODE   SEL5920A-TP15 (MEGA CONTROL)
+D716
+8-719-032-86
+DIODE   SEL5420E-TP15 (EASY PLAY)
+JACK
+JOG
+DISP
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 67
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+67
+CDP-CX355
+< RESISTOR >
+R715
+1-249-407-11
+CARBON
+150
+5%
+1/4W
+F
+R716
+1-249-409-11
+CARBON
+220
+5%
+1/4W
+F
+R717
+1-249-401-11
+CARBON
+47
+5%
+1/4W
+F
+R718
+1-249-401-11
+CARBON
+47
+5%
+1/4W
+F
+R737
+1-249-437-11
+CARBON
+47K
+5%
+1/4W
+R743
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R744
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R745
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R746
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R747
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R748
+1-249-437-11
+CARBON
+47K
+5%
+1/4W
+R752
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R753
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R754
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R755
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R756
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R757
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R762
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R763
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R764
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R765
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R766
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R767
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R793
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+< ROTARY ENCODER >
+RE701
+1-475-543-11
+ENCODER, ROTARY (AMS PUSH ENTER)
+RE702
+1-475-543-11
+ENCODER, ROTARY
+ (DISC/CHARACTOR PUSH ENTER)
+< SWITCH >
+S743
+1-762-875-21
+SWITCH, KEYBOARD (YES)
+S744
+1-762-875-21
+SWITCH, KEYBOARD (+100)
+S745
+1-762-875-21
+SWITCH, KEYBOARD (MENU/NO)
+S751
+1-762-875-21
+SWITCH, KEYBOARD (CLEAR)
+S752
+1-762-875-21
+SWITCH, KEYBOARD (FADER)
+S753
+1-762-875-21
+SWITCH, KEYBOARD (CHECK)
+S754
+1-762-875-21
+SWITCH, KEYBOARD (NO DELAY)
+S755
+1-762-875-21
+SWITCH, KEYBOARD (MEMO SEARCH)
+S756
+1-762-875-21
+SWITCH, KEYBOARD (X-FADE)
+S761
+1-762-875-21
+SWITCH, KEYBOARD (EASY PLAY)
+S762
+1-762-875-21
+SWITCH, KEYBOARD (MEGA CONTROL)
+S763
+1-762-875-21
+SWITCH, KEYBOARD (x/DISC EJECT)
+S764
+1-762-875-21
+SWITCH, KEYBOARD (X)
+S765
+1-762-875-21
+SWITCH, KEYBOARD (G)
+S766
+1-762-875-21
+SWITCH, KEYBOARD (OPEN/CLOSE)
+**************************************************************
+1-672-632-12
+KEYBOARD BOARD
+****************
+< CAPACITOR >
+C792
+1-126-935-11
+ELECT
+470uF
+20.00% 10V
+C821
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C822
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+< CONNECTOR >
+* CNP203 1-568-944-11
+PIN, CONNECTOR 6P
+< DIODE >
+D821
+8-719-109-85
+DIODE   RD5.1ES-T2B2
+D822
+8-719-109-85
+DIODE   RD5.1ES-T2B2
+D823
+8-719-109-85
+DIODE   RD5.1ES-T2B2
+< CONNECTOR >
+J821
+1-785-945-11
+CONNECTOR, DIN (KEY BOARD)
+< COIL >
+L821
+1-424-122-11
+FILTER, NOISE
+L822
+1-424-122-11
+FILTER, NOISE
+L823
+1-424-122-11
+FILTER, NOISE
+L824
+1-424-122-11
+FILTER, NOISE
+< RESISTOR >
+R801
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+**************************************************************
+1-672-642-11
+L.SW(A) BOARD
+*************
+< SWITCH >
+S81
+1-571-300-21
+SWITCH, LEVER SLIDE (LOADING DET)
+**************************************************************
+1-672-643-11
+L.SW(B) BOARD
+*************
+S82
+1-771-604-11
+SWITCH, DETECTION (LOADING)
+**************************************************************
+1-672-636-11
+L.T.MOTOR BOARD
+****************
+**************************************************************
+1-672-633-11
+LED BOARD
+**********
+*
+4-976-473-01
+HOLDER (LED-S)
+< CAPACITOR >
+C804
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+< CONNECTOR >
+* CN813
+1-568-942-11
+PIN, CONNECTOR 4P
+< DIODE >
+D802
+8-719-071-41
+DIODE   SELS5923C-TP15 (INSIDE ILLUMINATION)
+D803
+8-719-071-42
+DIODE   SEL5723C-TP15 (INSIDE ILLUMINATION)
+D804
+8-719-072-76
+DIODE   SEL5E23C-TP15 (INSIDE ILLUMINATION)
+D805
+8-719-071-42
+DIODE   SEL5723C-TP15 (INSIDE ILLUMINATION)
+D806
+8-719-071-41
+DIODE   SELS5923C-TP15 (INSIDE ILLUMINATION)
+JOG
+KEYBOARD
+L. SW (A)
+L. SW (B)
+L. T. MOTOR
+LED
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 68
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+68
+CDP-CX355
+< RESISTOR >
+R805
+1-249-401-11
+CARBON
+47
+5%
+1/4W
+F
+R806
+1-249-399-11
+CARBON
+33
+5%
+1/4W
+F
+R807
+1-249-401-11
+CARBON
+47
+5%
+1/4W
+F
+**************************************************************
+A-4727-794-A MAIN BOARD, COMPLETE
+*********************
+7-685-871-01
+SCREW +BVTT
+3X6
+(S)
+< CAPACITOR >
+C301
+1-126-965-91
+ELECT
+22uF
+20.00% 50V
+C304
+1-126-965-91
+ELECT
+22uF
+20.00% 50V
+C305
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C307
+1-126-964-11
+ELECT
+10uF
+20.00% 50V
+C321
+1-126-963-11
+ELECT
+4.7uF
+20.00% 50V
+C329
+1-126-962-11
+ELECT
+3.3uF
+20.00% 50V
+C401
+1-126-965-91
+ELECT
+22uF
+20.00% 50V
+C404
+1-126-965-91
+ELECT
+22uF
+20.00% 50V
+C405
+1-126-947-11
+ELECT
+47uF
+20.00% 10V
+C407
+1-126-964-11
+ELECT
+10uF
+20.00% 50V
+C501
+1-104-665-11
+ELECT
+100uF
+20.00% 10V
+C502
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C503
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C504
+1-104-665-11
+ELECT
+100uF
+20.00% 10V
+C505
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C510
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C512
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C514
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C516
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C518
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C520
+1-110-489-11
+CAPACITOR
+1F
+5.5V
+C521
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C530
+1-136-165-00
+MYLAR
+0.1uF
+5.00%
+50V
+C531
+1-126-933-11
+ELECT
+100uF
+20.00% 16V
+C532
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C534
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C540
+1-136-165-00
+MYLAR
+0.1uF
+5.00%
+50V
+C541
+1-126-933-11
+ELECT
+100uF
+20.00% 16V
+C542
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C544
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C550
+1-136-173-00
+MYLAR
+0.47uF
+5.00%
+50V
+C551
+1-136-173-00
+MYLAR
+0.47uF
+5.00%
+50V
+C552
+1-109-953-11
+ELECT
+2.2uF
+20.00% 50V
+C553
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C554
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C555
+1-164-159-11
+CERAMIC
+0.1uF
+50V
+C559
+1-126-967-11
+ELECT
+47uF
+20.00% 50V
+C560
+1-136-173-00
+MYLAR
+0.47uF
+5.00%
+50V
+C591
+1-104-665-11
+ELECT
+100uF
+20.00% 10V
+C592
+1-104-665-11
+ELECT
+100uF
+20.00% 10V
+C720
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C730
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C740
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C750
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C760
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C913
+1-126-768-11
+ELECT
+2200uF
+20.00% 16V
+C914
+1-126-768-11
+ELECT
+2200uF
+20.00% 16V
+C915
+1-126-933-11
+ELECT
+100uF
+20.00% 16V
+C917
+1-126-935-11
+ELECT
+470uF
+20.00% 10V
+C923
+1-126-768-11
+ELECT
+2200uF
+20.00% 16V
+C924
+1-126-768-11
+ELECT
+2200uF
+20.00% 16V
+C925
+1-126-933-11
+ELECT
+100uF
+20.00% 16V
+C926
+1-126-933-11
+ELECT
+100uF
+20.00% 16V
+C927
+1-126-935-11
+ELECT
+470uF
+20.00% 10V
+C928
+1-126-935-11
+ELECT
+470uF
+20.00% 10V
+C933
+1-126-933-11
+ELECT
+100uF
+20.00% 16V
+C936
+1-126-963-11
+ELECT
+4.7uF
+20.00% 50V
+C938
+1-126-935-11
+ELECT
+470uF
+20.00% 16V
+C939
+1-126-963-11
+ELECT
+4.7uF
+20.00% 50V
+C940
+1-128-576-11
+ELECT
+100uF
+20.00% 63V
+C941
+1-126-948-11
+ELECT
+100uF
+20.00% 35V
+< CONNECTOR >
+CN501
+1-784-784-11
+CONNECTOR, FFC 23P
+CN502
+1-568-838-11
+CONNECTOR, FFC 21P
+CN503
+1-568-955-11
+PIN, CONNECTOR 6P
+CN504
+1-506-469-11
+PIN, CONNECTOR 4P
+CN505
+1-506-469-11
+PIN, CONNECTOR 4P
+* CN506
+1-564-518-11
+PLUG, CONNECTOR 3P
+* CN507
+1-568-934-11
+PIN, CONNECTOR 7P
+* CN508
+1-506-469-11
+PIN, CONNECTOR 4P
+* CN509
+1-506-469-11
+PIN, CONNECTOR 4P
+CN510
+1-564-509-11
+PLUG, CONNECTOR 6P
+* CN511
+1-568-935-11
+PIN, CONNECTOR 8P
+* CN901
+1-564-511-11
+PLUG, CONNECTOR 8P
+* CN902
+1-564-508-11
+PLUG, CONNECTOR 5P
+CN903
+1-564-507-11
+PLUG, CONNECTOR 4P
+< DIODE >
+D325
+8-719-911-19
+DIODE   1SS133T-72
+D327
+8-719-911-19
+DIODE   1SS133T-72
+D329
+8-719-911-19
+DIODE   1SS133T-72
+D425
+8-719-911-19
+DIODE   1SS133T-72
+D501
+8-719-911-19
+DIODE   1SS133T-72
+D521
+8-719-911-19
+DIODE   1SS133T-72
+D550
+8-719-110-36
+DIODE   RD13ES-T2B2
+D940
+8-719-024-99
+DIODE   11ES2-NTA2B
+D941
+8-719-110-72
+DIODE   RD30ES-T2B2
+D942
+8-719-109-93
+DIODE   RD6.2ES-T2B2
+< IC >
+IC302
+8-759-634-51
+IC   NJM4558D
+IC401
+8-759-634-51
+IC   NJM4558D
+IC402
+8-759-634-51
+IC   NJM4558D
+IC501
+6-801-210-01
+IC   MN101C49GSA
+IC504
+8-759-463-99
+IC   M5M5256DFP-70XL
+IC505
+8-759-822-38
+IC   LA6510
+IC506
+8-759-822-38
+IC   LA6510
+IC910
+8-759-094-53
+IC   TA7805S(LBSONY)
+IC920
+8-759-605-00
+IC   TA7807S(LBSONY)
+IC921
+8-759-094-53
+IC   TA7805S(LBSONY)
+IC930
+8-759-173-39
+IC   NJU7201L50-T3
+IC931
+8-759-821-93
+IC   LA5601
+LED
+MAIN
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 69
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+69
+CDP-CX355
+< TRANSISTOR >
+Q321
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q322
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q323
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q324
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q325
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q326
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q327
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q328
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q329
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q421
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q422
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q423
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q424
+8-729-141-26
+TRANSISTOR
+2SC3622ATP-LK
+Q425
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q426
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q521
+8-729-030-08
+TRANSISTOR
+DTC144VSA-TP
+Q550
+8-729-900-89
+TRANSISTOR
+BA1L4M-TP
+Q551
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q552
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q559
+8-729-620-05
+TRANSISTOR
+2SC2603TP-EF
+Q560
+8-729-900-89
+TRANSISTOR
+BA1L4M-TP
+Q561
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q562
+8-729-900-65
+TRANSISTOR
+BN1L4M-TP
+Q570
+8-729-116-02
+TRANSISTOR
+BA1A4M-TP
+Q571
+8-729-116-02
+TRANSISTOR
+BA1A4M-TP
+Q572
+8-729-422-57
+TRANSISTOR
+BN1A4M-TP
+Q573
+8-729-422-57
+TRANSISTOR
+BN1A4M-TP
+Q574
+8-729-422-57
+TRANSISTOR
+BN1A4M-TP
+Q576
+8-729-422-57
+TRANSISTOR
+BN1A4M-TP
+Q940
+8-729-140-97
+TRANSISTOR
+2SB734-T-34
+< RESISTOR >
+R1
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R301
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R302
+1-249-419-11
+CARBON
+1.5K
+5%
+1/4W
+F
+R303
+1-249-419-11
+CARBON
+1.5K
+5%
+1/4W
+F
+R304
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R305
+1-249-428-11
+CARBON
+8.2K
+5%
+1/4W
+F
+R306
+1-247-895-00
+CARBON
+470K
+5%
+1/4W
+R307
+1-249-420-11
+CARBON
+1.8K
+5%
+1/4W
+F
+R308
+1-249-428-11
+CARBON
+8.2K
+5%
+1/4W
+F
+R309
+1-249-415-11
+CARBON
+680
+5%
+1/4W
+F
+R310
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R311
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R312
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R313
+1-247-887-00
+CARBON
+220K
+5%
+1/4W
+R314
+1-249-409-11
+CARBON
+220
+5%
+1/4W
+F
+R315
+1-249-409-11
+CARBON
+220
+5%
+1/4W
+F
+R316
+1-249-393-11
+CARBON
+10
+5%
+1/4W
+F
+R317
+1-249-428-11
+CARBON
+8.2K
+5%
+1/4W
+F
+R321
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R322
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R323
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R324
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R325
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R326
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R327
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R328
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R329
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R401
+1-249-433-11
+CARBON
+22K
+5%
+1/4W
+R402
+1-249-419-11
+CARBON
+1.5K
+5%
+1/4W
+F
+R403
+1-249-419-11
+CARBON
+1.5K
+5%
+1/4W
+F
+R404
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R405
+1-249-428-11
+CARBON
+8.2K
+5%
+1/4W
+F
+R406
+1-247-895-00
+CARBON
+470K
+5%
+1/4W
+R407
+1-249-420-11
+CARBON
+1.8K
+5%
+1/4W
+F
+R408
+1-249-428-11
+CARBON
+8.2K
+5%
+1/4W
+F
+R409
+1-249-415-11
+CARBON
+680
+5%
+1/4W
+F
+R410
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R411
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R412
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R413
+1-247-887-00
+CARBON
+220K
+5%
+1/4W
+R414
+1-249-409-11
+CARBON
+220
+5%
+1/4W
+F
+R415
+1-249-409-11
+CARBON
+220
+5%
+1/4W
+F
+R416
+1-249-393-11
+CARBON
+10
+5%
+1/4W
+F
+R417
+1-249-428-11
+CARBON
+8.2K
+5%
+1/4W
+F
+R421
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R422
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R423
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R424
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R425
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R426
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R501
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R502
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R503
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R504
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R505
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R506
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R507
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R508
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R509
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R510
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R516
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R517
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R518
+1-249-437-11
+CARBON
+47K
+5%
+1/4W
+R520
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R521
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R522
+1-249-403-11
+CARBON
+68
+5%
+1/4W
+F
+R523
+1-249-403-11
+CARBON
+68
+5%
+1/4W
+F
+R530
+1-247-860-11
+CARBON
+16K
+5%
+1/4W
+R531
+1-247-885-00
+CARBON
+180K
+5%
+1/4W
+R532
+1-247-885-00
+CARBON
+180K
+5%
+1/4W
+R533
+1-247-883-00
+CARBON
+150K
+5%
+1/4W
+R534
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R535
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R536
+1-249-393-11
+CARBON
+10
+5%
+1/4W
+F
+R537
+1-249-431-11
+CARBON
+15K
+5%
+1/4W
+R540
+1-247-860-11
+CARBON
+16K
+5%
+1/4W
+R541
+1-247-885-00
+CARBON
+180K
+5%
+1/4W
+R542
+1-247-885-00
+CARBON
+180K
+5%
+1/4W
+R543
+1-247-883-00
+CARBON
+150K
+5%
+1/4W
+R544
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+MAIN
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 70
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+70
+CDP-CX355
+R545
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R546
+1-249-393-11
+CARBON
+10
+5%
+1/4W
+F
+R547
+1-249-431-11
+CARBON
+15K
+5%
+1/4W
+R550
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R551
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R552
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R553
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R554
+1-247-883-00
+CARBON
+150K
+5%
+1/4W
+R555
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R556
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R557
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R558
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R559
+1-249-419-11
+CARBON
+1.5K
+5%
+1/4W
+F
+R560
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R561
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R562
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+R563
+1-249-441-11
+CARBON
+100K
+5%
+1/4W
+R564
+1-247-883-00
+CARBON
+150K
+5%
+1/4W
+R565
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R566
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R567
+1-249-382-11
+CARBON
+1.2
+5%
+1/6W
+F
+R569
+1-249-419-11
+CARBON
+1.5K
+5%
+1/4W
+F
+R570
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R571
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R591
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R592
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R593
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R594
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R595
+1-247-807-31
+CARBON
+100
+5%
+1/4W
+R720
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R730
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R740
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R750
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R760
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R940
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+R941
+1-249-425-11
+CARBON
+4.7K
+5%
+1/4W
+F
+< VARIABLE RESISTOR >
+RV501
+1-241-786-11
+RES, ADJ, CARBON 22K
+< VIBRATOR >
+X501
+1-579-175-11
+VIBRATOR, CERAMIC (10MHz)
+**************************************************************
+1-672-638-11
+POWER BOARD
+*************
+< CAPACITOR >
+0C901
+1-113-925-11
+CERAMIC
+0.01uF
+20.00% 250V
+C910
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C911
+1-126-767-11
+ELECT
+1000uF
+20.00% 16V
+C912
+1-126-767-11
+ELECT
+1000uF
+20.00% 16V
+C920
+1-161-494-00
+CERAMIC
+0.022uF
+25V
+C921
+1-126-767-11
+ELECT
+1000uF
+20.00% 16V
+C922
+1-126-767-11
+ELECT
+1000uF
+20.00% 16V
+C932
+1-126-936-11
+ELECT
+3300uF
+20.00% 16V
+C937
+1-126-960-11
+ELECT
+1uF
+20.00% 50V
+< CONNECTOR >
+* CN991
+1-580-230-11
+PIN, CONNECTOR (PC BOARD) 2P
+< DIODE >
+D901
+8-719-911-19
+DIODE   1SS133T-72
+D910
+8-719-024-99
+DIODE   11ES2-NTA2B
+D911
+8-719-024-99
+DIODE   11ES2-NTA2B
+D912
+8-719-024-99
+DIODE   11ES2-NTA2B
+D913
+8-719-024-99
+DIODE   11ES2-NTA2B
+D920
+8-719-200-77
+DIODE   10E2N-TA2B
+D921
+8-719-200-77
+DIODE   10E2N-TA2B
+D922
+8-719-200-77
+DIODE   10E2N-TA2B
+D923
+8-719-200-77
+DIODE   10E2N-TA2B
+D930
+8-719-911-19
+DIODE   1SS133T-72
+D931
+8-719-911-19
+DIODE   1SS133T-72
+D932
+8-719-210-21
+DIODE   11EQS04-TA2B
+D933
+8-719-210-21
+DIODE   11EQS04-TA2B
+D934
+8-719-210-21
+DIODE   11EQS04-TA2B
+D935
+8-719-210-21
+DIODE   11EQS04-TA2B
+D939
+8-719-911-19
+DIODE   1SS133T-72
+< GROUND TERMINAL >
+EB1
+1-537-770-21
+TERMINAL BOARD, GROUND
+EB2
+1-537-770-21
+TERMINAL BOARD, GROUND
+< LINE FILTER >
+0L901
+1-424-485-11
+FILTER, LINE
+< TRANSISTOR >
+Q930
+8-729-620-05
+TRANSISTOR
+2SC2603TP-EF
+< RESISTOR >
+R930
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R931
+1-249-421-11
+CARBON
+2.2K
+5%
+1/4W
+F
+R933
+1-249-429-11
+CARBON
+10K
+5%
+1/4W
+R934
+1-249-417-11
+CARBON
+1K
+5%
+1/4W
+F
+< RELAY >
+0RY901
+1-755-299-11
+RELAY
+**************************************************************
+MAIN
+POWER
+The components identified by
+mark 0 or dotted line with mark
+0 are critical for safety.
+Replace only with part number
+specified.
+Les composants identifiés par
+une marque 0 sont critiques
+pour la sécurité.
+Ne les remplacer que par une
+pièce portant le numéro spécifié.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 71
+
+Ref. No.
+Part No.
+Description
+Remarks
+Ref. No.
+Part No.
+Description
+Remarks
+71
+CDP-CX355
+1-672-639-11
+T.SENS BOARD
+************
+< CONNECTOR >
+* CN81
+1-506-486-11
+PIN, CONNECTOR 7P
+CN82
+1-506-481-11
+PIN, CONNECTOR 2P
+CN83
+1-506-481-11
+PIN, CONNECTOR 2P
+< PHOTO INTERRUPTER >
+IC81
+8-749-924-18
+PHOTO INTERRUPTER RPI-1391
+ (TABLE SENSOR)
+IC82
+8-749-924-18
+PHOTO INTERRUPTER RPI-1391
+ (TABLE SENSOR)
+IC83
+8-749-924-18
+PHOTO INTERRUPTER RPI-1391
+ (TABLE SENSOR)
+IC84
+8-749-924-18
+PHOTO INTERRUPTER RPI-1391
+ (TABLE SENSOR)
+< RESISTOR >
+R81
+1-249-416-11
+CARBON
+820
+5%
+1/4W
+F
+R82
+1-249-416-11
+CARBON
+820
+5%
+1/4W
+F
+R83
+1-249-416-11
+CARBON
+820
+5%
+1/4W
+F
+R84
+1-249-416-11
+CARBON
+820
+5%
+1/4W
+F
+R85
+1-249-415-11
+CARBON
+680
+5%
+1/4W
+F
+**************************************************************
+MISCELLANEOUS
+***************
+7
+1-790-420-12
+WIRE (FLAT TYPE) (21 CORE)
+8
+1-773-183-11
+WIRE (FLAT TYPE) (23 CORE)
+301
+1-792-024-11
+WIRE (FLAT TYPE) (16 CORE)
+0304
+A-3328-818-A OPTICAL PICK-UP KSM-213BFN/C2NP
+0CNP901 1-696-845-11
+CORD, POWER (AUS)
+0CNP901 1-777-071-61
+CORD, POWER (UK, AEP, SP)
+0CNP901 1-783-531-31
+CORD, POWER (CND,E,US)
+0FL701
+1-517-861-11
+INDICATOR TUBE, FLUORESCENT
+M81
+A-4672-675-A MOTOR ASSY (TABLE)
+M82
+A-4672-675-A MOTOR ASSY (LOADING)
+M83
+X-4950-062-1
+MOTOR ASSY (DOOR)
+0T901
+1-433-666-11
+TRANSFORMER, POWER (SUB) (CND, E, US)
+0T901
+1-433-668-11
+TRANSFORMER, POWER (SUB) (UK, AEP, SP)
+0T901
+1-433-877-11
+TRANSFORMER, POWER (SUB) (AUS)
+0T902
+1-433-663-11
+TRANSFORMER, POWER (MAIN) (CND, E, US)
+0T902
+1-433-665-11
+TRANSFORMER, POWER (MAIN)
+ (AUS, UK, AEP, SP)
+**************************************************************
+ACCESSORIES
+************
+1-418-419-11
+REMOTE COMMANDER (RM-DX300)
+1-558-271-11
+CORD, CONNECTION
+0
+1-770-019-11
+ADAPTOR, CONVERSION PLUG 3P (UK)
+3-866-670-11
+MANUAL,COMMONNESS INSTRUCTION
+ (FOR CONTROL A1) (ENGLISH) (AUS, UK, US)
+3-866-670-21
+MANUAL,COMMONNESS INSTRUCTION
+ (FOR CONTROL A1)
+ (ENGLISH, FRENCH, GERMAN, SPANISH, DUTCH, PORTUGUESE,
+SWEDISH, ITALIAN, CHINESE)
+ (CND, AEP, E, SP)
+4-238-111-11
+MANUAL, INSTRUCTION (ENGLISH) (AUS, US)
+4-238-111-21
+MANUAL, INSTRUCTION (ENGLISH, FRENCH)
+ (CND, UK, AEP, E, SP)
+4-238-111-31
+MANUAL, INSTRUCTION
+ (GERMAN, SPANISH, DUTCH) (AEP, E)
+4-238-111-41
+MANUAL, INSTRUCTION
+ (SWEDISH, ITALIAN, POLISH) (AEP)
+4-238-111-51
+MANUAL, INSTRUCTION (CHINESE) (E, SP)
+4-238-111-61
+MANUAL, INSTRUCTION (DANISH, FINNISH)
+(AEP)
+4-238-111-71
+MANUAL, INSTRUCTION (PORTUGUESE) (AEP)
+4-239-580-11
+MANUAL, INSTRUCTION (GREEK) (AEP)
+4-239-580-21
+MANUAL, INSTRUCTION (HUNGARIAN, CZECH)
+(AEP)
+4-239-580-31
+MANUAL, INSTRUCTION (TURKISH) (AEP)
+4-239-580-41
+MANUAL, INSTRUCTION (SLOVAK) (AEP)
+4-981-643-01
+COVER, BATTERY (FOR RM-DX300)
+**************************************************************
+T. SENS
+The components identified by
+mark 0 or dotted line with mark
+0 are critical for safety.
+Replace only with part number
+specified.
+Les composants identifiés par
+une marque 0 sont critiques
+pour la sécurité.
+Ne les remplacer que par une
+pièce portant le numéro spécifié.
+Downloaded from www.Manualslib.com manuals search engine 
+
+
+### Page 72
+
+CDP-CX355
+REVISION  HISTORY
+Clicking the version allows you to jump to the revised page.
+Also, clicking the version at the upper right on the revised page allows you to jump to the next revised
+page.
+Ver.
+Date
+Description of Revision
+1.0
+2002.02
+New
+Downloaded from www.Manualslib.com manuals search engine 
