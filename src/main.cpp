@@ -290,9 +290,8 @@ String queryDiscTitle(int discNumber)
 
 // ------------------ PS/2 KEYBOARD FUNCTIONS ------------------
 /**
- * Writes a disc title to the CD player using reliable, protocol-compliant
- * PS/2 keyboard emulation. This function replaces all "Sony-optimized" versions
- * and follows the report's recommendations using only standard ps2dev library functions.
+ * Writes a disc title to the CD player using the definitive defensive PS/2 strategy.
+ * Implements: 1) Host inhibit checking, 2) Typematic rate handshake, 3) Proper rhythm
  *
  * @param discNumber The disc slot to select (1-300).
  * @param title The string to write as the title.
@@ -303,37 +302,42 @@ void writeDiscTitle(int discNumber, const String& title)
     Serial.print(title);
     Serial.print("' to disc ");
     Serial.print(discNumber);
-    Serial.println(" via PS/2 ===");
+    Serial.println(" via Defensive PS/2 ===");
 
     // Step 1: Select the disc on the player using S-Link.
     Serial.println("Step 1: Selecting disc via S-Link...");
     slinkSelectDisc(discNumber);
-    delay(5000); // Wait for the mechanical action of disc selection to complete. 8 seconds is also fine.
+    delay(8000); // Wait for the mechanical action of disc selection to complete.
 
-    // Step 2: Press Enter to enter title editing mode.
-    // Use the standard, protocol-correct make/break function.
-    Serial.println("Step 2: Pressing Enter to enter title edit mode...");
-    ps2Keyboard.keyboard_mkbrk(PS2dev::ENTER);
+    // **NEW Step 2**: Perform robust handshake by setting typematic rate
+    // This tells the Sony device "I am a standard keyboard at expected speed"
+    Serial.println("Step 2: Setting default keyboard parameters (handshake)...");
+    ps2Keyboard.set_typematic_rate();
+    delay(250); // Give host time to process typematic command
+
+    // Step 3: Press Enter to enter title editing mode.
+    Serial.println("Step 3: Pressing Enter to enter title edit mode...");
+    ps2Keyboard.sendEnter();
     delay(1000); // Wait for the player to switch to edit mode.
 
-    // Step 3: Clear any existing title using the Shift+Delete helper function.
-    Serial.println("Step 3: Clearing existing title with Shift+Delete...");
+    // Step 4: Clear any existing title using the Shift+Delete helper function.
+    Serial.println("Step 4: Clearing existing title with Shift+Delete...");
     ps2Keyboard.sendShiftDelete();
     delay(500); // Wait for the clear operation to process.
 
-    // Step 4: Type the new title using the standard sendString function.
-    // The library handles the make/break and shift modifiers automatically.
-    Serial.print("Step 4: Typing title: ");
+    // Step 5: Type the new title using paced sendString function.
+    // Now includes 100ms delays between characters (10.9 chars/sec rhythm)
+    Serial.print("Step 5: Typing title at 10.9 chars/sec: ");
     Serial.println(title);
     ps2Keyboard.sendString(title);
     delay(500); // Wait for the final character to be processed.
 
-    // Step 5: Press Enter to store the title.
-    Serial.println("Step 5: Pressing Enter to store title...");
-    ps2Keyboard.keyboard_mkbrk(PS2dev::ENTER);
+    // Step 6: Press Enter to store the title.
+    Serial.println("Step 6: Pressing Enter to store title...");
+    ps2Keyboard.sendEnter();
     delay(1000); // Give the device time to save the title to memory.
 
-    Serial.println("=== PS/2 title write complete ===");
+    Serial.println("=== Defensive PS/2 title write complete ===");
 }
 
 /** Test PS/2 keyboard functionality */

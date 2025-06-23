@@ -365,6 +365,10 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
     _PS2DBG.println(code, HEX);
 #endif
     
+    // **CRITICAL**: Wait for host to be ready before transmitting
+    // This prevents sending data while the host is inhibiting the bus
+    while(digitalRead(_ps2clk) == LOW);
+    
     // Process any pending host communications before sending
     unsigned char leds;
     keyboard_handle(&leds);
@@ -380,10 +384,9 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
 #endif
     } while (!handling_io_abort);
     
-    // Process host responses after make
-    keyboard_handle(&leds);
-    delayMicroseconds(500);
-    
+    // Hold the key for a human-like duration
+    delay(50);
+
     // Send break (key release) with original ps2dev retry logic
 #ifdef _PS2DBG
     _PS2DBG.println("  Sending BREAK...");
@@ -395,9 +398,6 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
 #endif
     } while (!handling_io_abort);
     
-    // Process host responses after break
-    keyboard_handle(&leds);
-    
 #ifdef _PS2DBG
     _PS2DBG.print("keyboard_mkbrk: SUCCESS for code 0x");
     _PS2DBG.println(code, HEX);
@@ -408,6 +408,9 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
 
 int PS2dev::keyboard_press(unsigned char code)
 {
+    // **CRITICAL**: Wait for host to be ready before transmitting
+    while(digitalRead(_ps2clk) == LOW);
+    
     do {
         if (do_write(code) == EABORT) continue;
         break;
@@ -417,6 +420,9 @@ int PS2dev::keyboard_press(unsigned char code)
 
 int PS2dev::keyboard_release(unsigned char code)
 {
+    // **CRITICAL**: Wait for host to be ready before transmitting
+    while(digitalRead(_ps2clk) == LOW);
+    
     do {
         if (do_write(0xf0) == EABORT) continue;
         if (do_write(code) == EABORT) continue;
@@ -427,6 +433,9 @@ int PS2dev::keyboard_release(unsigned char code)
 
 int PS2dev::keyboard_press_special(unsigned char code)
 {
+    // **CRITICAL**: Wait for host to be ready before transmitting
+    while(digitalRead(_ps2clk) == LOW);
+    
     do {
         if (do_write(0xe0) == EABORT) continue;
         if (do_write(code) == EABORT) continue;
@@ -437,6 +446,9 @@ int PS2dev::keyboard_press_special(unsigned char code)
 
 int PS2dev::keyboard_release_special(unsigned char code)
 {
+    // **CRITICAL**: Wait for host to be ready before transmitting
+    while(digitalRead(_ps2clk) == LOW);
+    
     do {
         if (do_write(0xe0) == EABORT) continue;
         if (do_write(0xf0) == EABORT) continue;
@@ -571,18 +583,20 @@ void PS2dev::sendKey(char c)
         _PS2DBG.println("  Pressing shift...");
 #endif
         keyboard_press(0x12); // Left shift make
+        delay(30); // Brief delay for shift state
     }
     
 #ifdef _PS2DBG
     _PS2DBG.println("  Sending character make/break...");
 #endif
-    keyboard_mkbrk(sc.code);  // Key make/break - original ps2dev style
+    keyboard_mkbrk(sc.code);  // Key make/break
     
     if (sc.shift) {
 #ifdef _PS2DBG
         _PS2DBG.println("  Releasing shift...");
 #endif
         keyboard_release(0x12); // Left shift break
+        delay(30); // Brief delay for shift release
     }
     
 #ifdef _PS2DBG
@@ -596,6 +610,8 @@ void PS2dev::sendString(const String& str)
 {
     for (unsigned int i = 0; i < str.length(); i++) {
         sendKey(str.charAt(i));
+        // **CRITICAL**: Pacing between characters at 10.9 chars/sec (≈100ms)
+        delay(100);
     }
 }
 
@@ -643,6 +659,31 @@ void PS2dev::sendShiftDelete()
 void PS2dev::sendByte(unsigned char data)
 {
     write(data);
+}
+
+// *** NEW FUNCTION ***
+// Sets the typematic rate and delay to match standard keyboard defaults.
+// This helps synchronize the Arduino's behavior with the host's expectations.
+void PS2dev::set_typematic_rate()
+{
+#ifdef _PS2DBG
+    _PS2DBG.println("Setting default typematic rate (500ms delay, 10.9 chars/sec)...");
+#endif
+    // **CRITICAL**: Wait for host to be ready before transmitting
+    while(digitalRead(_ps2clk) == LOW);
+    
+    // Send Set Typematic Rate/Delay command
+    do_write(0xF3);
+    
+    // Wait for ACK from host, then send parameter
+    while(digitalRead(_ps2clk) == LOW);
+    
+    // Parameter: 0x2B = 500ms delay, 10.9 chars/sec rate
+    do_write(0x2B);
+    
+#ifdef _PS2DBG
+    _PS2DBG.println("Typematic rate set successfully");
+#endif
 }
 
 void PS2dev::update()

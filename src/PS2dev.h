@@ -174,6 +174,7 @@ public:
     
     // High-level functions for compatibility with existing code
     void begin();
+    void set_typematic_rate();  // NEW: Set standard IBM keyboard timing
     void sendKey(char c);
     void sendString(const String& str);
     void sendEnter();
