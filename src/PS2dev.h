@@ -151,15 +151,15 @@ public:
 
     // Core PS/2 functions
     int write(unsigned char data);
-    int read(unsigned char * data);
+    int read(unsigned char *data);
     int available();
     void keyboard_init();
-    
+
     // Host communication functions
     int keyboard_handle(unsigned char *leds_);
     int keyboard_reply(unsigned char cmd, unsigned char *leds_);
     void ack();
-    
+
     // Key press/release functions
     int keyboard_press(unsigned char code);
     int keyboard_release(unsigned char code);
@@ -171,45 +171,43 @@ public:
     int keyboard_release_printscreen();
     int keyboard_mkbrk_printscreen();
     int keyboard_pausebreak();
-    
-    // High-level functions for compatibility with existing code
+
+    // High-level application functions
     void begin();
-    void set_typematic_rate();  // NEW: Set standard IBM keyboard timing
-    void sendBAT();  // NEW: Send Basic Assurance Test sequence
-    bool waitForHostReady(unsigned long timeoutMs = 100);  // NEW: Enhanced host inhibit
+    void set_typematic_rate();
     void sendKey(char c);
-    void sendString(const String& str);
+    void sendString(const String &str);
     void sendEnter();
     void sendBackspace();
     void sendEscape();
-    void sendShiftDelete();  // Sony-specific: clear all text with Shift+Delete
+    void sendShiftDelete();
     void sendByte(unsigned char data);
     void update();
-    
 
 private:
     int _ps2clk;
     int _ps2data;
     unsigned char leds;
     bool handling_io_abort;
-    bool scanEnabled;  // NEW: Track if scanning is enabled
     unsigned long lastHostCheck;
-    
+
     // Scan code lookup table for ASCII characters
-    struct ScanCode {
+    struct ScanCode
+    {
         uint8_t code;
         bool shift;
     };
     static const ScanCode scanCodes[128];
-    
+
     // PS/2 pin control functions
     void gohi(int pin);
     void golo(int pin);
-    
+
     // Internal functions
     int do_write(unsigned char data);
-    int do_read(unsigned char * value);
+    int do_read(unsigned char *value);
     bool calculateParity(uint8_t data);
+    void bus_idle(); // NEW: Wait for true bus idle state
 };
 
 #endif
