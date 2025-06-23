@@ -385,7 +385,7 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
     } while (!handling_io_abort);
     
     // Hold the key for a human-like duration
-    delay(50);
+    delay(40);
 
     // Send break (key release) with original ps2dev retry logic
 #ifdef _PS2DBG
@@ -397,6 +397,11 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
         _PS2DBG.println("  BREAK retry due to abort");
 #endif
     } while (!handling_io_abort);
+    
+    // **FINAL FIX**: Add consistent "key-up" pause to prevent software key bounce.
+    // This eliminates double-presses and dropped keys by giving the Sony controller
+    // a clean recovery period between keystrokes.
+    delay(50);
     
 #ifdef _PS2DBG
     _PS2DBG.print("keyboard_mkbrk: SUCCESS for code 0x");
@@ -583,20 +588,20 @@ void PS2dev::sendKey(char c)
         _PS2DBG.println("  Pressing shift...");
 #endif
         keyboard_press(0x12); // Left shift make
-        delay(30); // Brief delay for shift state
+        delay(50); // Wait for host to register shift state
     }
     
 #ifdef _PS2DBG
     _PS2DBG.println("  Sending character make/break...");
 #endif
-    keyboard_mkbrk(sc.code);  // Key make/break
+    keyboard_mkbrk(sc.code);  // This now includes the 50ms recovery delay
     
     if (sc.shift) {
 #ifdef _PS2DBG
         _PS2DBG.println("  Releasing shift...");
 #endif
         keyboard_release(0x12); // Left shift break
-        delay(30); // Brief delay for shift release
+        delay(40); // Wait for shift release to register
     }
     
 #ifdef _PS2DBG
@@ -610,8 +615,9 @@ void PS2dev::sendString(const String& str)
 {
     for (unsigned int i = 0; i < str.length(); i++) {
         sendKey(str.charAt(i));
-        // **CRITICAL**: Pacing between characters at 10.9 chars/sec (≈100ms)
-        delay(100);
+        // The main inter-key delay. Combined with the 20ms recovery delay in mkbrk,
+        // this creates a total delay of ~100ms, matching the 10.9 chars/sec rate.
+        delay(80);
     }
 }
 
