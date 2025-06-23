@@ -175,6 +175,8 @@ public:
     // High-level functions for compatibility with existing code
     void begin();
     void set_typematic_rate();  // NEW: Set standard IBM keyboard timing
+    void sendBAT();  // NEW: Send Basic Assurance Test sequence
+    bool waitForHostReady(unsigned long timeoutMs = 100);  // NEW: Enhanced host inhibit
     void sendKey(char c);
     void sendString(const String& str);
     void sendEnter();
@@ -190,6 +192,7 @@ private:
     int _ps2data;
     unsigned char leds;
     bool handling_io_abort;
+    bool scanEnabled;  // NEW: Track if scanning is enabled
     unsigned long lastHostCheck;
     
     // Scan code lookup table for ASCII characters

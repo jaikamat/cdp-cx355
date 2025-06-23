@@ -51,6 +51,7 @@ PS2dev::PS2dev(int clk, int data)
     gohi(_ps2data);
     leds = 0;
     handling_io_abort = false;
+    scanEnabled = true;  // NEW: Initialize scanning enabled
     lastHostCheck = 0;
 }
 
@@ -285,56 +286,138 @@ void PS2dev::ack()
 int PS2dev::keyboard_reply(unsigned char cmd, unsigned char *leds_)
 {
     unsigned char val;
+    
+#ifdef _PS2DBG
+    _PS2DBG.print("Host command received: 0x");
+    _PS2DBG.print(cmd, HEX);
+    _PS2DBG.println();
+#endif
+    
     switch (cmd) {
-    case 0xFF: // reset
+    case 0xFF: // Reset - Complete keyboard reset
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing RESET command");
+#endif
         ack();
+        // Reset internal state
+        leds = 0;
+        scanEnabled = true;
+        // Send ACK then BAT success
         while (write(0xFA) != 0) delay(1);
         while (write(0xAA) != 0) delay(1);
         break;
-    case 0xFE: // resend
+        
+    case 0xFE: // Resend last byte
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing RESEND command");
+#endif
         ack();
         break;
-    case 0xF6: // set defaults
+        
+    case 0xF6: // Set defaults
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing SET DEFAULTS command");
+#endif
+        // Reset to power-on defaults
+        leds = 0;
+        scanEnabled = true;
         ack();
         break;
-    case 0xF5: // disable data reporting
+        
+    case 0xF5: // Disable data reporting
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing DISABLE command");
+#endif
+        scanEnabled = false;
         ack();
         break;
-    case 0xF4: // enable data reporting
+        
+    case 0xF4: // Enable data reporting  
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing ENABLE command");
+#endif
+        scanEnabled = true;
         ack();
         break;
-    case 0xF3: // set typematic rate
+        
+    case 0xF3: // Set typematic rate/delay
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing SET TYPEMATIC RATE command");
+#endif
         ack();
-        if (!read(&val)) ack();
+        if (!read(&val)) {
+#ifdef _PS2DBG
+            _PS2DBG.print("Typematic parameter: 0x");
+            _PS2DBG.println(val, HEX);
+#endif
+            ack();
+        }
         break;
-    case 0xF2: // get device id
+        
+    case 0xF2: // Read ID - Identify keyboard type
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing READ ID command");
+#endif
         ack();
+        // Send standard keyboard ID: 0xAB 0x83
         do {
             if (do_write(0xAB) == EABORT) continue;
             if (do_write(0x83) == EABORT) continue;
             break;
         } while (!handling_io_abort);
         break;
-    case 0xF0: // set scan code set
+        
+    case 0xF0: // Set scan code set
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing SET SCAN CODE SET command");
+#endif
         ack();
-        if (!read(&val)) ack();
+        if (!read(&val)) {
+#ifdef _PS2DBG
+            _PS2DBG.print("Scan code set: ");
+            _PS2DBG.println(val, HEX);
+#endif
+            ack();
+        }
         break;
-    case 0xEE: // echo
+        
+    case 0xEE: // Echo - Simple ping test
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing ECHO command");
+#endif
         delayMicroseconds(BYTE_INTERVAL_MICROS);
         write(0xEE);
         delayMicroseconds(BYTE_INTERVAL_MICROS);
         break;
-    case 0xED: // set/reset LEDs
+        
+    case 0xED: // Set/Reset LEDs - Critical for Caps Lock behavior
+#ifdef _PS2DBG
+        _PS2DBG.println("Processing SET LEDs command");
+#endif
         while (write(0xFA) != 0) delay(1);
         if (!read(&leds)) {
             while (write(0xFA) != 0) delay(1);
-        }
 #ifdef _PS2DBG
-        _PS2DBG.print("LEDs: ");
-        _PS2DBG.println(leds, HEX);
+            _PS2DBG.print("LED state updated: ");
+            _PS2DBG.print("Scroll=");
+            _PS2DBG.print((leds & 0x01) ? "ON" : "OFF");
+            _PS2DBG.print(" Num=");
+            _PS2DBG.print((leds & 0x02) ? "ON" : "OFF");
+            _PS2DBG.print(" Caps=");
+            _PS2DBG.println((leds & 0x04) ? "ON" : "OFF");
 #endif
+        }
         *leds_ = leds;
         return 1;
+        break;
+        
+    default:
+        // Unknown command - send RESEND (0xFE) to indicate error
+#ifdef _PS2DBG
+        _PS2DBG.print("Unknown command: 0x");
+        _PS2DBG.println(cmd, HEX);
+#endif
+        write(0xFE);
         break;
     }
     return 0;
@@ -367,7 +450,12 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
     
     // **CRITICAL**: Wait for host to be ready before transmitting
     // This prevents sending data while the host is inhibiting the bus
-    while(digitalRead(_ps2clk) == LOW);
+    if (!waitForHostReady()) {
+#ifdef _PS2DBG
+        _PS2DBG.println("Host inhibit timeout in keyboard_mkbrk");
+#endif
+        return -1; // Indicate failure
+    }
     
     // Process any pending host communications before sending
     unsigned char leds;
@@ -414,7 +502,9 @@ int PS2dev::keyboard_mkbrk(unsigned char code)
 int PS2dev::keyboard_press(unsigned char code)
 {
     // **CRITICAL**: Wait for host to be ready before transmitting
-    while(digitalRead(_ps2clk) == LOW);
+    if (!waitForHostReady()) {
+        return -1; // Host timeout
+    }
     
     do {
         if (do_write(code) == EABORT) continue;
@@ -426,7 +516,9 @@ int PS2dev::keyboard_press(unsigned char code)
 int PS2dev::keyboard_release(unsigned char code)
 {
     // **CRITICAL**: Wait for host to be ready before transmitting
-    while(digitalRead(_ps2clk) == LOW);
+    if (!waitForHostReady()) {
+        return -1; // Host timeout
+    }
     
     do {
         if (do_write(0xf0) == EABORT) continue;
@@ -439,7 +531,9 @@ int PS2dev::keyboard_release(unsigned char code)
 int PS2dev::keyboard_press_special(unsigned char code)
 {
     // **CRITICAL**: Wait for host to be ready before transmitting
-    while(digitalRead(_ps2clk) == LOW);
+    if (!waitForHostReady()) {
+        return -1; // Host timeout
+    }
     
     do {
         if (do_write(0xe0) == EABORT) continue;
@@ -452,7 +546,9 @@ int PS2dev::keyboard_press_special(unsigned char code)
 int PS2dev::keyboard_release_special(unsigned char code)
 {
     // **CRITICAL**: Wait for host to be ready before transmitting
-    while(digitalRead(_ps2clk) == LOW);
+    if (!waitForHostReady()) {
+        return -1; // Host timeout
+    }
     
     do {
         if (do_write(0xe0) == EABORT) continue;
@@ -535,7 +631,7 @@ int PS2dev::keyboard_pausebreak()
 void PS2dev::begin()
 {
 #ifdef _PS2DBG
-    _PS2DBG.println("PS2dev: Initializing...");
+    _PS2DBG.println("PS2dev: Initializing professional-grade keyboard emulator...");
 #endif
     pinMode(_ps2clk, OUTPUT);
     pinMode(_ps2data, OUTPUT);
@@ -548,13 +644,19 @@ void PS2dev::begin()
     delay(500);  // Longer initialization delay for UNO R4 WiFi
     
 #ifdef _PS2DBG
+    _PS2DBG.println("PS2dev: Sending BAT sequence for BIOS compatibility...");
+#endif
+    // Send BAT (Basic Assurance Test) for maximum host compatibility
+    sendBAT();
+    
+#ifdef _PS2DBG
     _PS2DBG.println("PS2dev: Sending keyboard initialization...");
 #endif
     keyboard_init();
     lastHostCheck = millis();
     
 #ifdef _PS2DBG
-    _PS2DBG.println("PS2dev: Initialization complete");
+    _PS2DBG.println("PS2dev: Professional-grade initialization complete");
 #endif
 }
 
@@ -570,6 +672,14 @@ bool PS2dev::calculateParity(uint8_t data)
 void PS2dev::sendKey(char c)
 {
     if (c < 0 || c >= 128) return;
+    
+    // Check if scanning is enabled (host may have disabled it)
+    if (!scanEnabled) {
+#ifdef _PS2DBG
+        _PS2DBG.println("Scan disabled - ignoring sendKey()");
+#endif
+        return;
+    }
     
     ScanCode sc = scanCodes[(uint8_t)c];
     if (sc.code == 0x00) return;
@@ -667,29 +777,102 @@ void PS2dev::sendByte(unsigned char data)
     write(data);
 }
 
-// *** NEW FUNCTION ***
+// *** ENHANCED HOST INHIBIT FUNCTION ***
+// Robust host inhibit check with timeout protection to prevent infinite loops
+bool PS2dev::waitForHostReady(unsigned long timeoutMs)
+{
+    unsigned long startTime = millis();
+    
+#ifdef _PS2DBG
+    if (digitalRead(_ps2clk) == LOW) {
+        _PS2DBG.println("Host inhibit detected - waiting for release...");
+    }
+#endif
+    
+    while (digitalRead(_ps2clk) == LOW) {
+        // Check for timeout to prevent infinite blocking
+        if (millis() - startTime > timeoutMs) {
+#ifdef _PS2DBG
+            _PS2DBG.println("Host inhibit timeout - may indicate stuck host");
+#endif
+            return false; // Timeout - host may be stuck
+        }
+        
+        // Allow other processing during wait (non-blocking)
+        keyboard_handle(&leds);
+        delayMicroseconds(10); // Small delay to prevent busy-waiting
+    }
+    
+    // Additional settling time after host releases bus
+    delayMicroseconds(50); // Per PS/2 spec: min 50µs idle before transmit
+    
+#ifdef _PS2DBG
+    if (startTime != millis()) { // Only log if we actually waited
+        _PS2DBG.println("Host inhibit released - ready to transmit");
+    }
+#endif
+    
+    return true; // Host is ready
+}
+
+// *** BAT INITIALIZATION SEQUENCE ***
+// Sends Basic Assurance Test completion code for maximum BIOS compatibility
+void PS2dev::sendBAT()
+{
+#ifdef _PS2DBG
+    _PS2DBG.println("Sending BAT (Basic Assurance Test) sequence...");
+#endif
+    
+    // BAT spec: 500-750ms delay after power-on before sending success code
+    delay(600);
+    
+    // Wait for host to be ready
+    if (waitForHostReady(200)) {
+        // Send BAT success code
+        do_write(0xAA);
+        
+#ifdef _PS2DBG
+        _PS2DBG.println("BAT sequence complete - keyboard ready");
+#endif
+    } else {
+#ifdef _PS2DBG
+        _PS2DBG.println("BAT sequence failed - host not responding");
+#endif
+    }
+}
+
+// *** ENHANCED TYPEMATIC RATE FUNCTION ***
 // Sets the typematic rate and delay to match standard keyboard defaults.
-// This helps synchronize the Arduino's behavior with the host's expectations.
 void PS2dev::set_typematic_rate()
 {
 #ifdef _PS2DBG
     _PS2DBG.println("Setting default typematic rate (500ms delay, 10.9 chars/sec)...");
 #endif
-    // **CRITICAL**: Wait for host to be ready before transmitting
-    while(digitalRead(_ps2clk) == LOW);
+    
+    // Use enhanced host inhibit check
+    if (!waitForHostReady(200)) {
+#ifdef _PS2DBG
+        _PS2DBG.println("Failed to set typematic rate - host not ready");
+#endif
+        return;
+    }
     
     // Send Set Typematic Rate/Delay command
     do_write(0xF3);
     
-    // Wait for ACK from host, then send parameter
-    while(digitalRead(_ps2clk) == LOW);
-    
-    // Parameter: 0x2B = 500ms delay, 10.9 chars/sec rate
-    do_write(0x2B);
-    
+    // Wait for host to process command and be ready for parameter
+    if (waitForHostReady(200)) {
+        // Parameter: 0x2B = 500ms delay, 10.9 chars/sec rate
+        do_write(0x2B);
+        
 #ifdef _PS2DBG
-    _PS2DBG.println("Typematic rate set successfully");
+        _PS2DBG.println("Typematic rate set successfully");
 #endif
+    } else {
+#ifdef _PS2DBG
+        _PS2DBG.println("Failed to send typematic parameter - host timeout");
+#endif
+    }
 }
 
 void PS2dev::update()

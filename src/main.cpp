@@ -309,9 +309,9 @@ void writeDiscTitle(int discNumber, const String& title)
     slinkSelectDisc(discNumber);
     delay(8000); // Wait for the mechanical action of disc selection to complete.
 
-    // **NEW Step 2**: Perform robust handshake by setting typematic rate
-    // This tells the Sony device "I am a standard keyboard at expected speed"
-    Serial.println("Step 2: Setting default keyboard parameters (handshake)...");
+    // **NEW Step 2**: Enhanced protocol handshake with timeout protection
+    // This tells the Sony device "I am a professional-grade keyboard"
+    Serial.println("Step 2: Setting default keyboard parameters (enhanced handshake)...");
     ps2Keyboard.set_typematic_rate();
     delay(250); // Give host time to process typematic command
 
