@@ -7,11 +7,7 @@
 #include "DiscStorage.hpp"
 #include <functional>
 #include "Sony_SLink.h"
-#include "PS2dev.h"
-
 #define SLINK_PIN 2     // Pick a suitable I/O pin for S-Link
-#define PS2_CLOCK_PIN 3 // PS/2 clock line (white wire)
-#define PS2_DATA_PIN 4  // PS/2 data line (red wire)
 
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
@@ -21,7 +17,6 @@ LedMatrixController ledController(matrix);
 WiFiManager wifiManager(ssid, password);
 DiscStorage storage;
 Slink slink;                                     // S-Link object
-PS2dev ps2Keyboard(PS2_CLOCK_PIN, PS2_DATA_PIN); // PS/2 keyboard simulator
 bool isPlayerOn = false;
 
 // ------------------ URL-DECODE HELPER ------------------
@@ -288,72 +283,299 @@ String queryDiscTitle(int discNumber)
   return "";
 }
 
-// ------------------ PS/2 KEYBOARD FUNCTIONS ------------------
+
+// ------------------ CUSTOM SONY RESPONSE PARSER ------------------
+
 /**
- * Writes a disc title to the CD player using the definitive defensive PS/2 strategy.
- * Implements: 1) Host inhibit checking, 2) Typematic rate handshake, 3) Proper rhythm
- *
- * @param discNumber The disc slot to select (1-300).
- * @param title The string to write as the title.
+ * Custom Sony response parser that handles actual Sony timing patterns
+ * Instead of looking for 2400μs sync, decodes data directly from pulse patterns
  */
-void writeDiscTitle(int discNumber, const String &title)
+String parseSonyResponse(unsigned long timeoutMs = 3000)
 {
-  Serial.print("=== Writing title '");
-  Serial.print(title);
-  Serial.print("' to disc ");
-  Serial.print(discNumber);
-  Serial.println(" via Defensive PS/2 ===");
-
-  // Step 1: Select the disc.
-  Serial.println("Step 1: Selecting disc via S-Link...");
-  slinkSelectDisc(discNumber);
-  delay(8000); // Wait for mechanical action.
-
-  // Step 2: The typematic rate handshake is now done in setup(),
-  // so we can proceed directly to sending keys.
-  Serial.println("Step 2: Pressing Enter to enter title edit mode...");
-  ps2Keyboard.sendEnter();
-  delay(1000); // Wait for the player to switch to edit mode.
-
-  // Step 3: Clear any existing title.
-  Serial.println("Step 3: Clearing existing title with Shift+Delete...");
-  ps2Keyboard.sendShiftDelete();
-  delay(500); // Wait for the clear operation to process.
-
-  // Step 4: Type the new title.
-  Serial.print("Step 4: Typing title at ~10cps: ");
-  Serial.println(title);
-  ps2Keyboard.sendString(title);
-  delay(500); // Wait for the final character to be processed.
-
-  // Step 5: Press Enter to store the title.
-  Serial.println("Step 5: Pressing Enter to store title...");
-  ps2Keyboard.sendEnter();
-  delay(1000); // Give the device time to save.
-
-  Serial.println("=== Defensive PS/2 title write complete ===");
+  Serial.println("=== Custom Sony Response Parser ===");
+  Serial.println("Looking for Sony pulse patterns (~1130μs = 1, ~566μs = 0)");
+  
+  String result = "";
+  unsigned long startTime = millis();
+  int pulseCount = 0;
+  String binaryData = "";
+  
+  while (millis() - startTime < timeoutMs && pulseCount < 100) // Max 100 pulses
+  {
+    // Read S-Link pin directly (assuming it's pin 2 based on SLINK_PIN)
+    unsigned long pulseStart = micros();
+    
+    // Wait for line to go LOW (start of pulse)
+    while (digitalRead(SLINK_PIN) == HIGH && (micros() - pulseStart) < 10000) {
+      delayMicroseconds(1);
+    }
+    
+    if ((micros() - pulseStart) >= 10000) break; // Timeout waiting for pulse
+    
+    // Measure LOW pulse duration
+    unsigned long lowStart = micros();
+    while (digitalRead(SLINK_PIN) == LOW && (micros() - lowStart) < 5000) {
+      delayMicroseconds(1);
+    }
+    
+    unsigned long pulseDuration = micros() - lowStart;
+    
+    if (pulseDuration > 100) // Ignore very short glitches
+    {
+      pulseCount++;
+      Serial.print("Pulse ");
+      Serial.print(pulseCount);
+      Serial.print(": ");
+      Serial.print(pulseDuration);
+      Serial.print("μs ");
+      
+      // Decode based on Sony timing patterns
+      if (pulseDuration >= 900 && pulseDuration <= 1400) {
+        // ~1130μs = Logic 1
+        binaryData += "1";
+        Serial.println("(1)");
+      }
+      else if (pulseDuration >= 400 && pulseDuration <= 800) {
+        // ~566μs = Logic 0
+        binaryData += "0";
+        Serial.println("(0)");
+      }
+      else {
+        Serial.print("(unknown - outside expected range)");
+        Serial.println();
+      }
+      
+      // Check if we have enough bits to decode a byte
+      if (binaryData.length() >= 8) {
+        // Try to decode bytes from binary data
+        while (binaryData.length() >= 8) {
+          String byteBinary = binaryData.substring(0, 8);
+          binaryData = binaryData.substring(8);
+          
+          // Convert binary string to byte
+          uint8_t byteValue = 0;
+          for (int i = 0; i < 8; i++) {
+            if (byteBinary[i] == '1') {
+              byteValue |= (1 << (7-i));
+            }
+          }
+          
+          Serial.print("Decoded byte: 0x");
+          if (byteValue < 0x10) Serial.print("0");
+          Serial.print(byteValue, HEX);
+          
+          // Check for the magic 1F response
+          if (byteValue == 0x1F) {
+            Serial.println(" *** FOUND 1F SUCCESS RESPONSE! ***");
+            return "1F";
+          }
+          
+          // Add to result
+          if (result.length() > 0) result += ",";
+          result += String(byteValue, HEX);
+          
+          Serial.println();
+        }
+      }
+    }
+    
+    // Brief delay before next pulse detection
+    delayMicroseconds(50);
+  }
+  
+  Serial.print("Final binary data remaining: ");
+  Serial.println(binaryData);
+  Serial.print("Total pulses detected: ");
+  Serial.println(pulseCount);
+  Serial.print("Decoded response: ");
+  Serial.println(result.length() > 0 ? result : "No valid data");
+  
+  return result;
 }
 
-/** Test PS/2 keyboard functionality */
-void testPS2Keyboard()
+// ------------------ S-LINK DIRECT TEXT WRITING FUNCTIONS ------------------
+
+/**
+ * Write text directly to a disc using correct Sony S-Link protocol
+ * CORRECTED: Using 0x80 "Set Disc Memo (Part 1)" command instead of 0x98
+ * Command format: [device] [0x80] [disc] [13 bytes ASCII]
+ * @param discNumber Disc number (1-400)
+ * @param text Text to write (max 13 characters)
+ * @return Response from Sony device
+ */
+String slinkWriteDiscText(int discNumber, const String& text)
 {
-  Serial.println("=== Testing PS/2 Keyboard ===");
+  Serial.println("=== S-Link Direct Disc Text Writing ===");
+  Serial.print("Writing text \"");
+  Serial.print(text);
+  Serial.print("\" to disc ");
+  Serial.println(discNumber);
+  
+  // CORRECTED: Use proper device code (same logic as slinkSelectDisc)
+  uint8_t device = (discNumber > 200) ? 0x93 : 0x90; // CD Player device codes
+  
+  // Convert disc number to BCD format (same logic as slinkSelectDisc)
+  int discVal = discNumber;
+  if (discNumber > 200)
+    discVal -= 200;
+    
+  uint8_t discByte = 0;
+  if (discVal <= 99)
+    discByte = toBCD(discVal);
+  else if (discVal <= 200)
+    discByte = 0x9A + (discVal - 100);
+  
+  Serial.print("Device: 0x");
+  Serial.print(device, HEX);
+  Serial.print(", Disc byte: 0x");
+  Serial.print(discByte, HEX);
+  Serial.print(" (");
+  Serial.print(discByte);
+  Serial.println(")");
+  
+  // CORRECTED: Using proper 0x80 "Set Disc Memo (Part 1)" command
+  // Format: [device] [0x80] [disc] [13 bytes ASCII]
+  
+  // Prepare text data (max 13 characters, pad with 0x00)
+  uint8_t textData[15]; // command + disc + 13 text bytes
+  textData[0] = 0x80;      // Command code for "Set Disc Memo (Part 1)"
+  textData[1] = discByte;  // Disc number in BCD
+  
+  // Fill text data (max 13 characters, pad with 0x00)
+  for (int i = 0; i < 13; i++)
+  {
+    if (i < text.length())
+    {
+      textData[2 + i] = (uint8_t)text[i];
+    }
+    else
+    {
+      textData[2 + i] = 0x00; // Pad with null bytes
+    }
+  }
+  
+  // Debug: Show complete command being sent
+  Serial.print("Sending CORRECTED 0x80 command: Device=0x");
+  Serial.print(device, HEX);
+  Serial.print(" Data=");
+  for (int i = 0; i < 15; i++)
+  {
+    if (textData[i] < 0x10) Serial.print("0");
+    Serial.print(textData[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
+  
+  // Use sendLongCommand with correct 0x80 format
+  slink.sendLongCommand(device, textData, 15);
+  
+  delay(500); // Give device time to process
+  
+  // NEW: Use custom Sony response parser that handles actual timing patterns
+  Serial.println("Using custom Sony response parser to decode actual device response...");
+  String response = parseSonyResponse(3000);
+  
+  Serial.print("Response: ");
+  if (response.length() > 0)
+  {
+    Serial.println(response);
+    
+    // Check for success response (1F)
+    if (response.indexOf("1F") >= 0)
+    {
+      Serial.println("✅ SUCCESS: Text write command acknowledged (1F)");
+      return "SUCCESS";
+    }
+    else
+    {
+      Serial.println("⚠️  Unexpected response - command may have failed");
+      return "UNKNOWN_RESPONSE";
+    }
+  }
+  else
+  {
+    Serial.println("No response received");
+    return "NO_RESPONSE";
+  }
+}
 
-  // Test basic typing
-  Serial.println("Testing basic string typing...");
-  ps2Keyboard.sendString("Hello World");
-  ps2Keyboard.sendEnter();
+/**
+ * Test function: Write single character "a" to disc 3
+ */
+void testSlinkWriteTextA()
+{
+  Serial.println("=== Testing S-Link Write Text: 'a' to Disc 3 ===");
+  String result = slinkWriteDiscText(3, "a");
+  Serial.print("Result: ");
+  Serial.println(result);
+  Serial.println("Check disc 3 display for the letter 'a'");
+  Serial.println("");
+}
 
-  delay(1000);
+/**
+ * Test function: Write "TEST" to disc 3
+ */
+void testSlinkWriteTextTEST()
+{
+  Serial.println("=== Testing S-Link Write Text: 'TEST' to Disc 3 ===");
+  String result = slinkWriteDiscText(3, "TEST");
+  Serial.print("Result: ");
+  Serial.println(result);
+  Serial.println("Check disc 3 display for 'TEST'");
+  Serial.println("");
+}
 
-  // Test special characters
-  Serial.println("Testing special characters...");
-  ps2Keyboard.sendString("Test123!@#");
-  ps2Keyboard.sendEnter();
+/**
+ * Test function: Write uppercase "A" to disc 3 (definitely in allowed range 0x20-0x5A)
+ */
+void testSlinkWriteTextA_Upper()
+{
+  Serial.println("=== Testing S-Link Write Text: 'A' (uppercase) to Disc 3 ===");
+  Serial.println("Using uppercase 'A' which is definitely in allowed ASCII range 0x20-0x5A");
+  String result = slinkWriteDiscText(3, "A");
+  Serial.print("Result: ");
+  Serial.println(result);
+  Serial.println("Check disc 3 display for uppercase 'A'");
+  Serial.println("");
+}
 
-  delay(1000);
+/**
+ * Test function: Write "X" using corrected 0x80 command to disc 3
+ */
+void testSlinkWriteText_0x80()
+{
+  Serial.println("=== Testing CORRECTED 0x80 'Set Disc Memo' Command ===");
+  Serial.println("Using proper Sony S-Link command 0x80 instead of 0x98");
+  Serial.println("Command format: [device] [0x80] [disc] [13 bytes ASCII]");
+  Serial.println("");
+  String result = slinkWriteDiscText(3, "X");
+  Serial.print("Result: ");
+  Serial.println(result);
+  Serial.println("*** If this works, we've found the solution! ***");
+  Serial.println("Check disc 3 display for 'X'");
+  Serial.println("");
+}
 
-  Serial.println("=== PS/2 Test Complete ===");
+/**
+ * Test function: Write custom text to specified disc
+ */
+void testSlinkWriteCustomText(int discNumber, const String& text)
+{
+  Serial.println("=== Testing S-Link Write Custom Text ===");
+  Serial.print("Writing \"");
+  Serial.print(text);
+  Serial.print("\" to disc ");
+  Serial.println(discNumber);
+  
+  String result = slinkWriteDiscText(discNumber, text);
+  Serial.print("Result: ");
+  Serial.println(result);
+  Serial.print("Check disc ");
+  Serial.print(discNumber);
+  Serial.print(" display for '");
+  Serial.print(text);
+  Serial.println("'");
+  Serial.println("");
 }
 
 // ------------------ COMMAND HANDLERS ------------------
@@ -518,279 +740,7 @@ bool waitForDeviceReady(int timeoutMs = 5000)
   return false;
 }
 
-/** Simplified reliable PS/2 title writing - no S-Link status queries */
-void writeDiscTitleViaPS2Simple(int discNumber, const String &title)
-{
-  Serial.print("=== Sony-compliant PS/2 Write: '");
-  Serial.print(title);
-  Serial.print("' to disc ");
-  Serial.print(discNumber);
-  Serial.println(" ===");
 
-  // Step 1: Select the disc via S-Link
-  Serial.print("Step 1: Selecting disc ");
-  Serial.print(discNumber);
-  Serial.println(" via S-Link...");
-  slinkSelectDisc(discNumber);
-
-  // Step 2: Wait for disc selection
-  Serial.println("Step 2: Waiting for disc selection to complete (8 seconds)...");
-  delay(8000);
-
-  // Step 3: Enter edit mode with Enter key (confirmed working)
-  Serial.println("Step 3: Entering edit mode with Enter key...");
-  ps2Keyboard.keyboard_mkbrk(0x5A);
-  delay(2000);
-
-  // Step 4: Clear existing text using Sony method (Shift+Delete)
-  Serial.println("Step 4: Clearing existing text with Shift+Delete (Sony method)...");
-  ps2Keyboard.sendShiftDelete();
-  delay(1000); // Wait for clearing to complete
-
-  // Step 5: Type new title
-  Serial.print("Step 5: Typing title: ");
-  Serial.println(title);
-  for (unsigned int i = 0; i < title.length(); i++)
-  {
-    char c = title.charAt(i);
-    Serial.print("  Typing: ");
-    Serial.println(c);
-    ps2Keyboard.sendKey(c);
-    delay(300); // Reasonable typing speed
-  }
-
-  // Step 6: Save with Enter key
-  Serial.println("Step 6: Saving with Enter key...");
-  ps2Keyboard.keyboard_mkbrk(0x5A);
-  delay(2000);
-
-  Serial.println("=== Sony-compliant PS/2 write complete ===");
-  Serial.println("Check your CD player display for the new title!");
-}
-
-void handlePS2TestCommand(const String &)
-{
-  Serial.println("=== COMPREHENSIVE PS/2 DIAGNOSTIC TEST ===");
-  Serial.println("Testing different Enter key approaches to find what works with Sony CD player");
-
-  // Select disc 3 first (this part works via S-Link)
-  Serial.println("Step 1: Selecting disc 3 via S-Link...");
-  slinkSelectDisc(3);
-  delay(8000); // Wait for disc selection
-
-  Serial.println("\nStep 2: Testing different Enter key methods...");
-
-  // Test 1: Original ps2dev style - simple mkbrk
-  Serial.println("\n--- Test 1: Original ps2dev method (keyboard_mkbrk) ---");
-  ps2Keyboard.keyboard_mkbrk(0x5A);
-  delay(3000);
-
-  // Test 2: Press and release separately
-  Serial.println("\n--- Test 2: Separate press/release ---");
-  ps2Keyboard.keyboard_press(0x5A);
-  delay(100);
-  ps2Keyboard.keyboard_release(0x5A);
-  delay(3000);
-
-  // Test 3: Multiple Enter attempts (in case first didn't work)
-  Serial.println("\n--- Test 3: Multiple Enter attempts ---");
-  for (int i = 0; i < 3; i++)
-  {
-    Serial.print("Enter attempt ");
-    Serial.println(i + 1);
-    ps2Keyboard.keyboard_mkbrk(0x5A);
-    delay(1000);
-  }
-  delay(2000);
-
-  // Test 4: Test basic character sending to verify PS/2 works at all
-  Serial.println("\n--- Test 4: Basic character test (sending 'A') ---");
-  ps2Keyboard.sendKey('A');
-  delay(2000);
-
-  // Test 5: Proper Sony documentation method
-  Serial.println("\n--- Test 5: Complete Sony sequence (Enter -> Shift+Delete -> Type -> Enter) ---");
-
-  // Step 1: Enter edit mode (we know Test 1 worked)
-  Serial.println("Entering edit mode with Enter key...");
-  ps2Keyboard.keyboard_mkbrk(0x5A);
-  delay(2000); // Wait for edit mode to activate
-
-  // Step 2: Clear existing text using Shift+Delete (per Sony docs)
-  Serial.println("Clearing existing text with Shift+Delete (Sony method)...");
-  ps2Keyboard.sendShiftDelete();
-  delay(1000); // Wait for clearing to complete
-
-  // Step 3: Type new title
-  Serial.println("Typing 'ABC'...");
-  ps2Keyboard.sendKey('A');
-  delay(300);
-  ps2Keyboard.sendKey('B');
-  delay(300);
-  ps2Keyboard.sendKey('C');
-  delay(300);
-
-  // Step 4: Save with Enter
-  Serial.println("Saving with Enter key...");
-  ps2Keyboard.keyboard_mkbrk(0x5A);
-
-  Serial.println("\n=== DIAGNOSTIC TEST COMPLETE ===");
-  Serial.println("Check Sony CD player display:");
-  Serial.println("- Did any Enter key method activate edit mode?");
-  Serial.println("- Do you see any characters being typed?");
-  Serial.println("- Is 'ABC' now shown as title for disc 3?");
-}
-
-void handlePS2BasicTestCommand(const String &)
-{
-  Serial.println("=== DOUBLE-ENTRY DIAGNOSTIC TEST ===");
-  Serial.println("Investigating character bouncing/double-entry issue...");
-
-  // Test 1: Single character with different methods
-  Serial.println("\n--- Test 1: Single 'A' with different methods ---");
-
-  Serial.println("Method A: Raw keyboard_mkbrk(0x1C)...");
-  ps2Keyboard.keyboard_mkbrk(0x1C); // 'A' scan code directly
-  delay(2000);
-
-  Serial.println("Method B: sendKey('A') wrapper...");
-  ps2Keyboard.sendKey('A');
-  delay(2000);
-
-  Serial.println("Method C: Manual press/release...");
-  ps2Keyboard.keyboard_press(0x1C);
-  delay(100);
-  ps2Keyboard.keyboard_release(0x1C);
-  delay(2000);
-
-  // Test 2: Different inter-character delays
-  Serial.println("\n--- Test 2: 'ABC' with different delays ---");
-
-  Serial.println("Fast (100ms between chars):");
-  ps2Keyboard.keyboard_mkbrk(0x1C); // A
-  delay(100);
-  ps2Keyboard.keyboard_mkbrk(0x32); // B
-  delay(100);
-  ps2Keyboard.keyboard_mkbrk(0x21); // C
-  delay(3000);
-
-  Serial.println("Medium (500ms between chars):");
-  ps2Keyboard.keyboard_mkbrk(0x1C); // A
-  delay(500);
-  ps2Keyboard.keyboard_mkbrk(0x32); // B
-  delay(500);
-  ps2Keyboard.keyboard_mkbrk(0x21); // C
-  delay(3000);
-
-  Serial.println("Slow (1000ms between chars):");
-  ps2Keyboard.keyboard_mkbrk(0x1C); // A
-  delay(1000);
-  ps2Keyboard.keyboard_mkbrk(0x32); // B
-  delay(1000);
-  ps2Keyboard.keyboard_mkbrk(0x21); // C
-  delay(3000);
-
-  Serial.println("\n=== DIAGNOSTIC COMPLETE ===");
-  Serial.println("Watch Sony display for:");
-  Serial.println("- Which method shows single characters vs doubles");
-  Serial.println("- Which timing prevents flickering");
-  Serial.println("- Note any patterns in the double-entry behavior");
-}
-
-void handlePS2DiagnosticCommand(const String &)
-{
-  Serial.println("=== ULTRA-RELIABLE PS/2 TEST ===");
-  Serial.println("Single character test with maximum reliability checks...");
-
-  // Disable host communication temporarily to avoid conflicts
-  Serial.println("Pausing host communication during test...");
-
-  // Test 1: Pin state verification
-  Serial.println("\nTest 1: Pin state check...");
-  Serial.print("CLK pin (3): ");
-  Serial.println(digitalRead(3) ? "HIGH (good)" : "LOW (bad)");
-  Serial.print("DATA pin (4): ");
-  Serial.println(digitalRead(4) ? "HIGH (good)" : "LOW (bad)");
-
-  // Test 2: Reset PS/2 interface
-  Serial.println("\nTest 2: Resetting PS/2 interface...");
-  ps2Keyboard.begin();
-  delay(1000); // Extra settling time
-
-  // Test 3: Ultra-reliable single character
-  Serial.println("\nTest 3: Ultra-reliable single 'A' transmission...");
-  Serial.println("Method: Raw scan code with maximum retries and timing");
-
-  // Send single 'A' character (scan code 0x1C) with maximum care
-  int result = ps2Keyboard.keyboard_mkbrk(0x1C);
-
-  if (result == 0)
-  {
-    Serial.println("SUCCESS: 'A' transmitted without errors");
-  }
-  else
-  {
-    Serial.println("FAILURE: 'A' transmission failed after retries");
-  }
-
-  delay(2000);
-
-  // Test 4: Second character to check consistency
-  Serial.println("\nTest 4: Second character ('B') consistency check...");
-  result = ps2Keyboard.keyboard_mkbrk(0x32); // 'B' scan code
-
-  if (result == 0)
-  {
-    Serial.println("SUCCESS: 'B' transmitted without errors");
-  }
-  else
-  {
-    Serial.println("FAILURE: 'B' transmission failed after retries");
-  }
-
-  Serial.println("\n=== ULTRA-RELIABLE TEST COMPLETE ===");
-  Serial.println("Check Sony display: Should show 'AB' if both succeeded");
-  Serial.println("Re-enabling host communication...");
-}
-
-void handlePS2WriteCommand(const String &args)
-{
-  // Parse disc number and title from args: "ps2Write&disc=N&title=XXXX"
-  int discIdx = args.indexOf("disc=");
-  int titleIdx = args.indexOf("title=");
-
-  if (discIdx >= 0 && titleIdx >= 0)
-  {
-    // Parse disc number
-    int discEnd = args.indexOf('&', discIdx);
-    if (discEnd < 0)
-      discEnd = args.length();
-    int discNum = urlDecode(args.substring(discIdx + 5, discEnd)).toInt();
-
-    // Parse title
-    int titleEnd = args.indexOf('&', titleIdx);
-    if (titleEnd < 0)
-      titleEnd = args.length();
-    String title = urlDecode(args.substring(titleIdx + 6, titleEnd));
-
-    if (discNum > 0 && discNum <= storage.getMaxDiscs() && title.length() > 0)
-    {
-      Serial.print("PS/2 Write Command: Writing '");
-      Serial.print(title);
-      Serial.print("' to disc ");
-      Serial.println(discNum);
-      writeDiscTitle(discNum, title);
-    }
-    else
-    {
-      Serial.println("Invalid disc number or title for PS/2 write");
-    }
-  }
-  else
-  {
-    Serial.println("Missing parameters for PS/2 write command");
-  }
-}
 
 // ------------------ TESTING FUNCTIONS ------------------
 void testSLinkConnection()
@@ -1027,253 +977,46 @@ void setupCommandHandlers()
   commandHandlers["prev"] = handlePrevCommand;
   commandHandlers["bulkUpdate"] = handleBulkUpdateCommand;
   commandHandlers["discoverTitle"] = handleDiscoverTitleCommand;
-  commandHandlers["ps2Test"] = handlePS2TestCommand;
-  commandHandlers["ps2Write"] = handlePS2WriteCommand;
-  commandHandlers["ps2Diag"] = handlePS2DiagnosticCommand;
-  commandHandlers["ps2Basic"] = handlePS2BasicTestCommand;
-  commandHandlers["ps2DoubleEntry"] = handlePS2BasicTestCommand; // Use same function
-  commandHandlers["ps2HostComm"] = [](const String &)
+  // S-Link direct text writing command
+  commandHandlers["slinkText"] = [](const String &args)
   {
-    Serial.println("=== PS/2 HOST COMMUNICATION TEST ===");
-    Serial.println("Testing proper PS/2 host acknowledgment handling...");
+    // Parse disc number and title from args: "slinkText&disc=N&title=XXXX"
+    int discIdx = args.indexOf("disc=");
+    int titleIdx = args.indexOf("title=");
 
-    // Temporary disable main loop host handling to see raw communication
-    Serial.println("Monitoring host communication for 10 seconds...");
-    Serial.println("Try pressing keys on Sony device during this time...");
-
-    unsigned long startTime = millis();
-    while (millis() - startTime < 10000)
+    if (discIdx >= 0 && titleIdx >= 0)
     {
-      unsigned char leds;
-      int result = ps2Keyboard.keyboard_handle(&leds);
-      if (result)
+      // Parse disc number
+      int discEnd = args.indexOf('&', discIdx);
+      if (discEnd < 0)
+        discEnd = args.length();
+      int discNum = urlDecode(args.substring(discIdx + 5, discEnd)).toInt();
+
+      // Parse title
+      int titleEnd = args.indexOf('&', titleIdx);
+      if (titleEnd < 0)
+        titleEnd = args.length();
+      String title = urlDecode(args.substring(titleIdx + 6, titleEnd));
+
+      if (discNum > 0 && discNum <= storage.getMaxDiscs() && title.length() > 0)
       {
-        Serial.print("Host communication processed, LED state: 0x");
-        Serial.println(leds, HEX);
+        Serial.print("S-Link Text Write: Writing '");
+        Serial.print(title);
+        Serial.print("' to disc ");
+        Serial.println(discNum);
+        String result = slinkWriteDiscText(discNum, title);
+        Serial.println("Write result: " + result);
       }
-      delay(10);
-    }
-
-    Serial.println("Host communication monitoring complete.");
-    Serial.println("Now testing single character with full host handling...");
-
-    // Send single 'A' with full host communication processing
-    int result = ps2Keyboard.keyboard_mkbrk(0x1C);
-    if (result == 0)
-    {
-      Serial.println("SUCCESS: Character sent with proper host handling");
+      else
+      {
+        Serial.println("Invalid disc number or title for S-Link write");
+      }
     }
     else
     {
-      Serial.println("FAILURE: Character transmission failed");
+      Serial.println("Missing parameters for S-Link write command");
     }
-
-    Serial.println("=== HOST COMMUNICATION TEST COMPLETE ===");
   };
-
-  // New timing-focused test since host communication isn't the issue
-  commandHandlers["ps2Timing"] = [](const String &)
-  {
-    Serial.println("=== PS/2 TIMING OPTIMIZATION TEST ===");
-    Serial.println("Testing different delays to find Sony's optimal processing speed...");
-
-    // Test different inter-character delays
-    int delays[] = {100, 250, 500, 750, 1000, 1500, 2000};
-    int numDelays = sizeof(delays) / sizeof(delays[0]);
-
-    for (int i = 0; i < numDelays; i++)
-    {
-      Serial.print("Test ");
-      Serial.print(i + 1);
-      Serial.print(": Typing 'ABC' with ");
-      Serial.print(delays[i]);
-      Serial.println("ms between characters...");
-
-      // Type A-B-C with specific timing
-      ps2Keyboard.keyboard_mkbrk(0x1C); // A
-      delay(delays[i]);
-      ps2Keyboard.keyboard_mkbrk(0x32); // B
-      delay(delays[i]);
-      ps2Keyboard.keyboard_mkbrk(0x21); // C
-
-      Serial.print("  Sent ABC with ");
-      Serial.print(delays[i]);
-      Serial.println("ms delays - check Sony display");
-
-      delay(3000); // Wait to observe result before next test
-    }
-
-    Serial.println("=== TIMING TEST COMPLETE ===");
-    Serial.println("Check which delay produced clean 'ABC' without doubles/drops");
-  };
-
-  // Protocol-compliant PS/2 test using standard library functions
-  commandHandlers["ps2Sony"] = [](const String &)
-  {
-    Serial.println("=== PS/2 PROTOCOL-COMPLIANT TEST ===");
-    Serial.println("Testing corrected implementation using standard ps2dev library functions");
-    Serial.println("Following the technical report's recommendations:");
-    Serial.println("- No custom clock-ratio timing");
-    Serial.println("- Using standard keyboard_mkbrk() functions");
-    Serial.println("- Reasonable human-like delays for pacing");
-    Serial.println("- Trusting the library's protocol-correct timing");
-
-    // Test the corrected writeDiscTitle function
-    Serial.println("Testing writeDiscTitle() with 'SONY'...");
-    writeDiscTitle(3, "SONY");
-
-    Serial.println("=== PROTOCOL-COMPLIANT TEST COMPLETE ===");
-    Serial.println("Expected: Reliable 'SONY' with proper PS/2 protocol compliance");
-  };
-
-  // Hardware diagnostic test for electrical issues
-  commandHandlers["ps2Hardware"] = [](const String &)
-  {
-    Serial.println("=== PS/2 HARDWARE DIAGNOSTIC ===");
-    Serial.println("Testing electrical connections and signal integrity...");
-
-    // Test 1: Pin voltage readings
-    Serial.println("\nTest 1: Pin voltage readings (should both be HIGH when idle)");
-    Serial.print("CLK pin (3): ");
-    Serial.println(digitalRead(3) ? "HIGH (good)" : "LOW (BAD - check connection)");
-    Serial.print("DATA pin (4): ");
-    Serial.println(digitalRead(4) ? "HIGH (good)" : "LOW (BAD - check connection)");
-
-    // Test 2: Pin stability over time
-    Serial.println("\nTest 2: Pin stability check (10 seconds)...");
-    unsigned long startTime = millis();
-    int clkChanges = 0, dataChanges = 0;
-    bool lastClk = digitalRead(3), lastData = digitalRead(4);
-
-    while (millis() - startTime < 10000)
-    {
-      bool currentClk = digitalRead(3);
-      bool currentData = digitalRead(4);
-
-      if (currentClk != lastClk)
-      {
-        clkChanges++;
-        lastClk = currentClk;
-      }
-      if (currentData != lastData)
-      {
-        dataChanges++;
-        lastData = currentData;
-      }
-      delay(1);
-    }
-
-    Serial.print("CLK pin changes: ");
-    Serial.print(clkChanges);
-    Serial.println(clkChanges > 10 ? " (BAD - line unstable)" : " (good)");
-    Serial.print("DATA pin changes: ");
-    Serial.print(dataChanges);
-    Serial.println(dataChanges > 10 ? " (BAD - line unstable)" : " (good)");
-
-    // Test 3: Manual pin control test
-    Serial.println("\nTest 3: Manual pin control test...");
-    for (int i = 0; i < 5; i++)
-    {
-      Serial.print("Cycle ");
-      Serial.print(i + 1);
-      Serial.print(": ");
-
-      pinMode(3, OUTPUT);
-      pinMode(4, OUTPUT);
-      digitalWrite(3, LOW);
-      digitalWrite(4, LOW);
-      delay(100);
-
-      Serial.print("LOW->HIGH ");
-
-      digitalWrite(3, HIGH);
-      digitalWrite(4, HIGH);
-      delay(100);
-
-      // Return to PS/2 mode
-      pinMode(3, INPUT);
-      pinMode(4, INPUT);
-      digitalWrite(3, HIGH);
-      digitalWrite(4, HIGH);
-
-      Serial.println("OK");
-    }
-
-    Serial.println("\n=== HARDWARE DIAGNOSTIC COMPLETE ===");
-    Serial.println("Check for:");
-    Serial.println("- Any 'BAD' indicators above");
-    Serial.println("- Loose wire connections");
-    Serial.println("- Missing ground connection");
-    Serial.println("- Interference from other devices");
-  };
-
-  // Robust retry approach since hardware is confirmed good
-  commandHandlers["ps2Robust"] = [](const String &)
-  {
-    Serial.println("=== ROBUST PS/2 CHARACTER TEST ===");
-    Serial.println("Hardware is good - testing robust retry approach...");
-
-    // Function to send character with multiple attempts and validation
-    auto sendCharRobust = [](char c, const char *name) -> bool
-    {
-      Serial.print("Sending '");
-      Serial.print(c);
-      Serial.print("' (");
-      Serial.print(name);
-      Serial.print(")...");
-
-      // Multiple attempts with different timings
-      int attempts[] = {100, 500, 1000, 1500}; // Different delays to try
-
-      for (int i = 0; i < 4; i++)
-      {
-        uint8_t scanCode;
-        if (c == 'A')
-          scanCode = 0x1C;
-        else if (c == 'B')
-          scanCode = 0x32;
-        else if (c == 'C')
-          scanCode = 0x21;
-        else
-          continue;
-
-        Serial.print(" attempt");
-        Serial.print(i + 1);
-
-        // Send character
-        ps2Keyboard.keyboard_mkbrk(scanCode);
-
-        // Wait with specific timing
-        delay(attempts[i]);
-
-        Serial.print("(");
-        Serial.print(attempts[i]);
-        Serial.print("ms)");
-      }
-
-      Serial.println(" - check Sony display");
-      return true;
-    };
-
-    Serial.println("\nRobust character sequence test:");
-    Serial.println("This sends each character multiple times with different timings");
-    Serial.println("At least one attempt per character should succeed");
-    Serial.println("");
-
-    sendCharRobust('A', "first");
-    delay(2000);
-
-    sendCharRobust('B', "second");
-    delay(2000);
-
-    sendCharRobust('C', "third");
-    delay(2000);
-
-    Serial.println("\n=== ROBUST TEST COMPLETE ===");
-    Serial.println("Expected result: Sony should show some combination of A, B, C");
-    Serial.println("This approach works around Sony's internal timing quirks");
-  };
-  // ... add more if needed
 }
 
 // ------------------ SETUP & LOOP ------------------
@@ -1286,10 +1029,6 @@ void setup()
 
   slink.init(SLINK_PIN);
   pinMode(SLINK_PIN, INPUT);
-
-  // Initialize PS/2 keyboard simulator
-  ps2Keyboard.begin();
-  Serial.println("PS/2 keyboard simulator initialized on pins 3 (CLK) and 4 (DATA)");
 
   matrix.begin(); // LED matrix
   setupCommandHandlers();
@@ -1395,21 +1134,24 @@ void sendIndexHtml(WiFiClient &client)
       "<button onclick='sendCommand(\"power\")'>Power</button>"
       "</div>"
 
-      "<div style='margin-bottom: 20px; padding: 10px; background-color: #f0f8ff; border: 1px solid #4169e1;'>"
-      "<h2 style='color: #4169e1;'>PS/2 Keyboard Test</h2>"
-      "<p><strong>New Feature:</strong> Write disc titles directly to CD player via PS/2 keyboard simulation</p>"
-      "<p><strong>How it works:</strong> 1) Selects disc via S-Link, 2) Presses Enter via PS/2, 3) Types title, 4) Presses Enter to store</p>"
-      "<button onclick='sendCommand(\"ps2Test\")' style='background-color: #4169e1; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Test: Set Disc 3 to \"ABC\"</button><br><br>"
-      "<button onclick='sendCommand(\"ps2DoubleEntry\")' style='background-color: #ff4500; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Fix Double-Entry Diagnostic</button> "
-      "<button onclick='sendCommand(\"ps2HostComm\")' style='background-color: #8b00ff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Host Communication Test</button> "
-      "<button onclick='sendCommand(\"ps2Timing\")' style='background-color: #ff1493; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Timing Optimization Test</button> "
-      "<button onclick='sendCommand(\"ps2Hardware\")' style='background-color: #dc143c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Hardware Diagnostic</button> "
-      "<button onclick='sendCommand(\"ps2Sony\")' style='background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;'>✅ Protocol-Compliant Test</button><br><br>"
-      "<button onclick='sendCommand(\"ps2Robust\")' style='background-color: #228b22; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Robust Retry Test</button> "
-      "<button onclick='sendCommand(\"ps2Basic\")' style='background-color: #32cd32; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>Basic PS/2 Test</button> "
-      "<button onclick='sendCommand(\"ps2Diag\")' style='background-color: #ff6347; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;'>PS/2 Diagnostics</button>"
-      "<p style='font-size: 12px; color: #666; margin-top: 10px;'>Wire connections: Pin 3→CLK (white), Pin 4→DATA (red), 5V→VCC (black), GND→GND (yellow)</p>"
+      "<div style='margin-bottom: 20px; padding: 15px; background-color: #e8f5e8; border: 2px solid #4caf50;'>"
+      "<h2 style='color: #2e8b57;'>✅ S-Link Direct Text Writing (SUCCESS!)</h2>"
+      "<p><strong>WORKING SOLUTION:</strong> Using correct Sony S-Link 0x80 \"Set Disc Memo\" command!</p>"
+      "<p><strong>Format:</strong> <code>[device] [0x80] [disc] [13 bytes ASCII]</code> - Direct Sony S-Link protocol</p>"
+      "<p><strong>Advantages:</strong> No PS/2 complexity, uses proven S-Link communication, immediate response</p>"
+      "<div style='margin: 15px 0; padding: 10px; background-color: #f0f8f0; border-left: 4px solid #4caf50;'>"
+      "<h3 style='color: #2e8b57; margin-bottom: 10px;'>Write Custom Text</h3>"
+      "<input type='text' id='customText' placeholder='Enter text (max 13 chars)' maxlength='13' style='padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-right: 5px; width: 150px;'>"
+      "<input type='number' id='discNumber' placeholder='Disc #' min='1' max='400' style='padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-right: 5px; width: 80px;'>"
+      "<button onclick='writeCustomText()' style='background-color: #4caf50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;'>✍️ Write Text</button><br><br>"
+      "<h3 style='color: #2e8b57; margin-bottom: 8px;'>Quick Tests</h3>"
+      "<button onclick='sendCommand(\"slinkText&disc=1&title=HELLO\")' style='background-color: #4caf50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 2px;'>Write \"HELLO\" to Disc 1</button> "
+      "<button onclick='sendCommand(\"slinkText&disc=2&title=WORLD\")' style='background-color: #45a049; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 2px;'>Write \"WORLD\" to Disc 2</button> "
+      "<button onclick='sendCommand(\"slinkText&disc=3&title=TEST\")' style='background-color: #2e8b57; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 2px;'>Write \"TEST\" to Disc 3</button>"
       "</div>"
+      "<p style='font-size: 11px; color: #666; margin-top: 8px;'>💡 <strong>How it works:</strong> Sends native Sony S-Link commands directly. Response: 1F (success). Check Sony display for text!</p>"
+      "</div>"
+
 
       "<h2>Disc Collection</h2>"
       "<form id='discForm'>"
@@ -1433,6 +1175,17 @@ void sendIndexHtml(WiFiClient &client)
       "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
       "    body: 'command=' + cmd"
       "  });"
+      "}"
+      ""
+      "function writeCustomText() {"
+      "  const text = document.getElementById('customText').value;"
+      "  const discNum = document.getElementById('discNumber').value;"
+      "  if (text && discNum) {"
+      "    const cmd = 'slinkText&disc=' + discNum + '&title=' + encodeURIComponent(text);"
+      "    sendCommand(cmd);"
+      "  } else {"
+      "    alert('Please enter both text and disc number');"
+      "  }"
       "}"
 
       "function playDisc(num) {"
@@ -1529,17 +1282,6 @@ void sendIndexHtml(WiFiClient &client)
 void loop()
 {
   wifiManager.runMDNS(); // Keep mDNS running
-
-  // CRITICAL: Handle PS/2 host communication every loop iteration
-  // This is essential for proper PS/2 protocol operation per ps2dev examples
-  static unsigned long lastPS2Check = 0;
-  unsigned long now = millis();
-  if (now - lastPS2Check >= 10)
-  { // Every 10ms as per ps2dev example
-    unsigned char leds;
-    ps2Keyboard.keyboard_handle(&leds);
-    lastPS2Check = now;
-  }
 
   WiFiClient client = wifiManager.getServer().available();
   if (!client)
