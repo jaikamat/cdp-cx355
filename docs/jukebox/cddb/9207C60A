@@ -1,0 +1,45 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	12160
+#	26947
+#	40747
+#	54627
+#	72660
+#	89182
+#	109212
+#	124570
+#	137710
+#
+# Disc length: 1992 seconds
+#
+# Revision: 34496460
+# Submitted via:  DiscPlay 4.0.3
+#
+DISCID=9207c60a
+DTITLE=John Cacava and the London Symphony Orchestra / Goldfinger-James
+DTITLE=Bond Themes
+TTITLE0=The James Bond Theme
+TTITLE1=Thunderball
+TTITLE2=Goldfinger
+TTITLE3=From Russia With Love
+TTITLE4=Diamonds Are Forever
+TTITLE5=You Only Live Twice
+TTITLE6=Nobody Does it Better
+TTITLE7=Live and Let Die
+TTITLE8=For Your Eyes Only
+TTITLE9=The James Bond Theme (reprise)
+EXTD=\nYEAR: 2000  ID3G:  24
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=From The Spy Who Loved Me\n
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

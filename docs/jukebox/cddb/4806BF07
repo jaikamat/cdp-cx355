@@ -1,0 +1,35 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	18162
+#	35257
+#	52992
+#	69197
+#	87915
+#	109090
+#
+# Disc length: 1729 seconds
+#
+# Revision: 34498124
+# Submitted via:  CDmax 1.7.3
+#
+DISCID=4806bf07
+DTITLE=Mariah Carey / MTV Unplugged EP
+TTITLE0=Emotions
+TTITLE1=If It's Over
+TTITLE2=Someday
+TTITLE3=Vision Of Love
+TTITLE4=Make It Happen
+TTITLE5=I'll Be There
+TTITLE6=Can't Let Go
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+PLAYORDER=

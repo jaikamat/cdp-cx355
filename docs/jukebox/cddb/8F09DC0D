@@ -1,0 +1,53 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	21318
+#	33365
+#	48735
+#	55768
+#	62298
+#	91103
+#	98293
+#	117620
+#	137473
+#	155353
+#	157638
+#	181650
+#
+# Disc length: 2526 seconds
+#
+# Revision: 34479388
+# Submitted via:  NotifyCDPlayer(CDDB) 1.51.3
+#
+DISCID=8f09dc0d
+DTITLE=Pink Floyd / The Wall (Disc 2)
+TTITLE0=Hey You
+TTITLE1=Is There Anybody Out There?
+TTITLE2=Nobody Home
+TTITLE3=Vera
+TTITLE4=Bring The Boys Back Home
+TTITLE5=Comfortably Numb
+TTITLE6=The Show Must Go On
+TTITLE7=In The Flesh
+TTITLE8=Run Like Hell
+TTITLE9=Waiting For The Worms
+TTITLE10=Stop
+TTITLE11=The Trial
+TTITLE12=Outside The Wall
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

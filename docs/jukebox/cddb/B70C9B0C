@@ -1,0 +1,50 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	182
+#	25060
+#	44667
+#	66560
+#	80352
+#	104155
+#	128590
+#	147092
+#	171575
+#	189545
+#	206495
+#	222125
+#
+# Disc length: 3229 seconds
+#
+# Revision: 34493068
+# Submitted via:  NotifyCDPlayer(CDDB) 1.51.3
+#
+DISCID=b70c9b0c
+DTITLE=Dishwalla / Pet Your Friends
+TTITLE0=Pretty Babies
+TTITLE1=Haze
+TTITLE2=Counting Blue Cars
+TTITLE3=Explode
+TTITLE4=Charlie Brown's Parents
+TTITLE5=Give
+TTITLE6=Miss Emma Peel
+TTITLE7=Moisture
+TTITLE8=The Feeder
+TTITLE9=All She Can See
+TTITLE10=Only For So Long
+TTITLE11=Interview with St. Etienne
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+PLAYORDER=

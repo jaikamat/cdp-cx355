@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	32239
+#	56291
+#	86278
+#	113695
+#	143265
+#	160824
+#	184844
+#	205838
+#	229993
+#
+# Disc length: 3487 seconds
+#
+# Revision: 34482092
+# Submitted via:  Axialis_AX_CDPlayer 2.1.003
+#
+DISCID=760d9d0a
+DTITLE=Peter Gabriel / Us
+TTITLE0=Come Talk To Me
+TTITLE1=Love To Be Loved
+TTITLE2=Blood of Eden
+TTITLE3=Steam
+TTITLE4=Only Us
+TTITLE5=Washing of the Water
+TTITLE6=Digging in the Dirt
+TTITLE7=Fourteen Black Paintings
+TTITLE8=Kiss That Frog
+TTITLE9=Secret World
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

@@ -1,0 +1,54 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	38387
+#	75892
+#	91275
+#	110132
+#	134812
+#	158215
+#	174900
+#	188440
+#	201940
+#	231217
+#	291255
+#	315532
+#
+# Disc length: 4490 seconds
+#
+# Revision: 34511724
+# Submitted via:  CDmax 1.7.5
+#
+DISCID=a511880d
+DTITLE=James Horner / The Mask of Zorro
+TTITLE0=The Plaza of Execution
+TTITLE1=Elena and Esperanza
+TTITLE2=The Ride
+TTITLE3=Elena's Truth
+TTITLE4=The Fencing Lesson
+TTITLE5=Tornado in the Barracks
+TTITLE6=The Confession
+TTITLE7=Zorro's Theme
+TTITLE8=The Mine (Montero's Vision)
+TTITLE9=Stealing the Map
+TTITLE10="Leave No Witnesses..."
+TTITLE11=Diego's Goodbye
+TTITLE12=I Want To Spend My Lifetime Loving You (performed by Marc Anthony a
+TTITLE12=nd Tina Arena)
+EXTD=\nYEAR: 2000  ID3G:  24
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

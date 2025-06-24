@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	182
+#	13927
+#	26080
+#	35920
+#	48580
+#	65627
+#	76277
+#	87210
+#	96690
+#	111217
+#
+# Disc length: 1700 seconds
+#
+# Revision: 34476364
+# Submitted via:  xmcd 2.3 PL0
+#
+DISCID=8c06a20a
+DTITLE=Various Artists / Billboard Top Rock'n'Roll Hits 1965
+TTITLE0=Shirley Ellis / The Name Game
+TTITLE1=The Toys / A Lover's Concerto
+TTITLE2=Gary Lewis and the Playboys / This Diamond Ring
+TTITLE3=The Beach Boys / Help me, Rhonda
+TTITLE4=The Righteous Brothers / You've Lost That Lovin' Feelin'
+TTITLE5=Sam the Sham & the Pharaohs / Wooly Bully
+TTITLE6=Len Barry / One Two Three
+TTITLE7=Roy Head & The Traits / Treat Her Right
+TTITLE8=Sonny & Cher / I've Got You Babe
+TTITLE9=Barry McGuire / Eve of Destruction
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

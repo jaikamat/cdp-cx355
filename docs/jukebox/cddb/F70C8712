@@ -1,0 +1,68 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	18132
+#	28400
+#	43820
+#	52862
+#	63727
+#	70527
+#	87722
+#	97525
+#	114285
+#	126495
+#	136170
+#	153120
+#	162475
+#	171432
+#	181530
+#	191225
+#	200920
+#
+# Disc length: 3209 seconds
+#
+# Revision: 35349516
+# Submitted via:  Axialis_AX_CDPlayer 2.5
+#
+DISCID=f70c8712
+DTITLE=John Barry / Dances With Wolves
+TTITLE0=Main Title - Looks Like A Suicide
+TTITLE1=John Dunbar Theme
+TTITLE2=Journey To Fort Sedgewick
+TTITLE3=Ride To Fort Hayes
+TTITLE4=The Death Of Timmons
+TTITLE5=Two Socks - The Wolf Theme
+TTITLE6=Pawnee Attack
+TTITLE7=Kicking Bird's Gift
+TTITLE8=Journey To The Buffalo Killing Ground
+TTITLE9=The Buffalo Hunt
+TTITLE10=Stands With A Fist Remembers
+TTITLE11=The Love Theme
+TTITLE12=The John Dunbar Theme
+TTITLE13=Two Socks At Play
+TTITLE14=The Death Of Cisco
+TTITLE15=Rescue Of Dances With Wolves
+TTITLE16=The Loss Of The Journal and the Return to Winter Camp
+TTITLE17=Farewell And End Title
+EXTD=\nYEAR: 2000  ID3G:  24
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+EXTT13=
+EXTT14=
+EXTT15=
+EXTT16=
+EXTT17=
+PLAYORDER=

@@ -1,0 +1,53 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	15145
+#	26385
+#	40632
+#	48987
+#	66982
+#	92230
+#	104850
+#	114465
+#	130280
+#	146610
+#	165885
+#	171507
+#
+# Disc length: 2363 seconds
+#
+# Revision: 34515356
+# Submitted via:  QuintessentialCD v1.26a (c) 1998-99 Paul Quinn
+#
+DISCID=a809390d
+DTITLE=Pink Floyd / The Wall
+TTITLE0=In The Flesh
+TTITLE1=The Thin Ice
+TTITLE2=Another Brick In The Wall (Part 1)
+TTITLE3=The Happiest Days Of Our Lives
+TTITLE4=Another Brick In The Wall (Part 2)
+TTITLE5=Mother
+TTITLE6=Goodbye Blue Sky
+TTITLE7=Empty Spaces
+TTITLE8=Young Lust
+TTITLE9=One Of My Turns
+TTITLE10=Dont Leave Me Now
+TTITLE11=Another Brick In The Wall (Part 3)
+TTITLE12=Goodbye Cruel World
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

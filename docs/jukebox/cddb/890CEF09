@@ -1,0 +1,41 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	225
+#	23640
+#	61592
+#	80530
+#	110065
+#	148417
+#	179770
+#	200787
+#	217355
+#
+# Disc length: 3313 seconds
+#
+# Revision: 34497548
+# Submitted via:  MusicMatchJukebox 4.30.0058
+#
+DISCID=8909390D
+DTITLE=Dire Straits / Brothers In Arms
+TTITLE0=So Far Away
+TTITLE1=Money For Nothing
+TTITLE2=Walk Of Life
+TTITLE3=Your Latest Trick
+TTITLE4=Why Worry
+TTITLE5=Ride Across The River
+TTITLE6=The Man's Too Strong
+TTITLE7=One World
+TTITLE8=Brothers In Arms
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+PLAYORDER=

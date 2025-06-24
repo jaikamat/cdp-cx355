@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	16315
+#	34245
+#	47122
+#	71070
+#	84300
+#	99180
+#	116607
+#	134865
+#	153982
+#
+# Disc length: 2257 seconds
+#
+# Revision: 34495068
+# Submitted via:  CDmax 1.5.4
+#
+DISCID=8108cf0a
+DTITLE=The Charlie Daniels Band / A Decade Of Hits
+TTITLE0=The Devil Went Down To Georgia
+TTITLE1=The South's Gonna Do It Again
+TTITLE2=Stroker's Theme
+TTITLE3=Uneasy Rider
+TTITLE4=Let It Roll
+TTITLE5=In America
+TTITLE6=Still In Saigon
+TTITLE7=Long Haired County Boy
+TTITLE8=The Legend Of Wooley Swamp
+TTITLE9=Everytime I See Him
+EXTD=\nYEAR: 2000  ID3G:   2
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

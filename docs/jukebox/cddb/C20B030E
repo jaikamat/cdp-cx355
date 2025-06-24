@@ -1,0 +1,56 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	182
+#	25642
+#	44285
+#	48127
+#	59817
+#	76837
+#	106512
+#	115852
+#	127492
+#	148445
+#	173365
+#	177225
+#	183390
+#	202070
+#
+# Disc length: 2821 seconds
+#
+# Revision: 34513996
+# Submitted via:  Clarion 0.9.5.3
+#
+DISCID=c20b030e
+DTITLE=The Moody Blues / This Is The Moody Blues - Disc 1
+TTITLE0=Question
+TTITLE1=The Actor
+TTITLE2=The Word
+TTITLE3=Eyes Of A Child
+TTITLE4=Dear Diary
+TTITLE5=Legend Of A Mind
+TTITLE6=In The Beginning
+TTITLE7=Lovely To See You
+TTITLE8=Never Comes The Day
+TTITLE9=Isn't Life Strange
+TTITLE10=The Dream
+TTITLE11=Have You Heard? (part 1)
+TTITLE12=The Voyage
+TTITLE13=Have You Heard? (part 2)
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+EXTT13=
+PLAYORDER=

@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	182
+#	38800
+#	62795
+#	84367
+#	101677
+#	113337
+#	130092
+#	141505
+#	162787
+#	172857
+#
+# Disc length: 2841 seconds
+#
+# Revision: 34496972
+# Submitted via:  MusicMatchJukebox 4.40.0109
+#
+DISCID=780b170a
+DTITLE=Don McLean / Classics
+TTITLE0=American Pie (Complete Original Version)
+TTITLE1=Vincent
+TTITLE2=And I Love You So
+TTITLE3=Crying
+TTITLE4=Since I Don't Have You
+TTITLE5=Castles In The Air
+TTITLE6=It's Just The Sun
+TTITLE7=Jerusalem
+TTITLE8=It's A Beautiful Life
+TTITLE9=American Pie (New Version)
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

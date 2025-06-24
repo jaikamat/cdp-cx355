@@ -1,0 +1,50 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	180
+#	14043
+#	28689
+#	39774
+#	53147
+#	68031
+#	82813
+#	106866
+#	118942
+#	130830
+#	148389
+#	164282
+#
+# Disc length: 2323 seconds
+#
+# Revision: 34499260
+# Submitted via:  CDValet v3.31 - Copyright (c) 1997 Greg Leichner
+#
+DISCID=9f09110c
+DTITLE=Glenn Miller Orchestra / The Best Of The Big Bands (Disc 1)
+TTITLE0=Little Brown Jug
+TTITLE1=Pennsylvania 6-5000
+TTITLE2=Chattanooga Choo Choo
+TTITLE3=String Of Pearls
+TTITLE4=In The Mood
+TTITLE5=Sunrise Serenade
+TTITLE6=The Johnson Rag
+TTITLE7=Kalamazoo
+TTITLE8=Bugle Call Rag
+TTITLE9=Anvil Chorus
+TTITLE10=Tuxedo Junction
+TTITLE11=Serenade In Blue
+EXTD=\nYEAR: 2000  ID3G:   8
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6= Patrol
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+PLAYORDER=

@@ -1,0 +1,56 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	25467
+#	46330
+#	62807
+#	81982
+#	98122
+#	119447
+#	136667
+#	153587
+#	170155
+#	183315
+#	200712
+#	222400
+#	241910
+#
+# Disc length: 3531 seconds
+#
+# Revision: 34488652
+# Submitted via:  Axialis_AX_CDPlayer 2.5
+#
+DISCID=cc0dc90e
+DTITLE=John Mellencamp / The Best That I Could Do
+TTITLE0=I Need A Lover
+TTITLE1=Ain't Even Done With The Night
+TTITLE2=Hurts So Good
+TTITLE3=Jack And Diane
+TTITLE4=Crumblin' Down
+TTITLE5=Pink Houses
+TTITLE6=Authority Song
+TTITLE7=Lonely Ol' Night
+TTITLE8=Small Town
+TTITLE9=R.O.C.K. In The U.S.A.
+TTITLE10=Paper And Fire
+TTITLE11=Cherry Bomb
+TTITLE12=Check It Out
+TTITLE13=Without Expression
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+EXTT13=
+PLAYORDER=

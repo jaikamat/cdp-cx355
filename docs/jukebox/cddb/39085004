@@ -1,0 +1,26 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	62775
+#	102225
+#	141525
+#
+# Disc length: 2130 seconds
+#
+# Revision: 34495228
+# Submitted via:  QuintessentialCD v1.27 (c) 1998-99 Paul Quinn
+#
+DISCID=39085004
+DTITLE=Maurice Ravel / Bolero Piano Concerto
+TTITLE0=Bolero
+TTITLE1=Piano Concerto in G major: Allegramente
+TTITLE2=Piano Concerto in G major: Adagio assai
+TTITLE3=Piano Concerto in G major: Presto
+EXTD=\nYEAR: 2000  ID3G:  32
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+PLAYORDER=

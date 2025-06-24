@@ -1,0 +1,80 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	10323
+#	19630
+#	33450
+#	45903
+#	56673
+#	71350
+#	82165
+#	95503
+#	107273
+#	119848
+#	131563
+#	142178
+#	152945
+#	167550
+#	177353
+#	192473
+#	203998
+#	213728
+#	224145
+#	236438
+#	249000
+#
+# Disc length: 3483 seconds
+#
+# Revision: 34516956
+# Submitted via:  xmcd 2.6 PL0
+#
+DISCID=430d9916
+DTITLE=Various Artists / The Rock 'N' Roll Era - 1956
+TTITLE0=Carl Perkins / Blue Suede Shoes
+TTITLE1=Fats Domino / I'm In Love Again
+TTITLE2=The Five Satins / I'll Remember (In The Still Of The Night)
+TTITLE3=Sanford Clark / The Fool
+TTITLE4=Shirley & Lee / Let The Good Times Roll
+TTITLE5=The Teen Queens / Eddie My Love
+TTITLE6=Chuck Berry / Roll Over Beethoven
+TTITLE7=Mickey and Slylvia / Love Is Strange
+TTITLE8=Gene Vincent / Be Bop A Lula
+TTITLE9=The Platters / My Prayer
+TTITLE10=Bill Doggett / Honkey Tonk (Part 2)
+TTITLE11=Fats Domino / Blueberry Hill
+TTITLE12=Little Richard / Rip It Up
+TTITLE13=The Cadets / Stranded In The Jungle
+TTITLE14=Clyde McPhatter / Treasure Of Love
+TTITLE15=Ray Charles / Drown In My Own Tears
+TTITLE16=Sonny James / Young Love
+TTITLE17=Little Richard / Long Tall Sally
+TTITLE18=Frankie Lymon and The Teenagers / Why Do Fools Fall In Love
+TTITLE19=Little Wille John / Fever
+TTITLE20=Bill Haley and The Coments / See You Later Alligator
+TTITLE21=Ivory Joe Huner / Since I Met You Baby
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=2-5/19/56
+EXTT1=3-7/14/56
+EXTT2=24-10/13/56\n81-1/25/60\n99-1/23/61
+EXTT3=7-9/22/56
+EXTT4=20-10/20/56\n48-9/12/60
+EXTT5=14-3/31/56
+EXTT6=29-6/30/56
+EXTT7=11-3/02/57
+EXTT8=7-7/28/56
+EXTT9=1-8/04/56
+EXTT10=2-10/06/56\n57-3/20/61
+EXTT11=2-1/19/57
+EXTT12=25-9/15/56
+EXTT13=18-7/28/56
+EXTT14=16-6/30/56
+EXTT15=2-1956
+EXTT16=1-2/16/57
+EXTT17=8-6/02/56
+EXTT18=6-4/14/56
+EXTT19=24-8/18/56
+EXTT20=6-2/11/56
+EXTT21=12-12/29/56
+PLAYORDER=

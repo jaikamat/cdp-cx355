@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	17437
+#	35455
+#	53952
+#	73782
+#	101390
+#	123812
+#	153652
+#	171422
+#	187687
+#
+# Disc length: 2803 seconds
+#
+# Revision: 34493388
+# Submitted via:  xmcd 2.3 PL0
+#
+DISCID=790af10a
+DTITLE=Simpsons / The Yellow Album
+TTITLE0=Love?
+TTITLE1=Sisters Are Doin' It For Themselves
+TTITLE2=Funny How Time Slips Away
+TTITLE3=Twenty-Four Hours A Day
+TTITLE4=Ten Commandments Of Bart
+TTITLE5=I Just Can't Help Myself
+TTITLE6=Shes's Comin' Out Swingin'
+TTITLE7=Anyone Else
+TTITLE8=Every Summer With You
+TTITLE9=Hail To Thee, Kamp Krusty
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

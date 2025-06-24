@@ -1,0 +1,50 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	39840
+#	69687
+#	77372
+#	101535
+#	130779
+#	153270
+#	168930
+#	181040
+#	194790
+#	216735
+#	230167
+#
+# Disc length: 3244 seconds
+#
+# Revision: 34493644
+# Submitted via:  VisiTrax 1.5.2.1978 - For more info visit www.synapsa.com
+#
+DISCID=a00caa0c
+DTITLE=Various Artists / The Best of the Big Bands (Disc 3)
+TTITLE0=Benny Goodman Orchestra / How High The Moon
+TTITLE1=Benny Goodman Orchestra / Seven Come Eleven
+TTITLE2=Glenn Miller Orchestra / Moonlight Cocktail
+TTITLE3=Duke Ellington / Take The A Train
+TTITLE4=Duke Ellington / Tootie For Cootie
+TTITLE5=Duke Ellington / Mood Indigo
+TTITLE6=Count Basie / Ain't Misbehaven
+TTITLE7=Count Basie / April In Paris
+TTITLE8=Count Basie / Jumping At The Woodside
+TTITLE9=Woody Herman / Woodchopper's Ball
+TTITLE10=Woody Herman / Blue Flame
+TTITLE11=Woody Herman / Blowing Up A Storm
+EXTD=\nYEAR: 2000  ID3G:   8
+EXTT0=Benny Goodman Orchestra
+EXTT1=Benny Goodman Orchestra
+EXTT2=Glenn Miller Orchestra
+EXTT3=Duke Ellington
+EXTT4=Duke Ellington
+EXTT5=Duke Ellington
+EXTT6=Count Basie
+EXTT7=Count Basie
+EXTT8=Count Basie
+EXTT9=Woody Herman
+EXTT10=Woody Herman
+EXTT11=Woody Herman
+PLAYORDER=

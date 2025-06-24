@@ -1,0 +1,47 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	14108
+#	28940
+#	48188
+#	64400
+#	80108
+#	97605
+#	112703
+#	126968
+#	142273
+#	155980
+#
+# Disc length: 2255 seconds
+#
+# Revision: 34494044
+# Submitted via:  Axialis_AX_CDPlayer 2.1.002
+#
+DISCID=9c08cd0b
+DTITLE=Joe Diffie / Third Rock From The Sun
+TTITLE0=Third Rock From The Sun
+TTITLE1=I'm In Love With A Capital "U"
+TTITLE2=That Road Not Taken
+TTITLE3=Pickup Man
+TTITLE4=So Help Me Girl
+TTITLE5=Wild Blue Yonder
+TTITLE6=I'd Like To Have A Problem Like That
+TTITLE7=Junior's In Love
+TTITLE8=From Here On Out
+TTITLE9=Good Brown Gravy
+TTITLE10=The Cows Came Home
+EXTD=\nYEAR: 2000  ID3G:   2
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+PLAYORDER=

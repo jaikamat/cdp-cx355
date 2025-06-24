@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	42675
+#	110425
+#	148825
+#	201510
+#	223300
+#	229450
+#	241385
+#	244830
+#	256555
+#
+# Disc length: 3653 seconds
+#
+# Revision: 34495276
+# Submitted via:  xmcd 2.0
+#
+DISCID=a00e440a
+DTITLE=Bach / Toccata & Fugue
+TTITLE0=Toccata & Fugue
+TTITLE1=Praeludium & Fuge
+TTITLE2=Fantasie & Fuge
+TTITLE3=Praeludium (Fantasie) & Fuge
+TTITLE4="O Mensch, bewein dein Sunde gross"
+TTITLE5="Vater unser im Himmelreich"
+TTITLE6="Herzlich tut mich verlangen"
+TTITLE7="Fughetta: Gottes Sohn ist kommen"
+TTITLE8="Das alte Jahr vergangen ist"
+TTITLE9=Fuge
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

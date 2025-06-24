@@ -1,0 +1,45 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	22013
+#	42263
+#	57338
+#	91013
+#	108338
+#	148838
+#	186338
+#	194288
+#	223913
+#
+# Disc length: 3801 seconds
+#
+# Revision: 34494828
+# Submitted via:  AdeptDE 1.0
+#
+DISCID=930ed70a
+DTITLE=Franz Schubert / Masters Of Classical Music, Vol 9
+TTITLE0=Ave Maria
+TTITLE1=Impromptu in E flat
+TTITLE2=Standchen
+TTITLE3=Trout Qt: Tema con variazioni
+TTITLE4=Entr'acte No.1 from 'Rosamunde'
+TTITLE5=Moment musical in A flat
+TTITLE6=Entr'acte No.2 from 'Rosamunde'
+TTITLE7=moment musical No.3 in f
+TTITLE8=Ballet Music No.2 aus from 'Rosamunde'
+TTITLE9=Sym No.8 in b-'Unfinished': Allegro moderato
+EXTD=DISC: 1\nUPC: 018111580922\nLABEL: Laserlight\nENSORECORD: 61142\n\nYEA
+EXTD=R: 2000  ID3G:  32
+EXTT0=Budapest Strings
+EXTT1=Jenv Jando
+EXTT2=Budapest Strings
+EXTT3=et
+EXTT4=Hungarian State Opera Orchestra\nAdam Fischer
+EXTT5=Jenv Jando
+EXTT6=Budapest Philharmonic\nJanos Kovacs
+EXTT7=Budapest Strings
+EXTT8=Budapest Philharmonic\nJanos Kovacs
+EXTT9=Budapest Philharmonic\nJanos Kovacs
+PLAYORDER=

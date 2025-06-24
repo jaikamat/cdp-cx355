@@ -1,0 +1,50 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	13705
+#	26165
+#	36255
+#	53352
+#	65867
+#	79175
+#	91895
+#	109885
+#	126995
+#	143782
+#	158810
+#
+# Disc length: 2336 seconds
+#
+# Revision: 34479820
+# Submitted via:  xmcd 2.6 PL0
+#
+DISCID=a0091e0c
+DTITLE=The Rolling Stones / Hot Rocks 1964-1971 (Disc 1)
+TTITLE0=Time Is On My Side
+TTITLE1=Heart Of Stone
+TTITLE2=Play With Fire
+TTITLE3=(I Can't Get No) Satisfaction
+TTITLE4=As Tears Go By
+TTITLE5=Get Off Of My Cloud
+TTITLE6=Mother's Little Helper
+TTITLE7=19th Nervous Breakdown
+TTITLE8=Paint It, Black
+TTITLE9=Under My Thumb
+TTITLE10=Ruby Tuesday
+TTITLE11=Let's Spend The Night Together
+EXTD=1986 Abkco 66672\nYEAR: 2000  ID3G:  17
+EXTT0=6-12/5/64
+EXTT1=19-2/20/65\nstereo
+EXTT2=96-5/22/65
+EXTT3=1-7/10/65
+EXTT4=6-1/29/66
+EXTT5=1-11/6/65
+EXTT6=8-8/13/66
+EXTT7=2-3/19/66
+EXTT8=1-6/11/66
+EXTT9=stereo\n
+EXTT10=1-3/4/67\nstereo
+EXTT11=55-3/4/67\nstereo
+PLAYORDER=

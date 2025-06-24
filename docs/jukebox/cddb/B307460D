@@ -1,0 +1,53 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	10912
+#	20155
+#	28965
+#	39627
+#	50632
+#	60292
+#	70317
+#	81890
+#	93235
+#	105620
+#	116105
+#	130420
+#
+# Disc length: 1864 seconds
+#
+# Revision: 34527660
+# Submitted via:  audiograbber 1.62
+#
+DISCID=b307460d
+DTITLE=The Beatles / 1962-1966 [Disc 1]
+TTITLE0=Love Me Do
+TTITLE1=Please Please Me
+TTITLE2=From Me To You
+TTITLE3=She Loves You
+TTITLE4=I Want To Hold Your Hand
+TTITLE5=All My Loving
+TTITLE6=Can't Buy Me Love
+TTITLE7=A Hard Day's Night
+TTITLE8=And I Love Her
+TTITLE9=Eight Days A Week
+TTITLE10=I Feel Fine
+TTITLE11=Ticket To Ride
+TTITLE12=Yesterday
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

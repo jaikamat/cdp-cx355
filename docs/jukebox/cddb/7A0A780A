@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	18085
+#	41572
+#	61027
+#	82387
+#	100775
+#	117804
+#	131602
+#	151725
+#	179137
+#
+# Disc length: 2682 seconds
+#
+# Revision: 34493036
+# Submitted via:  CDmax 1.6.7
+#
+DISCID=7a0a780a
+DTITLE=Leahy / Leahy
+TTITLE0=B. Minor
+TTITLE1=Cape Breton Medley
+TTITLE2=McBrides
+TTITLE3=The French
+TTITLE4=The Call to Dance
+TTITLE5=Alabama
+TTITLE6=Don Messer Medley
+TTITLE7=Czardas
+TTITLE8=Colm Quigley
+TTITLE9=The Coulin
+EXTD=\nYEAR: 2000  ID3G:  80
+EXTT0=he second tune back from Co. Monaghan, Ireland.
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	24423
+#	38798
+#	55365
+#	70823
+#	111983
+#	131380
+#	148825
+#	180140
+#	195693
+#
+# Disc length: 2898 seconds
+#
+# Revision: 34488076
+# Submitted via:  MusicMatchJukebox 5.00.0191
+#
+DISCID=890b500a
+DTITLE=Kansas / The Best of Kansas
+TTITLE0=Carry On My Wayward Son
+TTITLE1=Point of Know Return
+TTITLE2=Fight Fire With Fire
+TTITLE3=Dust In The Wind
+TTITLE4=Song For America
+TTITLE5=Perfect Lover
+TTITLE6=Hold On
+TTITLE7=No One Together
+TTITLE8=Play The Game Tonight
+TTITLE9=The Wall
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

@@ -1,0 +1,45 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	20175
+#	45000
+#	60675
+#	70500
+#	82125
+#	95175
+#	127050
+#	140250
+#	150225
+#
+# Disc length: 2720 seconds
+#
+# Revision: 34493196
+# Submitted via:  QuintessentialCD v1.27 (c) 1998-99 Paul Quinn
+#
+DISCID=810a9e0a
+DTITLE=Bach - Dubravka Tomsic, pianist / Bach
+TTITLE0=Italian Concerto in F - Moderato
+TTITLE1=Italian Concerto in F - Andante
+TTITLE2=Italian Concerto in F - Allegro vivace
+TTITLE3=Partita #1 in B flat - Praeludium
+TTITLE4=Partita #1 in B flat - Allemande
+TTITLE5=Partita #1 in B flat - Corrente
+TTITLE6=Partita #1 in B flat - Sarabande
+TTITLE7=Partita #1 in B flat - Menuett I & II
+TTITLE8=Partita #1 in B flat - Giga
+TTITLE9=Toccata in D major BWV 912
+EXTD=Pilz CD 160 202, DDD, Stereo\n\nPianist is unidentified on the CD Jacke
+EXTD=t; \nhowever, the CD does carry her name.\nYEAR: 2000  ID3G:  32
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

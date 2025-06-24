@@ -1,0 +1,53 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	20467
+#	37762
+#	50117
+#	63987
+#	79165
+#	102755
+#	122377
+#	146590
+#	169160
+#	189160
+#	209637
+#	226440
+#
+# Disc length: 3337 seconds
+#
+# Revision: 34493484
+# Submitted via:  DiscPlay 3.4.1
+#
+DISCID=aa0d070d
+DTITLE=Dirk Freymuth (Plays Bach) / Lifescapes: BACH
+TTITLE0=Air (from Orchestral Suite #3)
+TTITLE1=Prelude & Fugue in C (from The Well-Tempered Clavier)
+TTITLE2=Largo (from Oboe Concerto in Gm)
+TTITLE3=Jesu, Joy of Man's Desiring
+TTITLE4=Allegro (from Viola da Gamba Sonata in Gm)
+TTITLE5=Andante (from Sonata for Violin in Am)
+TTITLE6=Wachet Auf
+TTITLE7=Allegro (from Concerto for Oboe & Violin in Cm)
+TTITLE8=Adagio & Allegro (from Viola da Gamba Sonata in D)
+TTITLE9=Sarabande (from Violin Partita in Dm)
+TTITLE10=Nun Komm der Heiden Heilund
+TTITLE11=Gavotte (from Violin Partita in E)
+TTITLE12=Fantasia in Am
+EXTD=\nYEAR: 2000  ID3G:  32
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

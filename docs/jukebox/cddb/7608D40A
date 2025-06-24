@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	17305
+#	31750
+#	40840
+#	60085
+#	71607
+#	91502
+#	109937
+#	131410
+#	149845
+#
+# Disc length: 2262 seconds
+#
+# Revision: 34482636
+# Submitted via:  MusicMatchJukebox 4.20.0051
+#
+DISCID=7608d40a
+DTITLE=Garth Brooks / The Chase
+TTITLE0=We Shall Be Free
+TTITLE1=Somewhere Other Than The Night
+TTITLE2=Mr. Right
+TTITLE3=Every Now And Then
+TTITLE4=Walking After Midnight
+TTITLE5=Dixie Chicken
+TTITLE6=Learning To Live Again
+TTITLE7=That Summer
+TTITLE8=Night Rider's Lament
+TTITLE9=Face To Face
+EXTD=\nYEAR: 2000  ID3G:   2
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

@@ -1,0 +1,38 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	22620
+#	44370
+#	58697
+#	76162
+#	92625
+#	103192
+#	120462
+#
+# Disc length: 1848 seconds
+#
+# Revision: 34526556
+# Submitted via:  CDmax 1.6.7
+#
+DISCID=55073608
+DTITLE=Roger Whittaker / Roger Whittaker You Are My Miracle
+TTITLE0=You Are My Miracle
+TTITLE1=Albany
+TTITLE2=Annie's Song
+TTITLE3=Barroom Country Singer
+TTITLE4=Too Beautiful to Cry
+TTITLE5=Yellow Bird
+TTITLE6=My Love, Cape Breton and Me
+TTITLE7=The Wind Beneath My Wings
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+PLAYORDER=

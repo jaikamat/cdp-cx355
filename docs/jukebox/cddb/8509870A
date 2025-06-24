@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	183
+#	15488
+#	31103
+#	49235
+#	64070
+#	83910
+#	104565
+#	128050
+#	146943
+#	169058
+#
+# Disc length: 2441 seconds
+#
+# Revision: 34512828
+# Submitted via:  VisiTrax 1.7.1.2475 - For more info visit www.synapsa.com
+#
+DISCID=8509870a
+DTITLE=Bee Gees / Greatest - Disc 2
+TTITLE0=If I Can't Have You
+TTITLE1=You Stepped Into My Life
+TTITLE2=Love Me
+TTITLE3=More Than A Woman
+TTITLE4=Rest Your Love On Me
+TTITLE5=Nights On Broadway
+TTITLE6=Spirits (Having Flown)
+TTITLE7=Love You Inside Out
+TTITLE8=Wind Of Change
+TTITLE9=Children Of The World
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=1-5/13/78
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=7-12/13/75
+EXTT6=
+EXTT7=1-6/9/79
+EXTT8=
+EXTT9=
+PLAYORDER=

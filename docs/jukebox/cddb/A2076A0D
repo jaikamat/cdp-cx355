@@ -1,0 +1,53 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	10617
+#	20470
+#	30677
+#	43405
+#	54487
+#	63877
+#	76197
+#	88377
+#	99402
+#	110765
+#	121160
+#	130760
+#
+# Disc length: 1900 seconds
+#
+# Revision: 34484028
+# Submitted via:  CDmax 1.7.6
+#
+DISCID=a2076a0d
+DTITLE=The Beatles / 1962-1966 [Disc 2]
+TTITLE0=Help!
+TTITLE1=You've Got To Hide Your Love Away
+TTITLE2=We Can Work It Out
+TTITLE3=Day Tripper
+TTITLE4=Drive My Car
+TTITLE5=Norwegian Wood (This Bird Has Flown)
+TTITLE6=Nowhere Man
+TTITLE7=Michelle
+TTITLE8=In My Life
+TTITLE9=Girl
+TTITLE10=Paperback Writer
+TTITLE11=Eleanor Rigby
+TTITLE12=Yellow Submarine
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

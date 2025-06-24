@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	187
+#	21082
+#	40475
+#	57292
+#	73230
+#	92305
+#	109287
+#	132225
+#	148475
+#	163112
+#
+# Disc length: 2359 seconds
+#
+# Revision: 34510700
+# Submitted via:  CATraxx 3.10
+#
+DISCID=9409350a
+DTITLE=Various Artists / Beverly Hills Cop Soundtrack
+TTITLE0=Patti LaBelle / New Attitude
+TTITLE1=Shalamar / Don't Get Stopped In Beverly Hills
+TTITLE2=Junior / Do You Really (Want My Love?)
+TTITLE3=Rockie Robbins / Emergency
+TTITLE4=Pointer Sisters / Neutron Dance
+TTITLE5=Glenn Frey / The Heat Is On
+TTITLE6=Danny Elfman / Gratitude
+TTITLE7=Patti LaBelle / Stir It Up
+TTITLE8=The System / Rock 'N Roll Me Again
+TTITLE9=Harold Faltermeyer / Axel F
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=Patti LaBelle
+EXTT1=Shalamar
+EXTT2=Junior
+EXTT3=Rockie Robbins
+EXTT4=Pointer Sisters
+EXTT5=Glenn Frey
+EXTT6=Danny Eljman
+EXTT7=Patti LaBelle
+EXTT8=The System
+EXTT9=Harold Faltermeyer
+PLAYORDER=

@@ -1,0 +1,39 @@
+#FILENAME=6f0c8008
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	20042
+#	47842
+#	75642
+#	99577
+#	146127
+#	169377
+#	207825
+#
+# Disc length: 3202 seconds
+#
+# Revision: 34561276
+# Submitted via:  NotifyCDPlayer(CDDB) 1.60beta5
+#
+DISCID=6f0c8008
+DTITLE=Loreena McKennitt / the book of secrets
+TTITLE0=Prologue
+TTITLE1=The Mummers Dance
+TTITLE2=Skellig
+TTITLE3=Marco Polo
+TTITLE4=The Highwayman
+TTITLE5=La Serenissima
+TTITLE6=Night Ride Across the Caucasus
+TTITLE7=Dante's Prayer
+EXTD=1997\nYEAR: 1999  ID3G:  80
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+PLAYORDER=

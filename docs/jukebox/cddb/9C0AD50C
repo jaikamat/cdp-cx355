@@ -1,0 +1,50 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	182
+#	16125
+#	34255
+#	47455
+#	70352
+#	85207
+#	104407
+#	123212
+#	140737
+#	153102
+#	175980
+#	196420
+#
+# Disc length: 2775 seconds
+#
+# Revision: 34481916
+# Submitted via:  CDmax 1.7.5
+#
+DISCID=9c0ad50c
+DTITLE=The Moody Blues / This Is The Moody Blues - Disc 2
+TTITLE0=Ride My See Saw
+TTITLE1=Tuesday Afternoon
+TTITLE2=And The Tide Rushes In
+TTITLE3=New Horizons
+TTITLE4=A Simple Game
+TTITLE5=Watching And Waiting
+TTITLE6=I'm Just A Singer
+TTITLE7=For My Lady
+TTITLE8=The Story In Your Eyes
+TTITLE9=Melancholy Man
+TTITLE10=Nights In White Satin
+TTITLE11=Late Lament
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+PLAYORDER=

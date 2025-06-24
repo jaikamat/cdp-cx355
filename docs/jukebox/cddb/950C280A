@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	25405
+#	52515
+#	72072
+#	93932
+#	119385
+#	134987
+#	164240
+#	186152
+#	209020
+#
+# Disc length: 3114 seconds
+#
+# Revision: 34511804
+# Submitted via:  EasyCD 2.21 - (C) 1996 Greg Leichner
+#
+DISCID=950c280a
+DTITLE=Gerry Rafferty / City To City
+TTITLE0=The Ark
+TTITLE1=Baker Street
+TTITLE2=Right Down The Line
+TTITLE3=City to City
+TTITLE4=Stealin' Time
+TTITLE5=Mattie's Rag
+TTITLE6=Whatever's Written In Your Heart
+TTITLE7=Home And Dry
+TTITLE8=Island
+TTITLE9=Waiting For The Day
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+PLAYORDER=

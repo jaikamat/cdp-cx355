@@ -1,0 +1,45 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	182
+#	13342
+#	24402
+#	36750
+#	45990
+#	55202
+#	66420
+#	79215
+#	89617
+#	100485
+#
+# Disc length: 1453 seconds
+#
+# Revision: 34489500
+# Submitted via:  AdeptDE 1.0
+#
+DISCID=8205ab0a
+DTITLE=Various Artists / Billboard Top Rock 'N' Roll Hits 1962-1966
+TTITLE0=Booker T. & The MG's / Green Onions
+TTITLE1=Gene Chandler / Duke of Earl
+TTITLE2=The Shirelles / Soldier Boy
+TTITLE3=Tommy Roe / Sheila
+TTITLE4=Joey Dee & The Starlighters / Peppermint Twist-Part 1
+TTITLE5=Little Eva / The Loco-Motion
+TTITLE6=Dion / The Wanderer
+TTITLE7=Neil Sedaka / Breaking Up Is Hard To Do
+TTITLE8=Shelley Fabares / Johnny Angel
+TTITLE9=Freddy Cannon / Palisades Park
+EXTD=DISC: 1\nUPC: 081227200725\nLABEL: Rhino\nENSORECORD: 123718\n\nYEAR: 2
+EXTD=000  ID3G:  17
+EXTT0=PERFORMER: Booker T. & The MG's\n
+EXTT1=PERFORMER: Gene Chandler\n
+EXTT2=PERFORMER: The Shirelles\n
+EXTT3=PERFORMER: Tommy Roe\n
+EXTT4=PERFORMER: Joey Dee & The Starlighters\n
+EXTT5=PERFORMER: Little Eva\n
+EXTT6=PERFORMER: Dion\n
+EXTT7=PERFORMER: Neil Sedaka\n
+EXTT8=PERFORMER: Shelley Fabares\n
+EXTT9=PERFORMER: Freddy Cannon\n
+PLAYORDER=

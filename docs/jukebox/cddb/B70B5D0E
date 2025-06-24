@@ -1,0 +1,56 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	12572
+#	34077
+#	48425
+#	62865
+#	78977
+#	92470
+#	107477
+#	121515
+#	140937
+#	154642
+#	167552
+#	184980
+#	202027
+#
+# Disc length: 2910 seconds
+#
+# Revision: 34486780
+# Submitted via:  xmcd 2.6 PL0
+#
+DISCID=b70b5d0e
+DTITLE=The Beatles / 1967-1970 (Disc 2)
+TTITLE0=Back In The U.S.S.R.
+TTITLE1=While My Guitar Gently Weeps
+TTITLE2=Ob-La-Di,Ob-La-Da
+TTITLE3=Get Back
+TTITLE4=Don't Let Me Down
+TTITLE5=The Ballad Of John And Yoko
+TTITLE6=Old Brown Shoe
+TTITLE7=Here Comes The Sun
+TTITLE8=Come Together
+TTITLE9=Something
+TTITLE10=Octopus's Garden
+TTITLE11=Let It Be
+TTITLE12=Across The Universe
+TTITLE13=The Long And Winding Road
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=49-12/11/76
+EXTT3=1-5/24/69
+EXTT4=
+EXTT5=8-7/12/69
+EXTT6=
+EXTT7=
+EXTT8=1-11/29/69
+EXTT9=1-11/29/69
+EXTT10=
+EXTT11=1-4/11/70
+EXTT12=
+EXTT13=1-6/13/70
+PLAYORDER=

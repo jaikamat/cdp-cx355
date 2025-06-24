@@ -1,0 +1,53 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	16370
+#	31582
+#	43215
+#	58370
+#	72050
+#	89385
+#	106365
+#	124200
+#	138360
+#	156960
+#	173352
+#	201992
+#
+# Disc length: 3549 seconds
+#
+# Revision: 34514492
+# Submitted via:  xmcd 2.1 PL2
+#
+DISCID=b00ddb0d
+DTITLE=Sherrie Austin / Love In The Real World
+TTITLE0=Never Been Kissed
+TTITLE1=Good Love Comin' On
+TTITLE2=Little Bird
+TTITLE3=That's No Way To Break A Heart
+TTITLE4=Sarah
+TTITLE5=All The Love A Heart Can Hold
+TTITLE6=Dreaming Out Loud
+TTITLE7=Heart To Heart
+TTITLE8=Love In The Real World
+TTITLE9=Heart Hold On
+TTITLE10=All That Matters
+TTITLE11=Wish
+TTITLE12=data
+EXTD=\nYEAR: 2000  ID3G:   2
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+EXTT12=
+PLAYORDER=

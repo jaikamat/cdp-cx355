@@ -1,0 +1,51 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	60225
+#	75577
+#	90352
+#	107649
+#	132151
+#	156309
+#	189373
+#	194005
+#	215576
+#	227173
+#	239952
+#	263559
+#
+# Disc length: 3776 seconds
+#
+# Revision: 34496028
+# Submitted via:  NetCD 1.6.7
+#
+DISCID=ac0b9d0c
+DTITLE=Various Artists / A Musical Odyssey - A Journey Through the Classics
+TTITLE0=Vivaldi / The Four Seasons (Allegro from "The Spring")
+TTITLE1=Bach / Orchestra Suite No. 3 (Air for the "G" string)
+TTITLE2=Handel / Messiah (Hallelujah!)
+TTITLE3=Haydn / Symphony No. 104, "London" (Menuet: Allegro)
+TTITLE4=Mozart / Eine Kleine Nachtmusik (Allegro)
+TTITLE5=Beethoven / Symphony No. 5 (Allegro Con Brio)
+TTITLE6=Chopin / Prelude No. 7
+TTITLE7=Wagner / The Valkyrie (Ride of the Valkyries)
+TTITLE8=Tchaikovsky / "The Nutcracker" Suite (March)
+TTITLE9=Stravinsky / "The Firebird" Suite (The Palace of Kastchei and His
+TTITLE9=Enchantments Vanish)
+TTITLE10=Ravel / Bolero (Finale)
+TTITLE11=Bernstein / Candide (Overture)
+EXTD=\nYEAR: 2000  ID3G:  32
+EXTT0=Baroque Era (1600-1750)
+EXTT1=Baroque Era (1600-1750)
+EXTT2=Baroque Era (1600-1750)
+EXTT3=Classical Era (1750-1830)
+EXTT4=Classical Era (1750-1830)
+EXTT5=Classical Era (1750-1830)
+EXTT6=Romantic Era (1830-1900)
+EXTT7=Romantic Era (1830-1900)
+EXTT8=Romantic Era (1830-1900)
+EXTT9=Contemporary Era (1900-PRESENT)
+EXTT10=Contemporary Era (1900-PRESENT)
+EXTT11=Contemporary Era (1900-PRESENT)
+PLAYORDER=

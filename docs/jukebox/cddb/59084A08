@@ -1,0 +1,38 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	22095
+#	38245
+#	51997
+#	75160
+#	91605
+#	97952
+#	119097
+#
+# Disc length: 2124 seconds
+#
+# Revision: 34497868
+# Submitted via:  xmcd 2.0
+#
+DISCID=59084a08
+DTITLE=Joe Walsh / But Seriously Folks
+TTITLE0=Over and Over
+TTITLE1=Second Hand Store
+TTITLE2=Indian Summer
+TTITLE3=At The Station
+TTITLE4=Tomorrow
+TTITLE5=Inner Tube
+TTITLE6=Theme From Boat Weirdos
+TTITLE7=Life's Been Good
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+PLAYORDER=

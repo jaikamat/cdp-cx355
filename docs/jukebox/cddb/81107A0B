@@ -1,0 +1,47 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	32055
+#	60823
+#	86580
+#	113730
+#	141848
+#	159828
+#	188395
+#	220868
+#	256798
+#	285313
+#
+# Disc length: 4220 seconds
+#
+# Revision: 34499292
+# Submitted via:  Axialis_AX_CDPlayer 2.5
+#
+DISCID=81107a0b
+DTITLE=Miles, Robert / Dreamland
+TTITLE0=Children (Dream Version)
+TTITLE1=Fable (Message Version)
+TTITLE2=Fantasya
+TTITLE3=Landscape
+TTITLE4=In My Dreams
+TTITLE5=One And One
+TTITLE6=Princess Of Light
+TTITLE7=Fable (Dream Version)
+TTITLE8=In The Dawn
+TTITLE9=Children (Original Version)
+TTITLE10=Red Zone
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+PLAYORDER=

@@ -1,0 +1,41 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	16892
+#	31775
+#	60867
+#	74642
+#	95407
+#	136800
+#	170797
+#	188172
+#
+# Disc length: 2849 seconds
+#
+# Revision: 34487052
+# Submitted via:  Axialis_AX_CDPlayer 2.1.003
+#
+DISCID=710b1f09
+DTITLE=The Rolling Stones / Hot Rocks 1964-1971 (Disc 2)
+TTITLE0=Jumping Jack Flash
+TTITLE1=Street Fighting Man
+TTITLE2=Sympathy for the Devil
+TTITLE3=Honky Tonk Women
+TTITLE4=Gimme Shelter
+TTITLE5=Midnight Rambler (Live)
+TTITLE6=You Can't Always Get What You Want
+TTITLE7=Brown Sugar
+TTITLE8=Wild Horses
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+PLAYORDER=

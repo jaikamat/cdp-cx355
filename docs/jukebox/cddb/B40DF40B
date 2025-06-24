@@ -1,0 +1,48 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	18681
+#	41321
+#	59914
+#	81645
+#	101005
+#	125853
+#	145206
+#	173657
+#	194788
+#	217114
+#	279458
+#
+# Disc length: 4369 seconds
+#
+# Revision: 34480508
+# Submitted via:  xmcd 2.6 PL0
+#
+DISCID=b40df40b
+DTITLE=Sheryl Crow / The Globe Sessions
+TTITLE0=My favorite mistake
+TTITLE1=There goes the neighborhood
+TTITLE2=Riverwide
+TTITLE3=It don't hurt
+TTITLE4=Maybe that's something
+TTITLE5=Am I getting through (Part I & II)
+TTITLE6=Anything but down
+TTITLE7=The difficult kind
+TTITLE8=Mississippi
+TTITLE9=Members only
+TTITLE10=Crash and burn
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=istake\n
+EXTT1=ood.\nThere goes the neighborhood.\n
+EXTT2= on me.             \n
+EXTT3=          \n
+EXTT4=ore than nothing, more than nothing.\n
+EXTT5=fade the love you made\nWill seem one hundred light years away\n\n
+EXTT6=ell, I got some wishes of my own \n
+EXTT7= \nBut babe I've changed       \nCause babe I've changed    \n
+EXTT8=ing that I did wrong\nWas stayed in Mississippi a day too long\n
+EXTT9=ore\nNo and I can't take it anymore\n
+EXTT10=the crash and burn\nI say I've gotten use to the crash and burn\n
+PLAYORDER=

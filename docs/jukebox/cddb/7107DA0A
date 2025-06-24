@@ -1,0 +1,44 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	11745
+#	24820
+#	41500
+#	60472
+#	76900
+#	90267
+#	110840
+#	121287
+#	134392
+#
+# Disc length: 2012 seconds
+#
+# Revision: 34487004
+# Submitted via:  CDmax 1.7.5
+#
+DISCID=7107da0a
+DTITLE=Garth Brooks / Garth Brooks
+TTITLE0=Not Counting You
+TTITLE1=I've Got a Good Thing Going
+TTITLE2=If Tomorrow Never Comes
+TTITLE3=Everytime That It Rains
+TTITLE4=Alabama Clay
+TTITLE5=Much Too Young (To Feel This Damn Old)
+TTITLE6=Cowboy Bill
+TTITLE7=Nobody Gets off in This Town
+TTITLE8=I Know One
+TTITLE9=The Dance
+EXTD=Garth's First Album\nYEAR: 2000  ID3G:   2
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=     miss the dance
+PLAYORDER=

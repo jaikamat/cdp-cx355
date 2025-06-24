@@ -1,0 +1,50 @@
+# xmcd CD database file
+# Copyright (C) 1995-1998 Ti Kan
+#
+# Track frame offsets:
+#	150
+#	16208
+#	33588
+#	51353
+#	65788
+#	82568
+#	99018
+#	116578
+#	134058
+#	153298
+#	168303
+#	187170
+#
+# Disc length: 2750 seconds
+#
+# Revision: 34513900
+# Submitted via:  MusicMatchJukebox 5.00.0142
+#
+DISCID=990abc0c
+DTITLE=Ace of Base / The Sign
+TTITLE0=All That She Wants
+TTITLE1=Don't Turn Around
+TTITLE2=Young and Proud
+TTITLE3=The Sign
+TTITLE4=Living in Danger
+TTITLE5=Dancer in a Daydream
+TTITLE6=Wheel of Fortune
+TTITLE7=Waiting For Magic (Total Remix 7")
+TTITLE8=Happy Nation
+TTITLE9=Voulez-Vous Danser
+TTITLE10=My Mind (Mindless Mix)
+TTITLE11=All That She Wants (Banghra Version)
+EXTD=\nYEAR: 2000  ID3G:  17
+EXTT0=
+EXTT1=
+EXTT2=
+EXTT3=
+EXTT4=
+EXTT5=
+EXTT6=
+EXTT7=
+EXTT8=
+EXTT9=
+EXTT10=
+EXTT11=
+PLAYORDER=
