@@ -62,7 +62,7 @@ uint8_t toBCD(int val)
   return (highNibble << 4) | lowNibble;
 }
 
-/** Send “Play Direct Track” command for discNumber (1..400) */
+/** Send "Play Direct Track" command for discNumber (1..400) */
 void slinkSelectDisc(int discNumber)
 {
   // Decide device byte based on discNumber
@@ -284,115 +284,6 @@ String queryDiscTitle(int discNumber)
 }
 
 
-// ------------------ CUSTOM SONY RESPONSE PARSER ------------------
-
-/**
- * Custom Sony response parser that handles actual Sony timing patterns
- * Instead of looking for 2400μs sync, decodes data directly from pulse patterns
- */
-String parseSonyResponse(unsigned long timeoutMs = 3000)
-{
-  Serial.println("=== Custom Sony Response Parser ===");
-  Serial.println("Looking for Sony pulse patterns (~1130μs = 1, ~566μs = 0)");
-  
-  String result = "";
-  unsigned long startTime = millis();
-  int pulseCount = 0;
-  String binaryData = "";
-  
-  while (millis() - startTime < timeoutMs && pulseCount < 100) // Max 100 pulses
-  {
-    // Read S-Link pin directly (assuming it's pin 2 based on SLINK_PIN)
-    unsigned long pulseStart = micros();
-    
-    // Wait for line to go LOW (start of pulse)
-    while (digitalRead(SLINK_PIN) == HIGH && (micros() - pulseStart) < 10000) {
-      delayMicroseconds(1);
-    }
-    
-    if ((micros() - pulseStart) >= 10000) break; // Timeout waiting for pulse
-    
-    // Measure LOW pulse duration
-    unsigned long lowStart = micros();
-    while (digitalRead(SLINK_PIN) == LOW && (micros() - lowStart) < 5000) {
-      delayMicroseconds(1);
-    }
-    
-    unsigned long pulseDuration = micros() - lowStart;
-    
-    if (pulseDuration > 100) // Ignore very short glitches
-    {
-      pulseCount++;
-      Serial.print("Pulse ");
-      Serial.print(pulseCount);
-      Serial.print(": ");
-      Serial.print(pulseDuration);
-      Serial.print("μs ");
-      
-      // Decode based on Sony timing patterns
-      if (pulseDuration >= 900 && pulseDuration <= 1400) {
-        // ~1130μs = Logic 1
-        binaryData += "1";
-        Serial.println("(1)");
-      }
-      else if (pulseDuration >= 400 && pulseDuration <= 800) {
-        // ~566μs = Logic 0
-        binaryData += "0";
-        Serial.println("(0)");
-      }
-      else {
-        Serial.print("(unknown - outside expected range)");
-        Serial.println();
-      }
-      
-      // Check if we have enough bits to decode a byte
-      if (binaryData.length() >= 8) {
-        // Try to decode bytes from binary data
-        while (binaryData.length() >= 8) {
-          String byteBinary = binaryData.substring(0, 8);
-          binaryData = binaryData.substring(8);
-          
-          // Convert binary string to byte
-          uint8_t byteValue = 0;
-          for (int i = 0; i < 8; i++) {
-            if (byteBinary[i] == '1') {
-              byteValue |= (1 << (7-i));
-            }
-          }
-          
-          Serial.print("Decoded byte: 0x");
-          if (byteValue < 0x10) Serial.print("0");
-          Serial.print(byteValue, HEX);
-          
-          // Check for the magic 1F response
-          if (byteValue == 0x1F) {
-            Serial.println(" *** FOUND 1F SUCCESS RESPONSE! ***");
-            return "1F";
-          }
-          
-          // Add to result
-          if (result.length() > 0) result += ",";
-          result += String(byteValue, HEX);
-          
-          Serial.println();
-        }
-      }
-    }
-    
-    // Brief delay before next pulse detection
-    delayMicroseconds(50);
-  }
-  
-  Serial.print("Final binary data remaining: ");
-  Serial.println(binaryData);
-  Serial.print("Total pulses detected: ");
-  Serial.println(pulseCount);
-  Serial.print("Decoded response: ");
-  Serial.println(result.length() > 0 ? result : "No valid data");
-  
-  return result;
-}
-
 // ------------------ S-LINK DIRECT TEXT WRITING FUNCTIONS ------------------
 
 /**
@@ -469,16 +360,18 @@ String slinkWriteDiscText(int discNumber, const String& text)
   // Use sendLongCommand with correct 0x80 format
   slink.sendLongCommand(device, textData, 15);
   
-  delay(500); // Give device time to process
+  delay(100); // Give device time to process. 500ms was too long.
   
-  // NEW: Use custom Sony response parser that handles actual timing patterns
-  Serial.println("Using custom Sony response parser to decode actual device response...");
-  String response = parseSonyResponse(3000);
+  // Use the library's input monitor to robustly capture the response.
+  Serial.println("Using library's input monitor to capture device response...");
+  String response = slink.inputMonitorWithReturn(2, false, 500000UL); // 500ms timeout
   
   Serial.print("Response: ");
   if (response.length() > 0)
   {
     Serial.println(response);
+    
+    response.trim();
     
     // Check for success response (1F)
     if (response.indexOf("1F") >= 0)
