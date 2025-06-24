@@ -1,0 +1,160 @@
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#000080" alink="#FF0000"><!-- BEGIN WAYBACK TOOLBAR INSERT -->
+    <script>__wm.rw(0);</script>
+    <div id="wm-ipp-base" lang="en" style="display: block; direction: ltr; height: 127px;" toolbar-mode="auto">
+    </div><div id="wm-ipp-print">The Wayback Machine - http://web.archive.org/web/20070702173101/http://www.undeadscientist.com:80/slink/encoding.html</div>
+    <script type="text/javascript">//<![CDATA[
+    __wm.bt(750,27,25,2,"web","http://www.undeadscientist.com/slink/encoding.html","20070702173101",1996,"https://web-static.archive.org/_static/",["https://web-static.archive.org/_static/css/banner-styles.css?v=1B2M2Y8A","https://web-static.archive.org/_static/css/iconochive.css?v=1B2M2Y8A"], false);
+      __wm.rw(1);
+    //]]></script>
+    <!-- END WAYBACK TOOLBAR INSERT -->
+     
+    <h1 align="CENTER">S-Link / Control-A1 II / Control-S Encoding</h1>
+    <center>
+    <i>Last Update: February 2, 2003</i><hr><br>
+    <p>
+    </p><h2>Control-A1, Control-A1 II, and S-Link</h2>
+    Control-A1 (sometimes called S-Link) and Control-A1 II use a serial protocol to
+    transmit and recieve command codes to component audio systems.  This scheme is
+    used for both S-Link style packets of 2 to ?? bytes, and the 16, 19, or 24 bit
+    infrared legacy remote command codes.  
+    <p>
+    Briefly, the history of these specificiations runs something like this. The
+    legacy command sequences are based on infrared remote commands and the early
+    cable remote standard Control-S (see below). In the late 90's Sony introduced
+    Control-A1 calling it S-Link for marketing purposes. Control-A1 appeared as
+    part of a total system integration scheme which allowed an AV amplifier to act
+    as a central command center for all equipment and present menus on a 
+    television. Generally speaking this concept flopped for Sony simply because it
+    was supported in only a limited way and few people rushed out to replace all
+    their audio components with S-Link versions.  Control-A1 carried on however
+    as a wonderful way to interact with large CD changers.  Control-A1 II was 
+    introduced as a revision to the Control-A1 standard to provide support for
+    CD changers with 300 discs or more. All Control-A1 commands work on devices
+    using the Control-A1 II interface, but not necessarily the other way around.
+    </p><p>
+    Thus, we have a standard, which is proprietary to Sony and completely 
+    undocumented in the public arena. Our jouney might have ended there, but 
+    thanks to the tireless efforts of people who bought Sony equipment and actually
+    wanted to use it, most everything about Control-A1 and Control-A1 II has been
+    teased out of the machines themselves. You could glean how the encoding works 
+    by reading the 
+    <a href="http://web.archive.org/web/20070702173101/http://www.undeadscientist.com/slink/driverdownload.html">driver 
+    source code</a>, but if that seems intimidating, never fear. We thought it 
+    would be helpful to spell it out in case someone wants to start from scratch 
+    (or work under a different platform).
+    </p><p>
+    The serial bus used for the Control-A1 / Control-A1 II by Sony equipment 
+    operates in a steady hi state (+5 volts) when not sending data.  So the
+    transmission of information consists of an arrangement of ground (0 volt) 
+    pulses of various lengths.  The <a href="slinkhardware.html"> parallel port 
+    adapter</a> described in these pages can be used to decode and send these 
+    pulses by using the system interrupt generated when the bus transitions between
+    high (+5 V) to low (ground) states.  The serial scheme chosen by Sony has 
+    three elements:
+    </p><p>
+    <table width="75%">
+    <tbody><tr>
+    <td><li>An initialization pulse which is sent at the beginning of each serial 
+    string to announce the traffic and help distinguish the data pulses from 
+    potential bus noise.</li></td>
+    <td align="CENTER">
+    <img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/initpulse.gif"><br>Ground for 2400<br>microseconds</td>
+    </tr><tr>
+    <td><li>A pulse representing a binary one.</li></td>
+    <td align="CENTER">
+    <img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/onepulse.gif"><br>Ground for 1200<br>microseconds</td>
+    </tr><tr>
+    <td><li>A pulse representing a binary zero.</li></td>
+    <td align="CENTER">
+    <img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/zeropulse.gif"><br>Ground for 600<br>microseconds</td>
+    </tr></tbody></table>
+    </p><p> 
+    Every pulse is seperated by a 600 microsecond "gap" where the bus returns to 
+    +5 volts.  It has been my experience that the equipment behaves much like good 
+    hardware should and the precisions required for transmission of this data are 
+    fairly strict.
+    </p><p>
+    <i>Note: This is one of the main reason for the high processor speed required 
+        for sending data using the parallel port.  On PC/AT type computers 
+        (and most home computing hardware in general), there is a system 
+        interrupt which must run frequently to keep the system running.  It is 
+        impossible (and unwise in any event) to disable this operation and
+        claim total control of the system.  As a result this interrupt WILL 
+        OCCUR while transmitting data using the parallel port.  On machines 
+        slower than pentium class handling multiple users (linux), occasionally
+        the interrupt takes enough time to mangle a packet.  The result is 
+            a meaningless data packet and essentially a missed message.</i>
+    </p><p>
+    As a simple example, to send an ASCII letter A, 0x41 hex / 65 decimal, using theControl-A1 / Control-A1 II serial format you would send: 
+    <br><img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/slinka.gif">
+    <br>
+    init 0100 0001
+    </p><p>
+    Sending longer strings does not require resending the init pulse.  In fact, 
+    resending the init will invalidate the string.  So to send a Control-A1 play
+    command to CD player 1, the correct sequence is:
+    <br><img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/slinkCD1play.gif">
+    <br>
+    init 1001 0000 0000 0000
+    </p><p>
+    To send a play using the infrared command set to CD player 2 you would transmit:
+    <br><img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/irCD2play.gif">
+    <br>
+    init 1110 0100 1101 0011 100
+    </p><p>
+    The hardware I have appears to avoid the problem of two devices talking at the same time by a "wait-and-see" method.  If there
+    is traffic on the bus, the equipment won't start sending it's message until things have been quiet for 2,000 microseconds.
+    This may be a wait definined in the protocol specification or it may not, but it is how my equipment behaves and it seems to
+    work out well when I use it in the device driver. 
+    </p><p>
+    </p><h2>Control-S</h2>
+    Control-S is simply a TTL version of the SIRCS (Serial Infrared Remote Control
+    Standard) and is encoded completely opposite the newer bussed Control-A1 
+    standard. Control-S operates in a standard floating ground state (0 volts give 
+    or take a volt). So the transmission of information consists of an arrangement
+    of TTL hi pulses (+5 Volts). The
+    <a href="slinkhardware.html"> parallel port adapter</a> described in these 
+    pages can be used send these pulses by toggling the parallel port data bits.
+    In principle a single Control-S data channel could also be monitored with a
+    little design change, but the simple adapter currently presented on these 
+    pages has not been designed for this purpose and is restricted to sending
+    Control-S only.
+    <p>
+    <table width="75%">
+    <tbody><tr>
+    <td><li>An initialization pulse which is sent at the beginning of each serial 
+    string to announce the traffic and help distinguish the data pulses from 
+    potential bus noise.</li></td>
+    <td align="CENTER">
+    <img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/csinitpulse.gif"><br>+5 V for 2400<br>microseconds</td>
+    </tr><tr>
+    <td><li>A pulse representing a binary one.</li></td>
+    <td align="CENTER">
+    <img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/csonepulse.gif"><br>+5 V for 1200<br>microseconds</td>
+    </tr><tr>
+    <td><li>A pulse representing a binary zero.</li></td>
+    <td align="CENTER">
+    <img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/cszeropulse.gif"><br>+5 V for 600<br>microseconds</td>
+    </tr></tbody></table>
+    </p><p> 
+    Every pulse is seperated by a 600 microsecond "gap" where the bus returns to 
+    0 volts. Command words are 12, 15 or 20 bits long and are made up of a 5, 8 
+    or 13 bit device code and a 7 bit command code. Total message length is always 
+    45 ms including the initialization pulse and all data bits. Each message must
+    also be sent a minimum of three times. The repetition is a form of error 
+    correction built into the SIRCS standard.  For practical purposes the message 
+    length this is just a minimum command spacing on the Control-S bus since 
+    messages are padded with the TTL low state.
+    </p><p>
+    Hopefully I've managed to explain everything adequately to get everyone on with
+    making neat stuff to communicate with their Sony equipment.  If all of this is too much for you, I recommend just using the 
+    <a href="http://web.archive.org/web/20070702173101/http://www.undeadscientist.com/slink/driverdownload.html">
+    device driver</a> which has been tested and works quite well.  If anyone is 
+    still confused let me know and I'll do what I can to clear things up. Have 
+    fun. <a href="http://web.archive.org/web/20070702173101/mailto:jbehle@earthling.net">-Jeff</a><br></p><hr><br>
+    <a href="index.html">Back to S-Link Main Page.</a><br>
+    </center><br><hr><br><div align="CENTER"><img src="/web/20070702173101im_/http://www.undeadscientist.com/slink/apache_pb.gif" alt=""></div>
+    
+    
+    
+    </body>
