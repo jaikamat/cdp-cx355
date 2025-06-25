@@ -11,116 +11,146 @@
 #define SLINK_LOOP_TIMEOUT 500000
 #define SLINK_MARK_RANGE 1.2
 
-SLinkProtocol::SLinkProtocol(uint8_t pin) : _pin(pin), _commandCount(0), _currentCommand(nullptr) {
+SLinkProtocol::SLinkProtocol(uint8_t pin) : _pin(pin), _commandCount(0), _currentCommand(nullptr)
+{
     memset(_titleBuffer, 0, sizeof(_titleBuffer));
 }
 
-void SLinkProtocol::begin() {
+void SLinkProtocol::begin()
+{
     pinMode(_pin, INPUT);
 }
 
-void SLinkProtocol::process() {
-    if (_currentCommand) {
-        if (_currentCommand->timeout > 0 && millis() > _currentCommand->timeout) {
+void SLinkProtocol::process()
+{
+    if (_currentCommand)
+    {
+        if (_currentCommand->timeout > 0 && millis() > _currentCommand->timeout)
+        {
             Serial.println("Command timed out");
             _currentCommand = nullptr;
             executeNextCommand();
             return;
         }
 
-        switch (_currentCommand->command) {
-            case CMD_GET_DISC_TITLE:
-                processGetDiscTitle();
-                break;
-            case CMD_PLAY:
-            case CMD_STOP:
-            case CMD_PAUSE:
-            case CMD_NEXT_TRACK:
-            case CMD_PREV_TRACK:
-            case CMD_POWER_ON:
-            case CMD_POWER_OFF:
-                processSimpleCommand();
-                break;
-            case CMD_SELECT_DISC:
-                processSelectDisc();
-                break;
+        switch (_currentCommand->command)
+        {
+        case CMD_GET_DISC_TITLE:
+            processGetDiscTitle();
+            break;
+        case CMD_PLAY:
+        case CMD_STOP:
+        case CMD_PAUSE:
+        case CMD_NEXT_TRACK:
+        case CMD_PREV_TRACK:
+        case CMD_POWER_ON:
+        case CMD_POWER_OFF:
+            processSimpleCommand();
+            break;
+        case CMD_SELECT_DISC:
+            processSelectDisc();
+            break;
         }
-    } else {
+    }
+    else
+    {
         executeNextCommand();
     }
 }
 
-bool SLinkProtocol::getDiscTitle(int disc, SLinkCallback callback, void* userData) {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::getDiscTitle(int disc, SLinkCallback callback, void *userData)
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_GET_DISC_TITLE, disc, 0, callback, userData);
     return true;
 }
 
-bool SLinkProtocol::play() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::play()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_PLAY, 0, 0, nullptr, nullptr);
     return true;
 }
 
-bool SLinkProtocol::stop() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::stop()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_STOP, 0, 0, nullptr, nullptr);
     return true;
 }
 
-bool SLinkProtocol::pause() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::pause()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_PAUSE, 0, 0, nullptr, nullptr);
     return true;
 }
 
-bool SLinkProtocol::nextTrack() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::nextTrack()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_NEXT_TRACK, 0, 0, nullptr, nullptr);
     return true;
 }
 
-bool SLinkProtocol::prevTrack() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::prevTrack()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_PREV_TRACK, 0, 0, nullptr, nullptr);
     return true;
 }
 
-bool SLinkProtocol::selectDisc(int disc) {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::selectDisc(int disc)
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_SELECT_DISC, disc, 1, nullptr, nullptr); // Default to track 1
     return true;
 }
 
-bool SLinkProtocol::powerOn() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::powerOn()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_POWER_ON, 0, 0, nullptr, nullptr);
     return true;
 }
 
-bool SLinkProtocol::powerOff() {
-    if (_commandCount >= MAX_COMMANDS) return false;
+bool SLinkProtocol::powerOff()
+{
+    if (_commandCount >= MAX_COMMANDS)
+        return false;
     addCommand(CMD_POWER_OFF, 0, 0, nullptr, nullptr);
     return true;
 }
 
-const char* SLinkProtocol::getTitle() const {
+const char *SLinkProtocol::getTitle() const
+{
     return _titleBuffer;
 }
 
-void SLinkProtocol::processGetDiscTitle() {
+void SLinkProtocol::processGetDiscTitle()
+{
     uint8_t device = (_currentCommand->disc > 200) ? 0x93 : 0x90;
     uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
 
     String response;
-    for (int attempt = 1; attempt <= 5; attempt++) {
+    for (int attempt = 1; attempt <= 5; attempt++)
+    {
         uint8_t cmd[] = {device, (uint8_t)CMD_GET_DISC_TITLE, discByte};
         sendCommand(cmd, sizeof(cmd));
-        delay(attempt * 2); // 2ms, 4ms, 6ms, 8ms, 10ms
+        delayMicroseconds(attempt * 500); // 0.5ms, 1ms, 1.5ms...
 
         response = inputMonitorWithReturn(2, false, 200000UL); // 0.2 seconds
 
-        if (response.indexOf("98,40,") >= 0) {
+        if (response.indexOf("98,40,") >= 0)
+        {
             break;
         }
         delay(100);
@@ -129,7 +159,8 @@ void SLinkProtocol::processGetDiscTitle() {
     Serial.print("GetDiscTitle Response: ");
     Serial.println(response);
 
-    if (response.length() > 0) {
+    if (response.length() > 0)
+    {
         response.replace(",", " ");
         response.replace("START", "");
         response.replace("\n", " ");
@@ -138,14 +169,18 @@ void SLinkProtocol::processGetDiscTitle() {
         String title;
         int start = 0;
         int byteCount = 0;
-        while (start < response.length()) {
+        while (start < response.length())
+        {
             int end = response.indexOf(' ', start);
-            if (end == -1) end = response.length();
+            if (end == -1)
+                end = response.length();
             String hexByte = response.substring(start, end);
-            if (hexByte.length() > 0) {
+            if (hexByte.length() > 0)
+            {
                 long byteVal = strtol(hexByte.c_str(), NULL, 16);
                 byteCount++;
-                if (byteCount >= 4 && byteVal >= 0x20 && byteVal <= 0x7E) {
+                if (byteCount >= 4 && byteVal >= 0x20 && byteVal <= 0x7E)
+                {
                     title += (char)byteVal;
                 }
             }
@@ -153,28 +188,34 @@ void SLinkProtocol::processGetDiscTitle() {
         }
         title.trim();
         strncpy(_titleBuffer, title.c_str(), 20);
-    } else {
+    }
+    else
+    {
         strcpy(_titleBuffer, "Timeout");
     }
 
-    if (_currentCommand->callback) {
+    if (_currentCommand->callback)
+    {
         _currentCommand->callback(this, _currentCommand->userData);
     }
     _currentCommand = nullptr;
     executeNextCommand();
 }
 
-void SLinkProtocol::processSimpleCommand() {
+void SLinkProtocol::processSimpleCommand()
+{
     uint8_t cmd[] = {0x90, (uint8_t)_currentCommand->command};
     String response;
     char expectedResponse[10];
     sprintf(expectedResponse, "98,%x,", _currentCommand->command);
 
-    for (int attempt = 1; attempt <= 5; attempt++) {
+    for (int attempt = 1; attempt <= 5; attempt++)
+    {
         sendCommand(cmd, sizeof(cmd));
-        delay(attempt * 2);
+        delayMicroseconds(attempt * 500); // 0.5ms, 1ms, 1.5ms...
         response = inputMonitorWithReturn(2, false, 200000UL);
-        if (response.indexOf(expectedResponse) >= 0) {
+        if (response.indexOf(expectedResponse) >= 0)
+        {
             break;
         }
         delay(100);
@@ -185,27 +226,31 @@ void SLinkProtocol::processSimpleCommand() {
     Serial.print(") Response: ");
     Serial.println(response);
 
-    if (_currentCommand->callback) {
+    if (_currentCommand->callback)
+    {
         _currentCommand->callback(this, _currentCommand->userData);
     }
     _currentCommand = nullptr;
     executeNextCommand();
 }
 
-void SLinkProtocol::processSelectDisc() {
+void SLinkProtocol::processSelectDisc()
+{
     uint8_t device = (_currentCommand->disc > 200) ? 0x93 : 0x90;
     uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
     uint8_t trackByte = toBCD(_currentCommand->track);
     uint8_t cmd[] = {device, (uint8_t)CMD_SELECT_DISC, discByte, trackByte};
-    
+
     String response;
-    for (int attempt = 1; attempt <= 5; attempt++) {
+    for (int attempt = 1; attempt <= 5; attempt++)
+    {
         sendCommand(cmd, sizeof(cmd));
-        delay(attempt * 2);
+        delayMicroseconds(attempt * 500); // 0.5ms, 1ms, 1.5ms...
         response = inputMonitorWithReturn(2, false, 200000UL);
         // For select disc, we don't have a clear expected response, so we just capture.
         // A more advanced implementation could wait for a specific status like 'Playing'.
-        if (response.length() > 0) {
+        if (response.length() > 0)
+        {
             break;
         }
         delay(100);
@@ -214,24 +259,28 @@ void SLinkProtocol::processSelectDisc() {
     Serial.print("SelectDisc Response: ");
     Serial.println(response);
 
-    if (_currentCommand->callback) {
+    if (_currentCommand->callback)
+    {
         _currentCommand->callback(this, _currentCommand->userData);
     }
     _currentCommand = nullptr;
     executeNextCommand();
 }
 
-void SLinkProtocol::_lineReady() {
+void SLinkProtocol::_lineReady()
+{
     unsigned long Start = micros();
     unsigned long beginTimeout = Start;
-    do {
+    do
+    {
         delayMicroseconds(SLINK_LOOP_DELAY);
         if (digitalRead(_pin) == LOW)
             Start = micros();
     } while ((micros() - Start < SLINK_LINE_READY) && (micros() - beginTimeout < SLINK_LOOP_TIMEOUT));
 }
 
-void SLinkProtocol::_writeSync() {
+void SLinkProtocol::_writeSync()
+{
     pinMode(_pin, OUTPUT);
     digitalWrite(_pin, LOW);
     delayMicroseconds(SLINK_MARK_SYNC);
@@ -239,15 +288,20 @@ void SLinkProtocol::_writeSync() {
     delayMicroseconds(SLINK_MARK_DELIMITER);
 }
 
-void SLinkProtocol::_writeByte(byte value) {
+void SLinkProtocol::_writeByte(byte value)
+{
     pinMode(_pin, OUTPUT);
-    for (int i = 7; i >= 0; i--) {
-        if (value & 1 << i) {
+    for (int i = 7; i >= 0; i--)
+    {
+        if (value & 1 << i)
+        {
             digitalWrite(_pin, LOW);
             delayMicroseconds(SLINK_MARK_ONE);
             digitalWrite(_pin, HIGH);
             delayMicroseconds(SLINK_MARK_DELIMITER);
-        } else {
+        }
+        else
+        {
             digitalWrite(_pin, LOW);
             delayMicroseconds(SLINK_MARK_ZERO);
             digitalWrite(_pin, HIGH);
@@ -256,25 +310,29 @@ void SLinkProtocol::_writeByte(byte value) {
     }
 }
 
-void SLinkProtocol::sendCommand(const uint8_t* command, size_t length) {
+void SLinkProtocol::sendCommand(const uint8_t *command, size_t length)
+{
     unsigned long Start;
     pinMode(_pin, INPUT);
     _lineReady();
     Start = micros();
     pinMode(_pin, OUTPUT);
     _writeSync();
-    for (size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i)
+    {
         _writeByte(command[i]);
     }
     pinMode(_pin, INPUT);
-    do {
+    do
+    {
         delayMicroseconds(SLINK_LOOP_DELAY);
         if (digitalRead(_pin) == LOW)
             break;
     } while (micros() - Start < SLINK_WORD_DELIMITER);
 }
 
-int SLinkProtocol::readResponse(uint8_t* buffer, size_t length, unsigned long timeout_ms) {
+int SLinkProtocol::readResponse(uint8_t *buffer, size_t length, unsigned long timeout_ms)
+{
     unsigned long startTime = millis();
     int byteCount = 0;
     int bitCount = 0;
@@ -283,7 +341,8 @@ int SLinkProtocol::readResponse(uint8_t* buffer, size_t length, unsigned long ti
 
     memset(buffer, 0, length);
 
-    while (millis() - startTime < timeout_ms) {
+    while (millis() - startTime < timeout_ms)
+    {
         unsigned long pulseDuration;
 
         // --- Critical Section: Measure one pulse without interruption ---
@@ -292,17 +351,21 @@ int SLinkProtocol::readResponse(uint8_t* buffer, size_t length, unsigned long ti
         interrupts();
         // --- End Critical Section ---
 
-        if (pulseDuration == 0) { // No pulse was detected
-            if (syncFound && byteCount > 0) {
+        if (pulseDuration == 0)
+        { // No pulse was detected
+            if (syncFound && byteCount > 0)
+            {
                 // If we were in the middle of a message, it has ended.
                 return byteCount;
             }
             continue; // Otherwise, just keep waiting for a sync pulse.
         }
 
-        if (!syncFound) {
+        if (!syncFound)
+        {
             // We are waiting for a sync pulse to start a message.
-            if (pulseDuration > 2000 && pulseDuration < 3000) { // Sync is ~2400us
+            if (pulseDuration > 2000 && pulseDuration < 3000)
+            { // Sync is ~2400us
                 syncFound = true;
                 bitCount = 0;
                 byteCount = 0;
@@ -313,32 +376,41 @@ int SLinkProtocol::readResponse(uint8_t* buffer, size_t length, unsigned long ti
         }
 
         // --- If we are here, a sync has been found and we are decoding data ---
-        bool isOne = (pulseDuration > 900 && pulseDuration < 1500);  // ONE is ~1200us
+        bool isOne = (pulseDuration > 900 && pulseDuration < 1500); // ONE is ~1200us
         bool isZero = (pulseDuration > 400 && pulseDuration < 900); // ZERO is ~600us
 
-        if (isOne) {
+        if (isOne)
+        {
             currentByte |= (1 << (7 - bitCount));
             bitCount++;
-        } else if (isZero) {
+        }
+        else if (isZero)
+        {
             bitCount++;
-        } else {
+        }
+        else
+        {
             // This was not a valid data bit. The message may have been corrupted or ended.
             // If we have some data, return it. Otherwise, wait for a new sync.
-            if (byteCount > 0) return byteCount;
+            if (byteCount > 0)
+                return byteCount;
             syncFound = false;
             continue;
         }
 
         // If we have collected 8 bits, we have a full byte.
-        if (bitCount == 8) {
-            if (byteCount < length) {
+        if (bitCount == 8)
+        {
+            if (byteCount < length)
+            {
                 buffer[byteCount] = currentByte;
             }
             byteCount++;
             bitCount = 0;
             currentByte = 0;
             // If the buffer is full, we're done.
-            if (byteCount >= length) return byteCount;
+            if (byteCount >= length)
+                return byteCount;
         }
     }
 
@@ -415,15 +487,18 @@ String SLinkProtocol::inputMonitorWithReturn(int type, boolean idle, unsigned lo
     return buffer;
 }
 
-uint8_t SLinkProtocol::toBCD(int val) {
+uint8_t SLinkProtocol::toBCD(int val)
+{
     return ((val / 10) << 4) | (val % 10);
 }
 
-void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void* userData, void* data) {
-    if (_commandCount < MAX_COMMANDS) {
+void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void *userData, void *data)
+{
+    if (_commandCount < MAX_COMMANDS)
+    {
         Serial.print("Adding command to queue: 0x");
         Serial.println(command, HEX);
-        SLinkCommand& cmd = _commandQueue[_commandCount++];
+        SLinkCommand &cmd = _commandQueue[_commandCount++];
         cmd.command = command;
         cmd.disc = disc;
         cmd.track = track;
@@ -432,16 +507,21 @@ void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SL
         cmd.data = data;
         cmd.callback = callback;
         cmd.userData = userData;
-    } else {
+    }
+    else
+    {
         Serial.println("Command queue full!");
     }
 }
 
-void SLinkProtocol::executeNextCommand() {
-    if (!_currentCommand && _commandCount > 0) {
+void SLinkProtocol::executeNextCommand()
+{
+    if (!_currentCommand && _commandCount > 0)
+    {
         Serial.println("Executing next command from queue.");
         _currentCommand = &_commandQueue[0];
-        for (int i = 0; i < _commandCount - 1; ++i) {
+        for (int i = 0; i < _commandCount - 1; ++i)
+        {
             _commandQueue[i] = _commandQueue[i + 1];
         }
         _commandCount--;
