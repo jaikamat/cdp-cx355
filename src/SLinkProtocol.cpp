@@ -586,3 +586,42 @@ void SLinkProtocol::queryDiscMemoryInfo(int disc) {
         Serial.println("Disc has CDTEXT");
     }
 }
+
+void SLinkProtocol::setDiscTitle(int disc, const String& title) {
+    uint8_t device = (disc > 200) ? 0x93 : 0x90;
+    uint8_t discByte = toBCD(disc > 200 ? disc - 200 : disc);
+
+    uint8_t cmd[16];
+    cmd[0] = device;
+    cmd[1] = 0x80;
+    cmd[2] = discByte;
+
+    for (int i = 0; i < 13; i++) {
+        if (i < title.length()) {
+            cmd[3 + i] = title[i];
+        } else {
+            cmd[3 + i] = 0x20; // Pad with spaces
+        }
+    }
+
+    String response;
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        sendCommand(cmd, sizeof(cmd));
+        delayMicroseconds(attempt * 500);
+        response = inputMonitorWithReturn(2, false, 200000UL);
+        if (response.length() > 0) { // Any response is good enough for now
+            break;
+        }
+        delay(100);
+    }
+
+    Serial.print("SetDiscTitle Response: ");
+    Serial.println(response);
+
+    response.toUpperCase();
+    if (response.indexOf("1B") == -1) {
+        Serial.println("SUCCESS: Text write command sent. Assuming success as no error was received.");
+    } else {
+        Serial.println("ERROR: Text write command failed (Received 1B error)");
+    }
+}

@@ -175,6 +175,16 @@ void setupCommandHandlers()
   commandHandlers["bulkUpdate"] = handleBulkUpdateCommand;
   commandHandlers["discoverTitle"] = handleDiscoverTitleCommand;
   commandHandlers["queryDiscMemory"] = handleQueryDiscMemoryCommand;
+
+  commandHandlers["setDiscTitle"] = [](const String &args) {
+    int discIdx = args.indexOf("disc=");
+    int titleIdx = args.indexOf("title=");
+    if (discIdx >= 0 && titleIdx >= 0) {
+        int discNum = urlDecode(args.substring(discIdx + 5, args.indexOf("&", discIdx))).toInt();
+        String title = urlDecode(args.substring(titleIdx + 6));
+        slink.setDiscTitle(discNum, title);
+    }
+  };
 }
 
 void setup()
@@ -292,6 +302,15 @@ void sendIndexHtml(WiFiClient &client)
       "<h2>Disc Memory Info</h2>"
       "<button onclick=\"sendCommand('queryDiscMemory&disc=3')\">Query Disc 3</button> "
       "<button onclick=\"sendCommand('queryDiscMemory&disc=8')\">Query Disc 8</button>"
+      "</div>"
+
+      "<div style='margin-bottom: 20px;'>"
+      "<h2>Set Disc Title</h2>"
+      "<form onsubmit=\"event.preventDefault(); sendCommand('setDiscTitle&disc=' + document.getElementById('discNum').value + '&title=' + document.getElementById('title').value)\">"
+      "  <input type='number' id='discNum' placeholder='Disc #' min='1' max='400'>"
+      "  <input type='text' id='title' placeholder='Title (13 chars)' maxlength='13'>"
+      "  <button type='submit'>Set Title</button>"
+      "</form>"
       "</div>"
 
       "<h2>Disc Collection</h2>"
