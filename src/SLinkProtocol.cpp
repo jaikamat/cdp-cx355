@@ -9,6 +9,7 @@
 #define SLINK_LINE_READY 3000
 #define SLINK_LOOP_DELAY 25
 #define SLINK_LOOP_TIMEOUT 500000
+#define SLINK_MARK_RANGE 1.2
 
 SLinkProtocol::SLinkProtocol(uint8_t pin) : _pin(pin), _commandCount(0), _currentCommand(nullptr) {
     memset(_titleBuffer, 0, sizeof(_titleBuffer));
@@ -20,11 +21,6 @@ void SLinkProtocol::begin() {
 
 void SLinkProtocol::process() {
     if (_currentCommand) {
-        Serial.print("Processing command: 0x");
-        Serial.print(_currentCommand->command, HEX);
-        Serial.print(" in state: ");
-        Serial.println(_currentCommand->state);
-
         if (_currentCommand->timeout > 0 && millis() > _currentCommand->timeout) {
             Serial.println("Command timed out");
             _currentCommand = nullptr;
@@ -113,8 +109,54 @@ const char* SLinkProtocol::getTitle() const {
 }
 
 void SLinkProtocol::processGetDiscTitle() {
-    // This requires reading from the S-Link bus, which is not yet implemented.
-    // For now, we'll just mark the command as complete.
+    uint8_t device = (_currentCommand->disc > 200) ? 0x93 : 0x90;
+    uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
+
+    String response;
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        uint8_t cmd[] = {device, (uint8_t)CMD_GET_DISC_TITLE, discByte};
+        sendCommand(cmd, sizeof(cmd));
+        delay(attempt * 2); // 2ms, 4ms, 6ms, 8ms, 10ms
+
+        response = inputMonitorWithReturn(2, false, 200000UL); // 0.2 seconds
+
+        if (response.indexOf("98,40,") >= 0) {
+            break;
+        }
+        delay(100);
+    }
+
+    Serial.print("GetDiscTitle Response: ");
+    Serial.println(response);
+
+    if (response.length() > 0) {
+        response.replace(",", " ");
+        response.replace("START", "");
+        response.replace("\n", " ");
+        response.trim();
+
+        String title;
+        int start = 0;
+        int byteCount = 0;
+        while (start < response.length()) {
+            int end = response.indexOf(' ', start);
+            if (end == -1) end = response.length();
+            String hexByte = response.substring(start, end);
+            if (hexByte.length() > 0) {
+                long byteVal = strtol(hexByte.c_str(), NULL, 16);
+                byteCount++;
+                if (byteCount >= 4 && byteVal >= 0x20 && byteVal <= 0x7E) {
+                    title += (char)byteVal;
+                }
+            }
+            start = end + 1;
+        }
+        title.trim();
+        strncpy(_titleBuffer, title.c_str(), 20);
+    } else {
+        strcpy(_titleBuffer, "Timeout");
+    }
+
     if (_currentCommand->callback) {
         _currentCommand->callback(this, _currentCommand->userData);
     }
@@ -124,7 +166,25 @@ void SLinkProtocol::processGetDiscTitle() {
 
 void SLinkProtocol::processSimpleCommand() {
     uint8_t cmd[] = {0x90, (uint8_t)_currentCommand->command};
-    sendCommand(cmd, sizeof(cmd));
+    String response;
+    char expectedResponse[10];
+    sprintf(expectedResponse, "98,%x,", _currentCommand->command);
+
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        sendCommand(cmd, sizeof(cmd));
+        delay(attempt * 2);
+        response = inputMonitorWithReturn(2, false, 200000UL);
+        if (response.indexOf(expectedResponse) >= 0) {
+            break;
+        }
+        delay(100);
+    }
+
+    Serial.print("SimpleCommand (0x");
+    Serial.print(_currentCommand->command, HEX);
+    Serial.print(") Response: ");
+    Serial.println(response);
+
     if (_currentCommand->callback) {
         _currentCommand->callback(this, _currentCommand->userData);
     }
@@ -137,7 +197,23 @@ void SLinkProtocol::processSelectDisc() {
     uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
     uint8_t trackByte = toBCD(_currentCommand->track);
     uint8_t cmd[] = {device, (uint8_t)CMD_SELECT_DISC, discByte, trackByte};
-    sendCommand(cmd, sizeof(cmd));
+    
+    String response;
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        sendCommand(cmd, sizeof(cmd));
+        delay(attempt * 2);
+        response = inputMonitorWithReturn(2, false, 200000UL);
+        // For select disc, we don't have a clear expected response, so we just capture.
+        // A more advanced implementation could wait for a specific status like 'Playing'.
+        if (response.length() > 0) {
+            break;
+        }
+        delay(100);
+    }
+
+    Serial.print("SelectDisc Response: ");
+    Serial.println(response);
+
     if (_currentCommand->callback) {
         _currentCommand->callback(this, _currentCommand->userData);
     }
@@ -198,9 +274,145 @@ void SLinkProtocol::sendCommand(const uint8_t* command, size_t length) {
     } while (micros() - Start < SLINK_WORD_DELIMITER);
 }
 
-int SLinkProtocol::readResponse(uint8_t* buffer, size_t length, unsigned long timeout) {
-    // Not implemented yet
-    return 0;
+int SLinkProtocol::readResponse(uint8_t* buffer, size_t length, unsigned long timeout_ms) {
+    unsigned long startTime = millis();
+    int byteCount = 0;
+    int bitCount = 0;
+    uint8_t currentByte = 0;
+    bool syncFound = false;
+
+    memset(buffer, 0, length);
+
+    while (millis() - startTime < timeout_ms) {
+        unsigned long pulseDuration;
+
+        // --- Critical Section: Measure one pulse without interruption ---
+        noInterrupts();
+        pulseDuration = pulseIn(_pin, LOW, 5000UL); // 5ms timeout for a single pulse
+        interrupts();
+        // --- End Critical Section ---
+
+        if (pulseDuration == 0) { // No pulse was detected
+            if (syncFound && byteCount > 0) {
+                // If we were in the middle of a message, it has ended.
+                return byteCount;
+            }
+            continue; // Otherwise, just keep waiting for a sync pulse.
+        }
+
+        if (!syncFound) {
+            // We are waiting for a sync pulse to start a message.
+            if (pulseDuration > 2000 && pulseDuration < 3000) { // Sync is ~2400us
+                syncFound = true;
+                bitCount = 0;
+                byteCount = 0;
+                currentByte = 0;
+            }
+            // If it wasn't a sync pulse, ignore it and keep waiting.
+            continue;
+        }
+
+        // --- If we are here, a sync has been found and we are decoding data ---
+        bool isOne = (pulseDuration > 900 && pulseDuration < 1500);  // ONE is ~1200us
+        bool isZero = (pulseDuration > 400 && pulseDuration < 900); // ZERO is ~600us
+
+        if (isOne) {
+            currentByte |= (1 << (7 - bitCount));
+            bitCount++;
+        } else if (isZero) {
+            bitCount++;
+        } else {
+            // This was not a valid data bit. The message may have been corrupted or ended.
+            // If we have some data, return it. Otherwise, wait for a new sync.
+            if (byteCount > 0) return byteCount;
+            syncFound = false;
+            continue;
+        }
+
+        // If we have collected 8 bits, we have a full byte.
+        if (bitCount == 8) {
+            if (byteCount < length) {
+                buffer[byteCount] = currentByte;
+            }
+            byteCount++;
+            bitCount = 0;
+            currentByte = 0;
+            // If the buffer is full, we're done.
+            if (byteCount >= length) return byteCount;
+        }
+    }
+
+    return byteCount; // Return whatever we have if we time out.
+}
+
+String SLinkProtocol::inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout)
+{
+    unsigned long value = 0;
+    unsigned long Start = micros();
+    int nl = 0;
+    int count = 0;
+    int byte = 0;
+    String buffer = "";
+
+    do
+    {
+        value = pulseIn(_pin, idle, 3000UL); // timeout to 3 milliseconds=3000 uSec
+        if (value == 0)
+        {
+            if (nl == 0)
+                buffer += String("\n");
+            nl = 1;
+            count = 0;
+            byte = 0;
+        }
+        else
+        {
+            switch (type)
+            {
+            case 0: // timing
+                buffer += String(",");
+                buffer += String(value);
+                break;
+            case 1: // binary - HEX
+            case 2: // HEX
+                if ((value > (SLINK_MARK_SYNC / SLINK_MARK_RANGE)) && (value < SLINK_MARK_SYNC * SLINK_MARK_RANGE))
+                {
+                    buffer += String("\n");
+                    buffer += String("START,");
+                    count = 0;
+                    byte = 0;
+                }
+                else
+                {
+                    if ((value > SLINK_MARK_ONE / SLINK_MARK_RANGE) && (value < SLINK_MARK_ONE * SLINK_MARK_RANGE))
+                    {
+                        byte |= 128 >> count;
+
+                        if (type == 1)
+                            buffer += String("1,");
+                    }
+                    if ((value > SLINK_MARK_ZERO / SLINK_MARK_RANGE) && (value < SLINK_MARK_ZERO * SLINK_MARK_RANGE))
+                        if (type == 1)
+                            buffer += String("0,");
+
+                    if (count++ == 7)
+                    {
+                        if (type == 1)
+                            buffer += String(" = ");
+                        buffer += String(byte, HEX) + String(",");
+                        if (type == 1)
+                            buffer += String("  ");
+                        count = 0;
+                        byte = 0;
+                    }
+                }
+                break;
+            }
+            nl = 0;
+        } // else
+    } // do
+    while (micros() - Start < uSecTimeout);
+    return buffer;
 }
 
 uint8_t SLinkProtocol::toBCD(int val) {

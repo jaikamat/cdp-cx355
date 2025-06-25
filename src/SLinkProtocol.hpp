@@ -10,7 +10,7 @@ class SLinkProtocol;
 using SLinkCallback = void (*)(SLinkProtocol* protocol, void* userData);
 
 enum SLinkCommandType {
-    CMD_GET_DISC_TITLE = 0x98,
+    CMD_GET_DISC_TITLE = 0x40, // Correct command for disc memo
     CMD_PLAY = 0x00,
     CMD_STOP = 0x01,
     CMD_PAUSE = 0x02,
@@ -71,12 +71,14 @@ private:
     void _writeByte(byte value);
     void sendCommand(const uint8_t* command, size_t length);
     int readResponse(uint8_t* buffer, size_t length, unsigned long timeout);
+    String inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout);
     uint8_t toBCD(int val);
 
     void addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void* userData, void* data = nullptr);
     void executeNextCommand();
 
     char _titleBuffer[21]; // For storing disc title
+    uint8_t _responseBuffer[32]; // For reading responses
 };
 
 #endif // SLINK_PROTOCOL_HPP

@@ -18,18 +18,16 @@ DiscStorage storage;
 SLinkProtocol slink(8); // Use Digital Pin 8 for S-Link
 bool isPlayerOn = true; // Assume player is ON as per user feedback
 
-void onDiscTitleRetrieved(SLinkProtocol *protocol, void *userData)
-{
-  int discNum = (int)userData;
-  String title = protocol->getTitle();
-  Serial.print("Callback received for disc ");
-  Serial.print(discNum);
-  Serial.print(": ");
-  Serial.println(title);
-  if (title.length() > 0 && title != "No Disc")
-  {
-    storage.writeDiscWithNumber(discNum, title);
-  }
+void onDiscTitleRetrieved(SLinkProtocol* protocol, void* userData) {
+    int discNum = (int)userData;
+    String title = protocol->getTitle();
+    Serial.print("Callback received for disc ");
+    Serial.print(discNum);
+    Serial.print(": ");
+    Serial.println(title);
+    if (title.length() > 0 && title != "No Disc" && title != "No Title" && title != "Timeout") {
+        storage.writeDiscWithNumber(discNum, title);
+    }
 }
 
 String urlDecode(const String &encoded)
