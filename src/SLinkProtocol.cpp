@@ -527,3 +527,62 @@ void SLinkProtocol::executeNextCommand()
         _commandCount--;
     }
 }
+
+void SLinkProtocol::queryDiscMemoryInfo(int disc) {
+    uint8_t device = (disc > 200) ? 0x93 : 0x90;
+    uint8_t discByte = toBCD(disc > 200 ? disc - 200 : disc);
+
+    // --- Check for MEMO using 0x0E command ---
+    uint8_t cmd_memo[] = {device, 0x0E, discByte};
+    String response_memo;
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        sendCommand(cmd_memo, sizeof(cmd_memo));
+        delayMicroseconds(attempt * 500);
+        response_memo = inputMonitorWithReturn(2, false, 200000UL);
+        if (response_memo.indexOf("71,") >= 0) {
+            break;
+        }
+        delay(100);
+    }
+
+    Serial.print("QueryDiscMemoryInfo (MEMO check) Response: ");
+    Serial.println(response_memo);
+
+    if (response_memo.indexOf("71,") >= 0) {
+        response_memo.replace(",", " ");
+        response_memo.trim();
+        int start = response_memo.indexOf("71");
+        start = response_memo.indexOf(" ", start) + 1;
+        int end = response_memo.indexOf(" ", start);
+        if (end == -1) end = response_memo.length();
+
+        String hexByte = response_memo.substring(start, end);
+        if (hexByte.length() > 0) {
+            long byteVal = strtol(hexByte.c_str(), NULL, 16);
+            if (byteVal & 0x01) {
+                Serial.println("Disc has MEMO");
+            }
+        }
+    }
+
+    // --- Check for CDTEXT using 0x98 command ---
+    uint8_t cmd_cdtext[] = {device, 0x98, discByte};
+    String response_cdtext;
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        sendCommand(cmd_cdtext, sizeof(cmd_cdtext));
+        delayMicroseconds(attempt * 500);
+        response_cdtext = inputMonitorWithReturn(2, false, 200000UL);
+        if (response_cdtext.indexOf("98,") >= 0) { // Wait for a valid response from device 98
+            break;
+        }
+        delay(100);
+    }
+
+    Serial.print("QueryDiscMemoryInfo (CDTEXT check) Response: ");
+    Serial.println(response_cdtext);
+
+    response_cdtext.toUpperCase(); // Use uppercase for case-insensitive check
+    if (response_cdtext.indexOf("98,E,") == -1 && response_cdtext.indexOf("98,") >= 0) {
+        Serial.println("Disc has CDTEXT");
+    }
+}

@@ -156,6 +156,14 @@ void handlePauseCommand(const String &) { slinkPauseToggle(); }
 void handleNextCommand(const String &) { slinkNextTrack(); }
 void handlePrevCommand(const String &) { slinkPrevTrack(); }
 
+void handleQueryDiscMemoryCommand(const String &args) {
+    int discIdx = args.indexOf("disc=");
+    if (discIdx >= 0) {
+        int discNum = urlDecode(args.substring(discIdx + 5)).toInt();
+        slink.queryDiscMemoryInfo(discNum);
+    }
+}
+
 void setupCommandHandlers()
 {
   commandHandlers["power"] = handlePowerCommand;
@@ -166,6 +174,7 @@ void setupCommandHandlers()
   commandHandlers["prev"] = handlePrevCommand;
   commandHandlers["bulkUpdate"] = handleBulkUpdateCommand;
   commandHandlers["discoverTitle"] = handleDiscoverTitleCommand;
+  commandHandlers["queryDiscMemory"] = handleQueryDiscMemoryCommand;
 }
 
 void setup()
@@ -277,6 +286,12 @@ void sendIndexHtml(WiFiClient &client)
       "<button onclick='sendCommand(\"next\")'>Next</button> "
       "<button onclick='sendCommand(\"prev\")'>Previous</button> "
       "<button onclick='sendCommand(\"power\")'>Power</button>"
+      "</div>"
+
+      "<div style='margin-bottom: 20px;'>"
+      "<h2>Disc Memory Info</h2>"
+      "<button onclick=\"sendCommand('queryDiscMemory&disc=3')\">Query Disc 3</button> "
+      "<button onclick=\"sendCommand('queryDiscMemory&disc=8')\">Query Disc 8</button>"
       "</div>"
 
       "<h2>Disc Collection</h2>"

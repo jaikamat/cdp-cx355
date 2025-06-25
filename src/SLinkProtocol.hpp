@@ -48,6 +48,7 @@ public:
     bool selectDisc(int disc);
     bool powerOn();
     bool powerOff();
+    void queryDiscMemoryInfo(int disc);
 
     // Getters for application to retrieve data
     const char* getTitle() const;
