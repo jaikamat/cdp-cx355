@@ -75,6 +75,7 @@ private:
     int readResponse(uint8_t* buffer, size_t length, unsigned long timeout);
     String inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout);
     uint8_t toBCD(int val);
+    bool isBusIdle();
 
     void addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void* userData, void* data = nullptr);
     void executeNextCommand();

@@ -52,7 +52,7 @@ void SLinkProtocol::process()
             break;
         }
     }
-    else
+    else if (isBusIdle())
     {
         executeNextCommand();
     }
@@ -624,4 +624,15 @@ void SLinkProtocol::setDiscTitle(int disc, const String& title) {
     } else {
         Serial.println("ERROR: Text write command failed (Received 1B error)");
     }
+}
+
+bool SLinkProtocol::isBusIdle() {
+    unsigned long startTime = millis();
+    while (millis() - startTime < 50) { // Check for 50ms
+        if (digitalRead(_pin) == LOW) {
+            return false; // Bus is busy
+        }
+        delay(1);
+    }
+    return true; // Bus is idle
 }
