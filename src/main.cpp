@@ -176,6 +176,9 @@ void setupCommandHandlers()
       int discNum = urlDecode(args.substring(discIdx + 5, args.indexOf("&", discIdx))).toInt();
       String title = urlDecode(args.substring(titleIdx + 6));
       slink.setDiscTitle(discNum, title);
+
+      // Auto-discover after setting to sync EEPROM with player
+      slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)discNum);
     }
   };
 }
