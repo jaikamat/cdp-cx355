@@ -18,16 +18,18 @@ DiscStorage storage;
 SLinkProtocol slink(8); // Use Digital Pin 8 for S-Link
 bool isPlayerOn = true; // Assume player is ON as per user feedback
 
-void onDiscTitleRetrieved(SLinkProtocol* protocol, void* userData) {
-    int discNum = (int)userData;
-    String title = protocol->getTitle();
-    Serial.print("Callback received for disc ");
-    Serial.print(discNum);
-    Serial.print(": ");
-    Serial.println(title);
-    if (title.length() > 0 && title != "No Disc" && title != "No Title" && title != "Timeout") {
-        storage.writeDiscWithNumber(discNum, title);
-    }
+void onDiscTitleRetrieved(SLinkProtocol *protocol, void *userData)
+{
+  int discNum = (int)userData;
+  String title = protocol->getTitle();
+  Serial.print("Callback received for disc ");
+  Serial.print(discNum);
+  Serial.print(": ");
+  Serial.println(title);
+  if (title.length() > 0 && title != "No Disc" && title != "No Title" && title != "Timeout")
+  {
+    storage.writeDiscWithNumber(discNum, title);
+  }
 }
 
 String urlDecode(const String &encoded)
@@ -59,7 +61,10 @@ void slinkStop() { slink.stop(); }
 void slinkPauseToggle() { slink.pause(); }
 void slinkNextTrack() { slink.nextTrack(); }
 void slinkPrevTrack() { slink.prevTrack(); }
-void slinkSelectDisc(int discNumber) { slink.selectDisc(discNumber); }
+void slinkSelectDisc(int discNumber)
+{
+  slink.selectDisc(discNumber);
+}
 
 using CommandHandler = std::function<void(const String &)>;
 std::map<String, CommandHandler> commandHandlers;
@@ -115,9 +120,6 @@ void handleBulkUpdateCommand(const String &args)
 
 void handleDiscoverTitleCommand(const String &args)
 {
-  Serial.print("DEBUG: handleDiscoverTitleCommand called with args: ");
-  Serial.println(args);
-
   int discIdx = args.indexOf("disc=");
   if (discIdx >= 0)
   {
@@ -126,27 +128,14 @@ void handleDiscoverTitleCommand(const String &args)
       end = args.length();
     int discNum = urlDecode(args.substring(discIdx + 5, end)).toInt();
 
-    Serial.print("DEBUG: Parsed disc number: ");
-    Serial.println(discNum);
-
     if (discNum > 0 && discNum <= storage.getMaxDiscs())
     {
-      Serial.print("Queuing title discovery for disc #");
+      Serial.print("Discovering title for disc #");
       Serial.println(discNum);
+
+      // Simple query-only approach: just get the disc title directly
       slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)discNum);
     }
-    else
-    {
-      Serial.print("DEBUG: Invalid disc number ");
-      Serial.print(discNum);
-      Serial.print(" (max: ");
-      Serial.print(storage.getMaxDiscs());
-      Serial.println(")");
-    }
-  }
-  else
-  {
-    Serial.println("DEBUG: No 'disc=' parameter found in args");
   }
 }
 
@@ -156,12 +145,14 @@ void handlePauseCommand(const String &) { slinkPauseToggle(); }
 void handleNextCommand(const String &) { slinkNextTrack(); }
 void handlePrevCommand(const String &) { slinkPrevTrack(); }
 
-void handleQueryDiscMemoryCommand(const String &args) {
-    int discIdx = args.indexOf("disc=");
-    if (discIdx >= 0) {
-        int discNum = urlDecode(args.substring(discIdx + 5)).toInt();
-        slink.queryDiscMemoryInfo(discNum);
-    }
+void handleQueryDiscMemoryCommand(const String &args)
+{
+  int discIdx = args.indexOf("disc=");
+  if (discIdx >= 0)
+  {
+    int discNum = urlDecode(args.substring(discIdx + 5)).toInt();
+    slink.queryDiscMemoryInfo(discNum);
+  }
 }
 
 void setupCommandHandlers()
@@ -176,13 +167,15 @@ void setupCommandHandlers()
   commandHandlers["discoverTitle"] = handleDiscoverTitleCommand;
   commandHandlers["queryDiscMemory"] = handleQueryDiscMemoryCommand;
 
-  commandHandlers["setDiscTitle"] = [](const String &args) {
+  commandHandlers["setDiscTitle"] = [](const String &args)
+  {
     int discIdx = args.indexOf("disc=");
     int titleIdx = args.indexOf("title=");
-    if (discIdx >= 0 && titleIdx >= 0) {
-        int discNum = urlDecode(args.substring(discIdx + 5, args.indexOf("&", discIdx))).toInt();
-        String title = urlDecode(args.substring(titleIdx + 6));
-        slink.setDiscTitle(discNum, title);
+    if (discIdx >= 0 && titleIdx >= 0)
+    {
+      int discNum = urlDecode(args.substring(discIdx + 5, args.indexOf("&", discIdx))).toInt();
+      String title = urlDecode(args.substring(titleIdx + 6));
+      slink.setDiscTitle(discNum, title);
     }
   };
 }
@@ -356,12 +349,11 @@ void sendIndexHtml(WiFiClient &client)
       "    body: 'command=discoverTitle&disc=' + num"
       "  })"
       "  .then(() => {"
-      "    button.textContent = 'Discovered!';"
+      "    button.textContent = 'Please wait...';"
       "    setTimeout(() => {"
       "      button.textContent = originalText;"
       "      button.disabled = false;"
-      "      window.location.reload();"
-      "    }, 2000);"
+      "    }, 5000);"
       "  })"
       "  .catch(err => {"
       "    console.error('Error discovering title:', err);"

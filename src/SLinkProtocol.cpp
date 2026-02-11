@@ -205,21 +205,12 @@ void SLinkProtocol::processGetDiscTitle()
 void SLinkProtocol::processSimpleCommand()
 {
     uint8_t cmd[] = {0x90, (uint8_t)_currentCommand->command};
-    String response;
-    char expectedResponse[10];
-    sprintf(expectedResponse, "98,%x,", _currentCommand->command);
 
-    for (int attempt = 1; attempt <= 5; attempt++)
-    {
-        sendCommand(cmd, sizeof(cmd));
-        delayMicroseconds(attempt * 500); // 0.5ms, 1ms, 1.5ms...
-        response = inputMonitorWithReturn(2, false, 200000UL);
-        if (response.indexOf(expectedResponse) >= 0)
-        {
-            break;
-        }
-        delay(100);
-    }
+    // Transport commands (play/stop/pause/next/prev) are fire-and-forget
+    // Send once without retry to prevent multiple executions
+    sendCommand(cmd, sizeof(cmd));
+    delayMicroseconds(500);
+    String response = inputMonitorWithReturn(2, false, 200000UL);
 
     Serial.print("SimpleCommand (0x");
     Serial.print(_currentCommand->command, HEX);
