@@ -83,24 +83,8 @@ void handlePowerCommand(const String &)
   Serial.println(isPlayerOn ? "Power: OFF -> ON" : "Power: ON -> OFF");
 }
 
-void handleBulkUpdateCommand(const String &args)
+void handlePlayDiscCommand(const String &args)
 {
-  const int totalDiscs = storage.getMaxDiscs();
-
-  for (int i = 1; i <= totalDiscs; i++)
-  {
-    String paramName = "m_" + String(i) + "=";
-    int idx = args.indexOf(paramName);
-    if (idx >= 0)
-    {
-      int end = args.indexOf('&', idx);
-      if (end < 0)
-        end = args.length();
-      String memoVal = urlDecode(args.substring(idx + paramName.length(), end));
-      storage.writeDiscWithNumber(i, memoVal);
-    }
-  }
-
   int discIdx = args.indexOf("disc=");
   if (discIdx >= 0)
   {
@@ -114,6 +98,34 @@ void handleBulkUpdateCommand(const String &args)
       Serial.print("Playing disc #");
       Serial.println(discNum);
       slinkSelectDisc(discNum);
+    }
+  }
+}
+
+void handleSaveDiscTitleCommand(const String &args)
+{
+  int discIdx = args.indexOf("disc=");
+  int titleIdx = args.indexOf("title=");
+  if (discIdx >= 0 && titleIdx >= 0)
+  {
+    int discEnd = args.indexOf('&', discIdx);
+    if (discEnd < 0 || discEnd > titleIdx)
+      discEnd = titleIdx - 1;
+    int discNum = urlDecode(args.substring(discIdx + 5, discEnd)).toInt();
+    String title = urlDecode(args.substring(titleIdx + 6));
+
+    if (discNum > 0 && discNum <= storage.getMaxDiscs())
+    {
+      Serial.print("Setting title for disc ");
+      Serial.print(discNum);
+      Serial.print(": ");
+      Serial.println(title);
+
+      // Send title to Sony player via S-Link
+      slink.setDiscTitle(discNum, title);
+
+      // Auto-discover after setting to sync EEPROM with player
+      slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)discNum);
     }
   }
 }
@@ -153,7 +165,8 @@ void setupCommandHandlers()
   commandHandlers["pause"] = handlePauseCommand;
   commandHandlers["next"] = handleNextCommand;
   commandHandlers["prev"] = handlePrevCommand;
-  commandHandlers["bulkUpdate"] = handleBulkUpdateCommand;
+  commandHandlers["playDisc"] = handlePlayDiscCommand;
+  commandHandlers["saveDiscTitle"] = handleSaveDiscTitleCommand;
   commandHandlers["discoverTitle"] = handleDiscoverTitleCommand;
 
   commandHandlers["setDiscTitle"] = [](const String &args)
@@ -293,16 +306,10 @@ void sendIndexHtml(WiFiClient &client)
       "</div>"
 
       "<h2>Disc Collection</h2>"
-      "<form id='discForm'>"
-      "<input type='hidden' name='command' value='bulkUpdate'>"
       "<div id='discList'></div>"
       "<div style='margin: 20px 0;'>"
       "<button type='button' id='loadMoreBtn'>Load First 25 Discs</button>"
       "</div>"
-      "<div style='margin-top: 20px;'>"
-      "<button type='submit'>Update All Titles</button>"
-      "</div>"
-      "</form>"
 
       "<script>"
       "let currentPage = 0;"
@@ -320,8 +327,19 @@ void sendIndexHtml(WiFiClient &client)
       "  fetch('/', {"
       "    method: 'POST',"
       "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
-      "    body: 'command=bulkUpdate&disc=' + num"
+      "    body: 'command=playDisc&disc=' + num"
       "  });"
+      "}"
+
+      "function saveDiscTitle(num) {"
+      "  const input = document.querySelector('input[data-disc=\"' + num + '\"]');"
+      "  if (input) {"
+      "    fetch('/', {"
+      "      method: 'POST',"
+      "      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
+      "      body: 'command=saveDiscTitle&disc=' + num + '&title=' + encodeURIComponent(input.value)"
+      "    });"
+      "  }"
       "}"
 
       "function discoverTitle(num) {"
@@ -364,8 +382,9 @@ void sendIndexHtml(WiFiClient &client)
       "      data.discs.forEach(item => {"
       "        html += '<div style=\"margin-bottom: 5px;\">';"
       "        html += 'Disc ' + item.d + ': ';"
-      "        html += '<input type=\"text\" name=\"m_' + item.d + '\" value=\"' + item.m + '\" style=\"width: 200px; margin-right: 10px;\">';"
+      "        html += '<input type=\"text\" data-disc=\"' + item.d + '\" value=\"' + item.m + '\" style=\"width: 200px; margin-right: 10px;\">';"
       "        html += '<button type=\"button\" onclick=\"playDisc(' + item.d + ')\">Play</button> ';"
+      "        html += '<button type=\"button\" onclick=\"saveDiscTitle(' + item.d + ')\">Save</button> ';"
       "        html += '<button type=\"button\" onclick=\"discoverTitle(' + item.d + ')\">Auto-Discover</button>';"
       "        html += '</div>';"
       "      });"
@@ -386,21 +405,6 @@ void sendIndexHtml(WiFiClient &client)
 
       "document.addEventListener('DOMContentLoaded', () => {"
       "  document.getElementById('loadMoreBtn').addEventListener('click', loadDiscs);"
-
-      "  document.getElementById('discForm').addEventListener('submit', function(e) {"
-      "    e.preventDefault();"
-      "    const formData = new FormData(this);"
-      "    const params = new URLSearchParams(formData);"
-      "    fetch('/', {"
-      "      method: 'POST',"
-      "      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
-      "      body: params.toString()"
-      "    }).then(() => {"
-      "      alert('Disc titles updated successfully!');"
-      "    }).catch(err => {"
-      "      alert('Error updating titles: ' + err);"
-      "    });"
-      "  });"
       "});"
       "</script>"
       "</body></html>"));
