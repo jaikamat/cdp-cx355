@@ -28,7 +28,6 @@ This project creates a bridge between your Sony CDP-CX355 disc changer and moder
 ### Hardware Components
 - **Arduino Uno R4 WiFi**: Main controller with built-in WiFi and LED matrix
 - **S-Link Connection**: Communicates with Sony CDP-CX355 using Sony's proprietary S-Link protocol
-- **PS/2 Keyboard Interface**: Simulates PS/2 keyboard input to write disc titles directly to CD player
 - **EEPROM Storage**: Persistent storage for disc titles/memos (up to 300 discs)
 
 ### Software Components
@@ -86,19 +85,11 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
 ### Hardware Setup
 
 1. **S-Link Connection**
-   - Connect Arduino pin 2 to your CDP-CX355's S-Link port
+   - Connect Arduino pin 8 to your CDP-CX355's S-Link port
    - Use a 220Ω resistor and diode for line protection
    - Ensure proper ground connection between devices
 
-2. **PS/2 Keyboard Connection** (New Feature)
-   - Connect Arduino pin 3 to PS/2 CLK (white wire from DIN connector)
-   - Connect Arduino pin 4 to PS/2 DATA (red wire from DIN connector)
-   - Connect Arduino 5V to PS/2 VCC (black wire from DIN connector)
-   - Connect Arduino GND to PS/2 GND (yellow wire from DIN connector)
-   - **Power Requirement**: Sony spec requires ≤120mA consumption (Arduino meets this)
-   - This enables direct disc title writing to the CD player's keyboard input
-
-3. **Power Up**
+2. **Power Up**
    - Power on the Arduino (via USB or external power)
    - Power on your CDP-CX355
    - Watch the LED matrix for WiFi connection status
@@ -125,20 +116,21 @@ Located at the top of the interface, provides immediate access to all basic play
 #### Disc Collection Management
 The heart of the interface, featuring a smart progressive loading system:
 
-##### Progressive Loading System
-- **Initial Load**: Interface starts with "Load First 25 Discs" button
-- **Pagination**: Loads discs in batches of 25 to prevent memory overflow
-- **Progress Tracking**: Button shows "Load Next 25 Discs (50/300)" to indicate position
-- **Memory Efficient**: Only loads what's needed, supporting full 300-disc capacity
+##### Range Selector System
+- **Dropdown Navigation**: Select disc ranges from a dropdown menu (e.g., "Discs 1-25", "Discs 26-50")
+- **Instant Loading**: Switching ranges immediately loads the selected 25-disc batch
+- **Memory Efficient**: Only loads one range at a time, supporting full 300-disc capacity
+- **Quick Access**: Jump directly to any range without sequential loading
 
 ##### Per-Disc Controls
 Each disc entry provides multiple interaction options:
 ```
-Disc 1: [Title Text Field] [Play] [Auto-Discover]
+Disc 1: [Title Text Field] [Play] [Save] [Auto-Discover]
 ```
 
-- **Title Field**: Editable text input (16 character limit) for custom disc names
+- **Title Field**: Editable text input (13 character limit) for custom disc names
 - **Play Button**: Immediately selects and plays the specific disc
+- **Save Button**: Saves the title for this specific disc to the CDP-CX355 and EEPROM
 - **Auto-Discover Button**: Queries the CDP-CX355 for the actual disc title stored in its memory
 
 ##### Auto-Discovery Feature
@@ -148,15 +140,17 @@ The auto-discovery system communicates directly with your CDP-CX355 to retrieve 
 - **Error Handling**: Displays "Error" if communication fails
 - **Automatic Storage**: Successfully discovered titles are immediately saved to EEPROM
 
-##### Bulk Operations
-- **Update All Titles**: Saves all modified disc titles to device memory in one operation
-- **Form Persistence**: Changes are held in browser until explicitly saved
-- **Batch Processing**: Efficiently processes multiple disc updates simultaneously
-
 #### Real-time Status Feedback
 - **LED Matrix Display**: Shows current operation status, IP address, and connection state
 - **Web Interface Updates**: Dynamic button states and progress indicators
 - **Console Logging**: Detailed S-Link communication logs available via Serial monitor
+
+#### UI Locking During Operations
+The web interface includes a global busy state to prevent command spam:
+- **Visual Feedback**: All buttons and inputs dim when an operation is in progress
+- **Status Indicator**: Shows current operation (e.g., "Sending...", "Saving disc 5...")
+- **Automatic Unlock**: UI re-enables after operation completes (500ms-5s depending on operation type)
+- **Spam Prevention**: Rapid clicks are ignored while busy, ensuring reliable command execution
 
 ### API Reference
 
@@ -202,8 +196,10 @@ Returns the main HTML interface with embedded JavaScript for dynamic functionali
 - `command=power` - Toggle power
 
 **Disc Operations**:
-- `command=bulkUpdate&m_1=Title1&m_2=Title2&disc=5` - Update titles and optionally play disc
+- `command=playDisc&disc=5` - Select and play specific disc
+- `command=saveDiscTitle&disc=5&title=MyAlbum` - Save title for specific disc
 - `command=discoverTitle&disc=8` - Auto-discover title for specific disc
+- `command=setDiscTitle&disc=5&title=MyAlbum` - Write title to CDP-CX355 via S-Link
 
 ### Data Structures
 
@@ -211,7 +207,7 @@ Returns the main HTML interface with embedded JavaScript for dynamic functionali
 ```cpp
 struct DiscInfo {
     uint16_t discNumber;  // Disc number (1-300)
-    char memo[16];        // Title/memo (15 chars + null terminator)
+    char memo[16];        // Title/memo (13 chars used, 16 bytes storage)
     bool isDataCD;        // Data CD flag (future use)
 }
 ```
@@ -227,10 +223,10 @@ struct DiscInfo {
 #### First-Time Setup Workflow
 1. **Connection**: Arduino displays hostname (sony-remote.local) on LED matrix
 2. **Access**: Navigate to `http://sony-remote.local` in web browser
-3. **Discovery**: Use "Load First 25 Discs" to begin browsing
+3. **Discovery**: Select a disc range from the dropdown to begin browsing
 4. **Populate**: Use "Auto-Discover" buttons to retrieve disc titles from CDP-CX355
 5. **Customize**: Edit any discovered titles for better organization
-6. **Save**: Click "Update All Titles" to persist changes
+6. **Save**: Click "Save" next to each disc to persist changes
 
 #### Daily Use Workflow
 1. **Browse**: Load disc pages to find desired album
@@ -240,37 +236,9 @@ struct DiscInfo {
 
 #### Advanced Operations
 - **Bulk Discovery**: Systematically auto-discover titles across entire collection
-- **Custom Organization**: Create consistent naming conventions for easy browsing  
+- **Custom Organization**: Create consistent naming conventions for easy browsing
 - **Remote Control**: Access from any device on the network
 - **Power Management**: Remote power control of the CDP-CX355 unit
-- **PS/2 Title Writing**: Write disc titles directly to CD player via keyboard simulation
-
-#### PS/2 Keyboard Simulation (New Feature)
-
-The system now includes PS/2 keyboard simulation to write disc titles directly to your CD player's memory:
-
-##### Features
-- **Direct Title Writing**: Bypass EEPROM-only storage and write titles to the CD player itself
-- **Keyboard Simulation**: Full PS/2 protocol implementation with proper timing
-- **Test Interface**: Built-in test button to verify PS/2 functionality
-- **Hardware Independence**: Works with any device accepting PS/2 keyboard input
-
-##### Usage
-1. **Hardware Setup**: Connect PS/2 wires as described in Hardware Setup section
-2. **Test Connection**: Use the blue "Test: Set Disc 3 to 'Foobar123'" button in the web interface
-3. **Verify Operation**: Check your CD player's display to see if the title was written
-4. **Workflow**: System automatically follows Sony's official procedure:
-   - Selects disc via S-Link
-   - Presses Enter via PS/2 to enter title edit mode  
-   - Clears existing title with Shift+Delete
-   - Types new title via PS/2
-   - Presses Enter via PS/2 to store
-
-##### Technical Details
-- **Protocol**: Full PS/2 keyboard protocol implementation
-- **Timing**: 15-20 kHz clock rate with proper setup/hold times
-- **Character Support**: ASCII characters with shift key support for capitals/symbols
-- **Pin Assignment**: Pin 3 (CLK), Pin 4 (DATA), avoiding S-Link pin 2
 
 ### Performance Characteristics
 
@@ -345,7 +313,7 @@ Comprehensive logging provides insight into all operations:
 
 ```
 === Sony CDP-CX355 S-Link Controller Starting ===
-S-Link pin (2) initial state: HIGH
+S-Link pin (8) initial state: HIGH
 ✓ S-Link line appears stable and pulled HIGH (good)
 === Querying title for disc 8 ===
 Attempt 1: 98,40,8,48,6f,77,20,54,6f,20,54,72,61,69,6e,20
@@ -371,7 +339,7 @@ Common issues and solutions:
 
 **"No response to commands"**
 - Confirm CDP-CX355 is powered on and responsive
-- Check S-Link pin assignment (default: pin 2)
+- Check S-Link pin assignment (default: pin 8)
 - Verify device addressing (0x90 for primary unit)
 
 **"Title discovery fails"**
@@ -416,7 +384,7 @@ The REST API enables integration with home automation systems:
 ```bash
 # Example curl commands for home automation
 curl -X POST http://arduino-ip/ -d "command=power"
-curl -X POST http://arduino-ip/ -d "command=bulkUpdate&disc=5"
+curl -X POST http://arduino-ip/ -d "command=playDisc&disc=5"
 curl http://arduino-ip/discs?page=1&limit=10
 ```
 
@@ -435,11 +403,11 @@ The JSON API supports custom client applications:
 
 ### Code Structure
 - `src/main.cpp` - Main application logic and web server
-- `src/WifiManager.*` - Network connection management  
-- `src/HttpParser.*` - HTTP request parsing
+- `src/SLinkProtocol.cpp/.hpp` - S-Link protocol implementation
+- `src/WifiManager.cpp/.hpp` - Network connection management
+- `src/HttpParser.cpp/.hpp` - HTTP request parsing
 - `src/DiscStorage.hpp` - EEPROM-based disc metadata storage
 - `src/LedMatrixController.hpp` - LED matrix display control
-- `lib/Sony_SLink/` - S-Link protocol implementation
 
 ### Testing
 Build and verify compilation:
@@ -502,7 +470,7 @@ This project implements Sony's proprietary S-Link (Control-A1) protocol for comm
 
 ### Storage Specifications
 - **Disc Capacity**: 300 discs maximum (hardware limited by CDP-CX355)
-- **Title Length**: 15 characters per disc title (plus null terminator)
+- **Title Length**: 13 characters per disc title (stored in 16-byte field)
 - **Data Persistence**: EEPROM-based storage survives power cycles
 - **Total Storage**: 5.7KB for disc database (300 × 19 bytes)
 
