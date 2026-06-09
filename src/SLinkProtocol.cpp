@@ -413,12 +413,15 @@ void SLinkProtocol::executeNextCommand()
     if (!_currentCommand && _commandCount > 0)
     {
         Serial.println("Executing next command from queue.");
-        _currentCommand = &_commandQueue[0];
+        // Copy the head command out before shifting; shifting overwrites
+        // slot 0 in place, so pointing into the queue would corrupt it.
+        _activeCommand = _commandQueue[0];
         for (int i = 0; i < _commandCount - 1; ++i)
         {
             _commandQueue[i] = _commandQueue[i + 1];
         }
         _commandCount--;
+        _currentCommand = &_activeCommand;
     }
 }
 

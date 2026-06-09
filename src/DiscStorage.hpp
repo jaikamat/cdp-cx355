@@ -31,6 +31,22 @@ public:
         DiscInfo disc;
         int address = calculateAddress(index);
         EEPROM.get(address, disc); // Retrieve the record
+
+        // Records that were never written read back as erased flash (0xFF),
+        // and older records were saved without a disc number. Normalize the
+        // disc number from the index and blank any memo containing
+        // non-printable bytes so callers always get a clean record.
+        disc.discNumber = index + 1;
+        disc.memo[sizeof(disc.memo) - 1] = '\0';
+        for (const char *p = disc.memo; *p; p++)
+        {
+            if (*p < 0x20 || *p > 0x7E)
+            {
+                disc.memo[0] = '\0';
+                disc.isDataCD = false;
+                break;
+            }
+        }
         return disc;
     }
 
@@ -48,6 +64,7 @@ public:
 
         // Read the existing record to preserve the current flags
         DiscInfo disc = readDisc(discIndex);
+        disc.discNumber = discNumber;
 
         // Update the memo
         char charBuf[16];

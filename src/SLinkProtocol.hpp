@@ -56,6 +56,7 @@ private:
     SLinkCommand _commandQueue[MAX_COMMANDS];
     int _commandCount;
 
+    SLinkCommand _activeCommand;
     SLinkCommand* _currentCommand;
 
     // Command processing state machines

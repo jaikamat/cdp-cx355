@@ -20,7 +20,7 @@ bool isPlayerOn = true; // Assume player is ON as per user feedback
 
 void onDiscTitleRetrieved(SLinkProtocol *protocol, void *userData)
 {
-  int discNum = (int)userData;
+  int discNum = (int)(intptr_t)userData;
   String title = protocol->getTitle();
   Serial.print("Callback received for disc ");
   Serial.print(discNum);
@@ -117,7 +117,7 @@ void handleSaveDiscTitleCommand(const String &args)
       slink.setDiscTitle(discNum, title);
 
       // Auto-discover after setting to sync EEPROM with player
-      slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)discNum);
+      slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)(intptr_t)discNum);
     }
   }
 }
@@ -138,7 +138,7 @@ void handleDiscoverTitleCommand(const String &args)
       Serial.println(discNum);
 
       // Simple query-only approach: just get the disc title directly
-      slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)discNum);
+      slink.getDiscTitle(discNum, onDiscTitleRetrieved, (void *)(intptr_t)discNum);
     }
   }
 }
@@ -197,6 +197,25 @@ void setup()
   Serial.println("=== Ready for S-Link commands ===");
 }
 
+// Print a string into a JSON value, escaping quotes/backslashes and
+// dropping control characters so a memo can never break the document
+void printJsonEscaped(WiFiClient &client, const char *text)
+{
+  for (const char *p = text; *p; p++)
+  {
+    char c = *p;
+    if (c == '"' || c == '\\')
+    {
+      client.print('\\');
+      client.print(c);
+    }
+    else if (c >= 0x20)
+    {
+      client.print(c);
+    }
+  }
+}
+
 void sendDiscsJsonStream(WiFiClient &client, String url)
 {
   int page = 1;
@@ -248,7 +267,7 @@ void sendDiscsJsonStream(WiFiClient &client, String url)
     client.print("{\"d\":");
     client.print(d.discNumber);
     client.print(",\"m\":\"");
-    client.print(d.memo);
+    printJsonEscaped(client, d.memo);
     client.print("\"}");
   }
 
@@ -295,7 +314,7 @@ void sendIndexHtml(WiFiClient &client)
       "<div style='margin-bottom: 20px;'>"
       "<h2>Set Disc Title</h2>"
       "<form onsubmit=\"event.preventDefault(); if(!lock('Setting title...'))return; var d=document.getElementById('discNum').value; var t=document.getElementById('title').value; fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'command=setDiscTitle&disc='+d+'&title='+encodeURIComponent(t)}).then(()=>{refreshCurrentRange();setTimeout(unlock,3000);}).catch(()=>setTimeout(unlock,1000));\">"
-      "  <input type='number' id='discNum' placeholder='Disc #' min='1' max='400'>"
+      "  <input type='number' id='discNum' placeholder='Disc #' min='1'>"
       "  <input type='text' id='title' placeholder='Title (13 chars)' maxlength='13'>"
       "  <button type='submit'>Set Title</button>"
       "</form>"
@@ -309,7 +328,14 @@ void sendIndexHtml(WiFiClient &client)
       "</div>"
       "<div id='discList'></div>"
 
-      "<script>"
+      "<script>"));
+
+  // Inject device constants so the page stays in sync with DiscStorage
+  client.print("const MAX_DISCS = ");
+  client.print(storage.getMaxDiscs());
+  client.print(";const PAGE_SIZE = 25;");
+
+  client.print(F(
       "let currentRange = null;"
       "let busy = false;"
 
@@ -376,10 +402,10 @@ void sendIndexHtml(WiFiClient &client)
 
       "function populateRangeDropdown() {"
       "  const select = document.getElementById('rangeSelect');"
-      "  for (let i = 0; i < 300; i += 25) {"
+      "  for (let i = 0; i < MAX_DISCS; i += PAGE_SIZE) {"
       "    const option = document.createElement('option');"
-      "    option.value = (i / 25 + 1);"
-      "    option.textContent = 'Discs ' + (i + 1) + '-' + Math.min(i + 25, 300);"
+      "    option.value = (i / PAGE_SIZE + 1);"
+      "    option.textContent = 'Discs ' + (i + 1) + '-' + Math.min(i + PAGE_SIZE, MAX_DISCS);"
       "    select.appendChild(option);"
       "  }"
       "}"
@@ -388,7 +414,7 @@ void sendIndexHtml(WiFiClient &client)
       "  const page = document.getElementById('rangeSelect').value;"
       "  if (!page) return;"
       "  currentRange = page;"
-      "  fetch('/discs?page=' + page + '&limit=25')"
+      "  fetch('/discs?page=' + page + '&limit=' + PAGE_SIZE)"
       "    .then(response => response.json())"
       "    .then(data => {"
       "      const container = document.getElementById('discList');"
@@ -396,13 +422,18 @@ void sendIndexHtml(WiFiClient &client)
       "      data.discs.forEach(item => {"
       "        html += '<div style=\"margin-bottom: 5px;\">';"
       "        html += 'Disc ' + item.d + ': ';"
-      "        html += '<input type=\"text\" data-disc=\"' + item.d + '\" value=\"' + item.m + '\" style=\"width: 200px; margin-right: 10px;\">';"
+      "        html += '<input type=\"text\" data-disc=\"' + item.d + '\" maxlength=\"13\" style=\"width: 200px; margin-right: 10px;\">';"
       "        html += '<button type=\"button\" onclick=\"playDisc(' + item.d + ')\">Play</button> ';"
       "        html += '<button type=\"button\" onclick=\"saveDiscTitle(' + item.d + ')\">Save</button> ';"
       "        html += '<button type=\"button\" onclick=\"discoverTitle(' + item.d + ')\">Auto-Discover</button>';"
       "        html += '</div>';"
       "      });"
       "      container.innerHTML = html;"
+      // Assign titles via the DOM so quotes in a memo can't break the markup
+      "      data.discs.forEach(item => {"
+      "        const input = container.querySelector('input[data-disc=\"' + item.d + '\"]');"
+      "        if (input) input.value = item.m;"
+      "      });"
       "    })"
       "    .catch(err => {"
       "      console.error('Error fetching discs:', err);"
@@ -416,6 +447,7 @@ void sendIndexHtml(WiFiClient &client)
       "}"
 
       "document.addEventListener('DOMContentLoaded', () => {"
+      "  document.getElementById('discNum').max = MAX_DISCS;"
       "  populateRangeDropdown();"
       "});"
       "</script>"
