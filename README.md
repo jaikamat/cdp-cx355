@@ -1,41 +1,42 @@
 # Sony CDP-CX355 WiFi Remote Control
 
-A modern WiFi-based remote control system for Sony CDP-CX355 disc changers using Arduino Uno R4 WiFi and the S-Link protocol. Transform your vintage Sony disc changer into a network-connected device with a web-based interface for disc management and playback control.
+A WiFi-based remote control system for Sony CDP-CX355 disc changers using Arduino Uno R4 WiFi and the S-Link protocol. Transform your vintage Sony disc changer into a network-connected device with a web-based interface for disc management and playback control.
 
 ## What It Does
 
-This project creates a bridge between your Sony CDP-CX355 disc changer and modern WiFi networks, allowing you to:
+This project creates a bridge between your Sony CDP-CX355 disc changer and your home network, allowing you to:
 
 - **Remote Control**: Play, stop, pause, skip tracks, and power on/off your disc changer from any device on your network
 - **Disc Management**: Browse, edit, and organize disc titles/memos for up to 300 discs through a web interface
 - **Direct Disc Selection**: Jump directly to any disc number (1-300) with a single click
-- **Real-time Updates**: Interactive web interface that loads disc information dynamically via JSON API
-- **LED Matrix Display**: Visual feedback on the Arduino showing connection status and current operations
+- **Title Sync**: Write titles to the CDP-CX355's own memo memory over S-Link, and read titles back from the device
+- **LED Matrix Display**: Visual feedback on the Arduino showing connection status and the device hostname
 
 ### User Experience
 
 1. **Setup**: Connect the Arduino to your CDP-CX355's S-Link port and power on
-2. **Connect**: The device creates a WiFi connection and displays its IP address on the LED matrix
-3. **Control**: Open any web browser and navigate to the device's IP address
+2. **Connect**: The device joins your WiFi network and scrolls its hostname (`sony-remote.local`) on the LED matrix
+3. **Control**: Open any web browser and navigate to `http://sony-remote.local`
 4. **Manage**: Use the web interface to:
-   - View all your discs with custom titles/memos
+   - View your discs with custom titles/memos, 25 at a time
    - Click play buttons to directly select and play any disc
-   - Edit disc titles and save them to device memory
+   - Edit disc titles and save them to the player and EEPROM
    - Control basic playback functions (play/stop/pause/next/previous)
 
 ## Architecture
 
 ### Hardware Components
 - **Arduino Uno R4 WiFi**: Main controller with built-in WiFi and LED matrix
-- **S-Link Connection**: Communicates with Sony CDP-CX355 using Sony's proprietary S-Link protocol
+- **S-Link Connection**: Communicates with Sony CDP-CX355 using Sony's proprietary S-Link protocol (single wire, pin 8)
 - **EEPROM Storage**: Persistent storage for disc titles/memos (up to 300 discs)
 
 ### Software Components
-- **S-Link Protocol**: Custom library for Sony S-Link/Control-A1 communication
-- **Web Server**: HTTP server serving both static HTML and JSON API endpoints
-- **Disc Storage**: EEPROM-based persistence system for disc metadata
-- **LED Matrix Controller**: Visual feedback system using Arduino's built-in LED matrix
-- **WiFi Manager**: Network connection and status management
+- **S-Link Protocol** (`SLinkProtocol`): Sony S-Link/Control-A1 communication with command queuing
+- **Web Server / UI** (`main.cpp` + `WebUI.hpp`): HTTP server serving the single-page interface and JSON API
+- **Disc Storage** (`DiscStorage`): EEPROM-based persistence for disc metadata
+- **LED Matrix Controller** (`LedMatrixController`): Visual feedback using Arduino's built-in LED matrix
+- **WiFi Manager** (`WiFiManager`): Network connection and mDNS hostname management
+- **HTTP Parser** (`HttpParser`): Minimal HTTP request parsing
 
 ### Communication Flow
 ```
@@ -53,8 +54,7 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
 - 220Ω resistor and diode for S-Link line protection
 
 #### Software Required
-- [PlatformIO](https://platformio.org/) or [Arduino IDE](https://www.arduino.cc/en/software)
-- Python 3.x (for PlatformIO installation)
+- [PlatformIO](https://platformio.org/)
 
 ### Installation
 
@@ -64,14 +64,13 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
    cd 241219-214510-uno_r4_wifi
    ```
 
-2. **Install PlatformIO** (recommended)
+2. **Install PlatformIO**
    ```bash
    pip install platformio
    ```
 
 3. **Configure WiFi Credentials**
-   - Edit `src/Secrets.hpp`
-   - Replace `WIFI_SSID` and `WIFI_PASSWORD` with your network credentials
+   - Create `src/Secrets.hpp` (it is gitignored)
    ```cpp
    #define WIFI_SSID "your-network-name"
    #define WIFI_PASSWORD "your-password"
@@ -95,79 +94,49 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
    - Watch the LED matrix for WiFi connection status
 
 3. **Find Your Device**
-   - Check the LED matrix display for the hostname (sony-remote.local)
+   - The LED matrix scrolls the hostname (`sony-remote.local`) once connected
    - Navigate to `http://sony-remote.local` in your web browser
-   - Alternative: Check the LED matrix or router's DHCP client list for IP address and use `http://[IP-ADDRESS]`
+   - Alternative: check your router's DHCP client list for the IP address and use `http://[IP-ADDRESS]`
 
-### Usage
+## Web Interface
 
-### Web Interface Deep Dive
+The interface has three functional areas, protected by a global busy lock so commands can't be spammed while the slow S-Link bus is working.
 
-The web interface provides a comprehensive control system for your Sony CDP-CX355 with several distinct functional areas:
+### Transport Controls
+- **Play / Stop / Pause / Next / Previous**: Basic playback control
+- **Power**: Toggles CDP-CX355 power state
 
-#### Transport Control Panel
-Located at the top of the interface, provides immediate access to all basic playback functions:
-- **Play**: Starts playback of the currently selected disc
-- **Stop**: Stops playback and returns to ready state
-- **Pause**: Toggles pause/resume for current track
-- **Next/Previous**: Skip between tracks on the current disc
-- **Power**: Toggles CDP-CX355 power state (with visual feedback on LED matrix)
+### Set Disc Title
+A standalone form for titling any disc by number without paging to its range. Submits the same command as the per-disc Save button.
 
-#### Disc Collection Management
-The heart of the interface, featuring a smart progressive loading system:
+### Disc Collection
+A progressive loading system keeps memory usage small:
 
-##### Range Selector System
-- **Dropdown Navigation**: Select disc ranges from a dropdown menu (e.g., "Discs 1-25", "Discs 26-50")
-- **Instant Loading**: Switching ranges immediately loads the selected 25-disc batch
-- **Memory Efficient**: Only loads one range at a time, supporting full 300-disc capacity
-- **Quick Access**: Jump directly to any range without sequential loading
+- **Range Selector**: Pick a 25-disc range (e.g., "Discs 1-25") from the dropdown; only one range is loaded at a time
+- **Per-Disc Controls**, for each disc in the loaded range:
+  ```
+  Disc 1: [Title Text Field] [Play] [Save] [Auto-Discover]
+  ```
+  - **Title Field**: Editable text input (13 character limit)
+  - **Play**: Immediately selects and plays the disc
+  - **Save**: Writes the title to the CDP-CX355's memo memory via S-Link, then reads it back and stores it in EEPROM
+  - **Auto-Discover**: Queries the CDP-CX355 for the disc's title (memo or CD TEXT) and stores it in EEPROM
 
-##### Per-Disc Controls
-Each disc entry provides multiple interaction options:
-```
-Disc 1: [Title Text Field] [Play] [Save] [Auto-Discover]
-```
+### UI Locking During Operations
+- All buttons and inputs dim while an operation is in progress
+- A status indicator shows the current operation (e.g., "Saving disc 5...")
+- The UI re-enables automatically after the operation's expected duration (0.5-5s depending on the command)
 
-- **Title Field**: Editable text input (13 character limit) for custom disc names
-- **Play Button**: Immediately selects and plays the specific disc
-- **Save Button**: Saves the title for this specific disc to the CDP-CX355 and EEPROM
-- **Auto-Discover Button**: Queries the CDP-CX355 for the actual disc title stored in its memory
+## API Reference
 
-##### Auto-Discovery Feature
-The auto-discovery system communicates directly with your CDP-CX355 to retrieve disc titles:
-- **Real-time Feedback**: Button shows "Discovering..." during operation
-- **Success Indication**: Shows "Discovered!" then auto-refreshes the page
-- **Error Handling**: Displays "Error" if communication fails
-- **Automatic Storage**: Successfully discovered titles are immediately saved to EEPROM
+### `GET /`
+Returns the main HTML interface.
 
-#### Real-time Status Feedback
-- **LED Matrix Display**: Shows current operation status, IP address, and connection state
-- **Web Interface Updates**: Dynamic button states and progress indicators
-- **Console Logging**: Detailed S-Link communication logs available via Serial monitor
+### `GET /discs?page=N&limit=M`
+Paginated disc information.
+- `page` (optional): page number, default 1
+- `limit` (optional): items per page, default 25, max 50
 
-#### UI Locking During Operations
-The web interface includes a global busy state to prevent command spam:
-- **Visual Feedback**: All buttons and inputs dim when an operation is in progress
-- **Status Indicator**: Shows current operation (e.g., "Sending...", "Saving disc 5...")
-- **Automatic Unlock**: UI re-enables after operation completes (500ms-5s depending on operation type)
-- **Spam Prevention**: Rapid clicks are ignored while busy, ensuring reliable command execution
-
-### API Reference
-
-The device exposes a RESTful API for programmatic control:
-
-#### Core Endpoints
-
-##### `GET /`
-Returns the main HTML interface with embedded JavaScript for dynamic functionality.
-
-##### `GET /discs?page=N&limit=M`
-**Purpose**: Paginated disc information retrieval
-**Parameters**:
-- `page` (optional): Page number (default: 1)
-- `limit` (optional): Items per page (default: 25, max: 50)
-
-**Response Format**:
 ```json
 {
   "discs": [
@@ -181,305 +150,110 @@ Returns the main HTML interface with embedded JavaScript for dynamic functionali
 }
 ```
 
-##### `POST /`
-**Purpose**: Command execution and data updates
-**Content-Type**: `application/x-www-form-urlencoded`
+### `POST /`
+Command execution. Content-Type: `application/x-www-form-urlencoded`.
 
-**Command Types**:
+**Transport commands**:
+- `command=play` / `stop` / `pause` / `next` / `prev` / `power`
 
-**Transport Commands**:
-- `command=play` - Start playback
-- `command=stop` - Stop playback  
-- `command=pause` - Toggle pause
-- `command=next` - Next track
-- `command=prev` - Previous track
-- `command=power` - Toggle power
+**Disc operations**:
+- `command=playDisc&disc=5` — select and play a disc
+- `command=saveDiscTitle&disc=5&title=MyAlbum` — write the title to the CDP-CX355 and sync it back to EEPROM (`setDiscTitle` is accepted as an alias)
+- `command=discoverTitle&disc=8` — read a disc's title from the CDP-CX355 into EEPROM
 
-**Disc Operations**:
-- `command=playDisc&disc=5` - Select and play specific disc
-- `command=saveDiscTitle&disc=5&title=MyAlbum` - Save title for specific disc
-- `command=discoverTitle&disc=8` - Auto-discover title for specific disc
-- `command=setDiscTitle&disc=5&title=MyAlbum` - Write title to CDP-CX355 via S-Link
+Example automation:
+```bash
+curl -X POST http://sony-remote.local/ -d "command=playDisc&disc=5"
+curl "http://sony-remote.local/discs?page=1&limit=10"
+```
 
-### Data Structures
+## Storage
 
-#### DiscInfo Structure
 ```cpp
 struct DiscInfo {
     uint16_t discNumber;  // Disc number (1-300)
-    char memo[16];        // Title/memo (13 chars used, 16 bytes storage)
-    bool isDataCD;        // Data CD flag (future use)
-}
+    char memo[16];        // Title/memo (13 chars used, null-terminated)
+    bool isDataCD;        // Reserved; kept for record-layout stability
+};
 ```
 
-#### Storage Architecture
-- **EEPROM Persistence**: 300 × 19 bytes = 5,700 bytes total storage
-- **Record Size**: 19 bytes per disc (2 + 16 + 1)
-- **Addressing**: Zero-indexed internally, 1-indexed for user interface
-- **Memory Layout**: Sequential records starting at EEPROM address 0
+- **Record Size**: `sizeof(DiscInfo)` = 20 bytes (2 + 16 + 1, padded to 2-byte alignment)
+- **Total**: 300 × 20 = 6,000 bytes of the Uno R4's 8KB emulated EEPROM (RA4M1 data flash)
+- **Addressing**: sequential records from address 0; zero-indexed internally, 1-indexed in the UI
+- **Robust Reads**: never-written records (erased flash) are normalized on read, so the UI shows clean empty slots
 
-### User Experience Workflows
+## S-Link Protocol Notes
 
-#### First-Time Setup Workflow
-1. **Connection**: Arduino displays hostname (sony-remote.local) on LED matrix
-2. **Access**: Navigate to `http://sony-remote.local` in web browser
-3. **Discovery**: Select a disc range from the dropdown to begin browsing
-4. **Populate**: Use "Auto-Discover" buttons to retrieve disc titles from CDP-CX355
-5. **Customize**: Edit any discovered titles for better organization
-6. **Save**: Click "Save" next to each disc to persist changes
+This project implements Sony's proprietary S-Link (Control-A1) protocol, based on [Ircama's Sony_SLink library](https://github.com/Ircama/Sony_SLink) timings.
 
-#### Daily Use Workflow
-1. **Browse**: Load disc pages to find desired album
-2. **Play**: Click "Play" button next to any disc for immediate playback
-3. **Control**: Use transport controls for playback management
-4. **Manage**: Edit titles and save changes as needed
-
-#### Advanced Operations
-- **Bulk Discovery**: Systematically auto-discover titles across entire collection
-- **Custom Organization**: Create consistent naming conventions for easy browsing
-- **Remote Control**: Access from any device on the network
-- **Power Management**: Remote power control of the CDP-CX355 unit
-
-### Performance Characteristics
-
-#### Web Interface Performance
-- **Page Load Time**: ~2-3 seconds for initial interface
-- **Disc Loading**: ~1-2 seconds per 25-disc batch
-- **Command Response**: ~500ms for transport controls
-- **Auto-Discovery**: 5-15 seconds per disc (depends on S-Link timing)
-
-#### S-Link Communication
-- **Protocol Speed**: 355 bps (hardware limitation)
-- **Command Latency**: 1-3 seconds typical
-- **Error Recovery**: Automatic retry with exponential backoff
-- **Timing Optimization**: Multiple rapid attempts for title discovery
-
-#### Memory Usage
-- **SRAM**: ~1KB for web server buffers
-- **EEPROM**: 5.7KB for disc storage (out of 1024KB available)
-- **Flash**: ~32KB for program code
-- **Network Buffers**: Dynamic allocation for HTTP responses
-
-## Advanced Features & Debugging
-
-### LED Matrix Status Indicators
-
-The Arduino Uno R4 WiFi's built-in LED matrix provides visual feedback throughout operation:
-
-#### Connection States
-- **WiFi Search Animation**: Displays during initial WiFi connection
-- **IP Address Display**: Shows device IP address once connected
-- **Connection Status**: Scrolling text indicates "wifi connected"
-
-#### Operation Feedback
-- **S-Link Activity**: Visual indication during disc communication
-- **Power State Changes**: Feedback when toggling CDP-CX355 power
-- **Error States**: Distinctive patterns for communication failures
-
-### S-Link Protocol Implementation
-
-#### Command Structure
-The Sony S-Link (Control-A1) protocol uses specific addressing and timing:
-
-```cpp
-// Device addressing for CDP-CX355
-0x90 - CDP unit 1 (discs 1-200)
-0x93 - CDP unit 2 (discs 201-300)
-
-// BCD encoding for disc numbers
-toBCD(8) = 0x08    // Disc 8
-toBCD(99) = 0x99   // Disc 99
-0x9A + (n-100)     // Discs 100+ (0x9A = disc 100, 0x9B = disc 101, etc.)
+### Addressing and Encoding
+```
+0x90 - CDP unit, discs 1-200
+0x93 - CDP unit, discs 201-300
+Disc numbers are BCD encoded.
 ```
 
-#### Title Discovery Process
-The auto-discovery feature implements sophisticated retry logic:
+### Commands Used
+- Transport: play `0x00`, stop `0x01`, pause `0x02`, next `0x08`, prev `0x09`
+- Power: on `0x2E`, off `0x2F`
+- Disc select: `0x50` (disc + track)
+- Title query: `0x40` (responds with `98 40 ...` followed by ASCII title bytes)
+- Memo write: `0x80` (disc + 13 title bytes, space padded)
 
-1. **Multiple Attempts**: Up to 5 rapid attempts with varying delays (2ms, 4ms, 6ms, 8ms, 10ms)
-2. **Response Detection**: Looks for specific response pattern "98,40," indicating valid title data
-3. **Data Parsing**: Extracts ASCII title from hexadecimal response stream
-4. **Automatic Storage**: Saves discovered titles directly to EEPROM
+### Timing and Retry Behavior
+- The line runs at roughly 355 bps; every command takes visible time
+- Transport commands are sent once (fire-and-forget) so a retry can't double-execute them
+- Title queries and disc selection retry up to 5 times, with a short growing delay between send and listen (0.5ms increments) and 100ms between attempts
+- Responses are captured with a 0.2s listening window
+- Commands are queued and executed one at a time; the queue waits for the bus to be idle
 
-#### Communication Timing
-- **S-Link Speed**: 355 bps (Sony specification)
-- **Command Timeout**: 3-5 seconds typical
-- **Retry Intervals**: 100ms between attempts
-- **Monitor Windows**: 0.2-3 seconds for response capture
+### Serial Monitor
+The serial monitor (115200 baud) logs every queued command, raw S-Link responses, parsed titles, and HTTP commands as they arrive — this is the main debugging tool.
 
-### Debugging Tools
+### Troubleshooting
+- **No response to commands**: confirm the CDP-CX355 is powered on, check the pin 8 connection and shared ground
+- **Title discovery fails**: ensure a disc is actually loaded in that slot; watch the serial monitor for raw responses
+- **Line protection**: a 220Ω series resistor and diode protect the single-wire bus
 
-#### Serial Monitor Output
-Comprehensive logging provides insight into all operations:
+## Code Structure
 
-```
-=== Sony CDP-CX355 S-Link Controller Starting ===
-S-Link pin (8) initial state: HIGH
-✓ S-Link line appears stable and pulled HIGH (good)
-=== Querying title for disc 8 ===
-Attempt 1: 98,40,8,48,6f,77,20,54,6f,20,54,72,61,69,6e,20
-SUCCESS on attempt 1
-Parsed title: How To Train
-```
+- `src/main.cpp` — setup, command handlers, HTTP request routing
+- `src/WebUI.hpp` — embedded web interface (HTML/JS) and `/discs` JSON endpoint
+- `src/SLinkProtocol.cpp/.hpp` — S-Link protocol implementation and command queue
+- `src/WifiManager.cpp/.hpp` — network connection and mDNS
+- `src/HttpParser.cpp/.hpp` — HTTP request parsing
+- `src/DiscStorage.hpp` — EEPROM-based disc metadata storage
+- `src/LedMatrixController.hpp` — LED matrix display control
+- `src/Secrets.hpp` — WiFi credentials (not in git)
 
-#### Built-in Diagnostic Functions
-The code includes several diagnostic functions accessible via serial commands:
-
-- **testSLinkConnection()**: Tests physical S-Link connection integrity
-- **testDeviceResponse()**: Verifies communication with CDP-CX355
-- **testTitleCommand()**: Tests title query functionality
-- **monitorSLinkTraffic()**: Captures S-Link traffic for analysis
-
-#### Connection Troubleshooting
-Common issues and solutions:
-
-**"S-Link line stuck LOW"**
-- Check physical connection to CDP-CX355 S-Link port
-- Verify ground connection between Arduino and CDP unit
-- Ensure proper line protection (220Ω resistor + diode)
-
-**"No response to commands"**
-- Confirm CDP-CX355 is powered on and responsive
-- Check S-Link pin assignment (default: pin 8)
-- Verify device addressing (0x90 for primary unit)
-
-**"Title discovery fails"**
-- Ensure disc is actually loaded in the specified slot
-- Try manual disc selection on CDP unit first
-- Check for S-Link timing issues in serial monitor
-
-### Performance Optimization
-
-#### Memory Management
-- **Progressive Loading**: Prevents memory overflow with large disc collections
-- **EEPROM Efficiency**: Optimized record structure minimizes storage overhead
-- **Buffer Management**: Dynamic allocation prevents memory fragmentation
-
-#### Network Optimization  
-- **Pagination**: Reduces HTTP response sizes for better performance
-- **Connection Pooling**: Reuses TCP connections where possible
-- **Timeout Management**: Prevents hanging connections
-
-#### S-Link Optimization
-- **Command Batching**: Groups related operations to minimize protocol overhead
-- **Response Caching**: Avoids redundant queries where possible
-- **Timing Adaptation**: Adjusts retry timings based on device responsiveness
-
-### Security Considerations
-
-#### Network Security
-- **Local Network Only**: Device operates on local network, not internet-exposed
-- **No Authentication**: Basic implementation assumes trusted local network
-- **HTTP Only**: Uses unencrypted HTTP (suitable for local use)
-
-#### Physical Security
-- **S-Link Interface**: Direct hardware connection to CDP-CX355
-- **EEPROM Storage**: Data persists locally on Arduino hardware
-- **No External Dependencies**: Operates independently without cloud services
-
-### Integration Possibilities
-
-#### Home Automation
-The REST API enables integration with home automation systems:
-
+### Building
 ```bash
-# Example curl commands for home automation
-curl -X POST http://arduino-ip/ -d "command=power"
-curl -X POST http://arduino-ip/ -d "command=playDisc&disc=5"
-curl http://arduino-ip/discs?page=1&limit=10
+pio run              # build
+pio run --target upload
+pio device monitor   # serial output at 115200 baud
 ```
-
-#### Custom Applications
-The JSON API supports custom client applications:
-- Mobile apps for remote control
-- Voice control integration  
-- Automated playlist management
-- Backup/restore disc title databases
-
-### Development Setup
-1. Follow the installation steps above
-2. Make your changes to the source code
-3. Test on hardware (the Sony S-Link protocol requires actual hardware)
-4. Submit pull requests with clear descriptions
-
-### Code Structure
-- `src/main.cpp` - Main application logic and web server
-- `src/SLinkProtocol.cpp/.hpp` - S-Link protocol implementation
-- `src/WifiManager.cpp/.hpp` - Network connection management
-- `src/HttpParser.cpp/.hpp` - HTTP request parsing
-- `src/DiscStorage.hpp` - EEPROM-based disc metadata storage
-- `src/LedMatrixController.hpp` - LED matrix display control
-
-### Testing
-Build and verify compilation:
-```bash
-pio run
-```
-
-### Known Limitations
-- Requires physical connection to CDP-CX355 for S-Link communication
-- Limited to 300 discs (hardware limitation of CDP-CX355)
-- S-Link protocol is slow (~355 bps) - commands take time to execute
-
-## Hardware Compatibility
-
-### Tested Devices
-- Sony CDP-CX355 (primary target)
-
-### Likely Compatible Devices
-- Sony CDP-CX series multi-disc changers (CDP-CX100, CDP-CX200, CDP-CX300, etc.)
-- Other Sony devices with S-Link/Control-A1 ports
-- Sony receivers and amplifiers with S-Link capability
-
-### S-Link Protocol Details
-This project implements Sony's proprietary S-Link (Control-A1) protocol for communication with vintage Sony audio equipment:
-
-#### Protocol Specifications
-- **Baud Rate**: 355 bps (bits per second)
-- **Data Format**: 8 data bits, 1 stop bit, no parity
-- **Addressing**: 4-bit device addressing with broadcast capability
-- **Commands**: Variable length command structure with BCD encoding
-- **Response Time**: 100ms to 5 seconds depending on operation
-
-#### Supported Commands
-- **Transport Control**: Play, Stop, Pause, Next/Previous track
-- **Power Management**: Power On/Off commands
-- **Disc Selection**: Direct access to any disc (1-300)
-- **Title Query**: Retrieve disc titles from device memory
-- **Status Query**: Device type and setup information
-
-#### Physical Requirements
-- **Connection**: Single-wire bidirectional communication
-- **Voltage**: 5V logic levels (Arduino Uno R4 compatible)
-- **Protection**: 220Ω resistor and diode recommended for line protection
-- **Distance**: Designed for short cable runs (< 3 meters typical)
+Behavioral testing requires the actual hardware — the S-Link protocol can't be exercised without a connected CDP unit.
 
 ## Technical Specifications
 
-### System Requirements
-- **Microcontroller**: Arduino Uno R4 WiFi (ARM Cortex-M4 @ 48MHz)
-- **Memory**: 32KB Flash, 8KB SRAM, 1KB EEPROM
-- **WiFi**: ESP32-S3 module with 802.11 b/g/n support
-- **Operating Voltage**: 5V (USB) or 7-12V (external power)
+- **Microcontroller**: Renesas RA4M1 (ARM Cortex-M4 @ 48MHz): 256KB flash, 32KB SRAM, 8KB data-flash EEPROM
+- **WiFi**: ESP32-S3 module (802.11 b/g/n), HTTP on port 80, mDNS as `sony-remote.local`
+- **S-Link**: single-wire bidirectional, 5V logic, ~355 bps
+- **Disc capacity**: 300 (CDP-CX355 hardware limit); titles 13 characters
 
-### Network Specifications
-- **Protocol**: HTTP/1.1 over TCP/IP
-- **Port**: 80 (standard HTTP)
-- **mDNS**: Responds to `sony-remote.local` for easy access
-- **Concurrent Connections**: Up to 4 simultaneous clients
-- **Response Format**: HTML5 + JSON for API endpoints
+## Known Limitations
 
-### Storage Specifications
-- **Disc Capacity**: 300 discs maximum (hardware limited by CDP-CX355)
-- **Title Length**: 13 characters per disc title (stored in 16-byte field)
-- **Data Persistence**: EEPROM-based storage survives power cycles
-- **Total Storage**: 5.7KB for disc database (300 × 19 bytes)
+- S-Link is slow; saving or discovering a title takes several seconds
+- No authentication and HTTP only — intended for trusted local networks
+- Power state is assumed, not queried: if the player is toggled from its front panel, the web Power button's sense inverts until toggled again
+- CD TEXT discs: the player's own CD TEXT overrides a written memo when the disc is selected
 
-### Performance Specifications
-- **Boot Time**: ~10-15 seconds including WiFi connection
-- **Web Response**: < 500ms for transport controls
-- **Disc Loading**: ~2 seconds per 25-disc page
-- **Title Discovery**: 5-15 seconds per disc (S-Link limited)
-- **Power Consumption**: ~200mA @ 5V typical operation
+## Future Work
+
+- Indicate in the UI whether a title is editable (memo) or read-only (CD TEXT)
+- Load the first 25 discs automatically on page load
+- Show a failure state on Auto-Discover when no disc or title is found
+- Playback animations on the LED matrix
 
 ## License
 
@@ -490,13 +264,3 @@ This project implements Sony's proprietary S-Link (Control-A1) protocol for comm
 - S-Link protocol implementation based on [Ircama's Sony_SLink library](https://github.com/Ircama/Sony_SLink)
 - Arduino framework and WiFiS3 library for network connectivity
 - PlatformIO for build system and dependency management
-
-## Support
-
-If you encounter issues:
-1. Verify S-Link hardware connections and line protection
-2. Check WiFi credentials in `src/Secrets.hpp`
-3. Ensure CDP-CX355 is powered on and responsive
-4. Check serial monitor output for debugging information
-
-For questions or contributions, please open an issue in this repository.
