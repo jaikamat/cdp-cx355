@@ -425,6 +425,10 @@ void SLinkProtocol::executeNextCommand()
     }
 }
 
+// Deliberately synchronous (not queued): it runs inside the HTTP handler,
+// before loop() next calls process(), so a getDiscTitle queued right after
+// it is guaranteed to execute once the title write has finished. Queueing
+// it would also require copying the title String into the command struct.
 void SLinkProtocol::setDiscTitle(int disc, const String& title) {
     uint8_t device = (disc > 200) ? 0x93 : 0x90;
     uint8_t discByte = toBCD(disc > 200 ? disc - 200 : disc);
