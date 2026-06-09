@@ -25,14 +25,6 @@ void SLinkProtocol::process()
 {
     if (_currentCommand)
     {
-        if (_currentCommand->timeout > 0 && millis() > _currentCommand->timeout)
-        {
-            Serial.println("Command timed out");
-            _currentCommand = nullptr;
-            executeNextCommand();
-            return;
-        }
-
         switch (_currentCommand->command)
         {
         case CMD_GET_DISC_TITLE:
@@ -322,92 +314,6 @@ void SLinkProtocol::sendCommand(const uint8_t *command, size_t length)
     } while (micros() - Start < SLINK_WORD_DELIMITER);
 }
 
-int SLinkProtocol::readResponse(uint8_t *buffer, size_t length, unsigned long timeout_ms)
-{
-    unsigned long startTime = millis();
-    int byteCount = 0;
-    int bitCount = 0;
-    uint8_t currentByte = 0;
-    bool syncFound = false;
-
-    memset(buffer, 0, length);
-
-    while (millis() - startTime < timeout_ms)
-    {
-        unsigned long pulseDuration;
-
-        // --- Critical Section: Measure one pulse without interruption ---
-        noInterrupts();
-        pulseDuration = pulseIn(_pin, LOW, 5000UL); // 5ms timeout for a single pulse
-        interrupts();
-        // --- End Critical Section ---
-
-        if (pulseDuration == 0)
-        { // No pulse was detected
-            if (syncFound && byteCount > 0)
-            {
-                // If we were in the middle of a message, it has ended.
-                return byteCount;
-            }
-            continue; // Otherwise, just keep waiting for a sync pulse.
-        }
-
-        if (!syncFound)
-        {
-            // We are waiting for a sync pulse to start a message.
-            if (pulseDuration > 2000 && pulseDuration < 3000)
-            { // Sync is ~2400us
-                syncFound = true;
-                bitCount = 0;
-                byteCount = 0;
-                currentByte = 0;
-            }
-            // If it wasn't a sync pulse, ignore it and keep waiting.
-            continue;
-        }
-
-        // --- If we are here, a sync has been found and we are decoding data ---
-        bool isOne = (pulseDuration > 900 && pulseDuration < 1500); // ONE is ~1200us
-        bool isZero = (pulseDuration > 400 && pulseDuration < 900); // ZERO is ~600us
-
-        if (isOne)
-        {
-            currentByte |= (1 << (7 - bitCount));
-            bitCount++;
-        }
-        else if (isZero)
-        {
-            bitCount++;
-        }
-        else
-        {
-            // This was not a valid data bit. The message may have been corrupted or ended.
-            // If we have some data, return it. Otherwise, wait for a new sync.
-            if (byteCount > 0)
-                return byteCount;
-            syncFound = false;
-            continue;
-        }
-
-        // If we have collected 8 bits, we have a full byte.
-        if (bitCount == 8)
-        {
-            if (byteCount < length)
-            {
-                buffer[byteCount] = currentByte;
-            }
-            byteCount++;
-            bitCount = 0;
-            currentByte = 0;
-            // If the buffer is full, we're done.
-            if (byteCount >= length)
-                return byteCount;
-        }
-    }
-
-    return byteCount; // Return whatever we have if we time out.
-}
-
 String SLinkProtocol::inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout)
 {
     unsigned long value = 0;
@@ -483,7 +389,7 @@ uint8_t SLinkProtocol::toBCD(int val)
     return ((val / 10) << 4) | (val % 10);
 }
 
-void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void *userData, void *data)
+void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void *userData)
 {
     if (_commandCount < MAX_COMMANDS)
     {
@@ -493,9 +399,6 @@ void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SL
         cmd.command = command;
         cmd.disc = disc;
         cmd.track = track;
-        cmd.state = 0;
-        cmd.timeout = 0;
-        cmd.data = data;
         cmd.callback = callback;
         cmd.userData = userData;
     }

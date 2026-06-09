@@ -7,8 +7,7 @@
 // Define available animations
 enum class MatrixAnimation
 {
-    WifiSearch,
-    Loading
+    WifiSearch
 };
 
 class LedMatrixController
@@ -25,9 +24,6 @@ public:
         {
         case MatrixAnimation::WifiSearch:
             matrix.loadSequence(LEDMATRIX_ANIMATION_WIFI_SEARCH);
-            break;
-        case MatrixAnimation::Loading:
-            matrix.loadSequence(LEDMATRIX_ANIMATION_INFINITY_LOOP_LOADER);
             break;
         }
         matrix.play(loop);

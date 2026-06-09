@@ -9,7 +9,7 @@ struct DiscInfo
 {
     uint16_t discNumber; // Disc number (2 bytes)
     char memo[16];       // Memo data (16 bytes, including padding for 13-char memos)
-    bool isDataCD;       // Flag indicating if the disc is a data CD (1 byte)
+    bool isDataCD;       // Reserved; kept so the on-flash record layout stays stable
 };
 
 class DiscStorage
@@ -42,7 +42,7 @@ public:
     }
 
     // Write a disc record to EEPROM using the disc number
-    void writeDiscWithNumber(int discNumber, String memo, bool isDataCD = false)
+    void writeDiscWithNumber(int discNumber, String memo)
     {
         int discIndex = discNumber - 1;
 
@@ -55,44 +55,14 @@ public:
         strncpy(disc.memo, charBuf, sizeof(disc.memo) - 1); // Ensure null-termination
         disc.memo[sizeof(disc.memo) - 1] = '\0';            // Explicit null-termination (safe)
 
-        // Preserve the isDataCD flag unless explicitly overwritten
-        disc.isDataCD = isDataCD ? isDataCD : disc.isDataCD;
-
         // Write the updated record back to EEPROM
         writeDisc(discIndex, disc);
-    }
-
-    // Mark a disc as a Data CD
-    void setDiscAsDataCD(int discNumber, bool isDataCD)
-    {
-        int discIndex = discNumber - 1;
-        DiscInfo disc = readDisc(discIndex); // Read the existing record
-        disc.isDataCD = isDataCD;            // Update the flag
-        writeDisc(discIndex, disc);          // Write it back to EEPROM
-    }
-
-    // Check if a disc is a Data CD
-    bool isDataDisc(int discNumber)
-    {
-        int discIndex = discNumber - 1;
-        DiscInfo disc = readDisc(discIndex);
-        return disc.isDataCD;
     }
 
     // Get the maximum number of discs supported
     int getMaxDiscs() const
     {
         return MAX_DISCS;
-    }
-
-    // Initialize all EEPROM entries with default values
-    void initializeEEPROM()
-    {
-        for (int i = 0; i < MAX_DISCS; i++)
-        {
-            DiscInfo disc = {static_cast<uint16_t>(i + 1), "", false};
-            writeDisc(i, disc);
-        }
     }
 };
 

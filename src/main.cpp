@@ -58,16 +58,6 @@ String urlDecode(const String &encoded)
   return decoded;
 }
 
-void slinkPlay() { slink.play(); }
-void slinkStop() { slink.stop(); }
-void slinkPauseToggle() { slink.pause(); }
-void slinkNextTrack() { slink.nextTrack(); }
-void slinkPrevTrack() { slink.prevTrack(); }
-void slinkSelectDisc(int discNumber)
-{
-  slink.selectDisc(discNumber);
-}
-
 using CommandHandler = std::function<void(const String &)>;
 std::map<String, CommandHandler> commandHandlers;
 
@@ -99,7 +89,7 @@ void handlePlayDiscCommand(const String &args)
     {
       Serial.print("Playing disc #");
       Serial.println(discNum);
-      slinkSelectDisc(discNum);
+      slink.selectDisc(discNum);
     }
   }
 }
@@ -153,11 +143,11 @@ void handleDiscoverTitleCommand(const String &args)
   }
 }
 
-void handlePlayCommand(const String &) { slinkPlay(); }
-void handleStopCommand(const String &) { slinkStop(); }
-void handlePauseCommand(const String &) { slinkPauseToggle(); }
-void handleNextCommand(const String &) { slinkNextTrack(); }
-void handlePrevCommand(const String &) { slinkPrevTrack(); }
+void handlePlayCommand(const String &) { slink.play(); }
+void handleStopCommand(const String &) { slink.stop(); }
+void handlePauseCommand(const String &) { slink.pause(); }
+void handleNextCommand(const String &) { slink.nextTrack(); }
+void handlePrevCommand(const String &) { slink.prevTrack(); }
 
 void setupCommandHandlers()
 {

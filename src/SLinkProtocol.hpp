@@ -25,9 +25,6 @@ struct SLinkCommand {
     SLinkCommandType command;
     int disc;
     int track;
-    int state;
-    unsigned long timeout;
-    void* data;
     SLinkCallback callback;
     void* userData;
 };
@@ -71,16 +68,14 @@ private:
     void _writeSync();
     void _writeByte(byte value);
     void sendCommand(const uint8_t* command, size_t length);
-    int readResponse(uint8_t* buffer, size_t length, unsigned long timeout);
     String inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout);
     uint8_t toBCD(int val);
     bool isBusIdle();
 
-    void addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void* userData, void* data = nullptr);
+    void addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void* userData);
     void executeNextCommand();
 
     char _titleBuffer[21]; // For storing disc title
-    uint8_t _responseBuffer[32]; // For reading responses
 };
 
 #endif // SLINK_PROTOCOL_HPP
