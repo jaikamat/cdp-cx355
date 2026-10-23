@@ -689,10 +689,17 @@ void SLinkProtocol::setDiscTitle(int disc, const String& title) {
     Serial.println(response);
 
     response.toUpperCase();
-    if (response.indexOf("1B") == -1) {
-        Serial.println("SUCCESS: Text write command sent. Assuming success as no error was received.");
-    } else {
+    if (response.indexOf("98,E,") >= 0) {
+        // Seen on hardware when the disc carries CD TEXT: the player keeps
+        // the disc's own title and refuses the memo.
+        Serial.println("ERROR: Player rejected the memo write (reply 0E). CD TEXT discs cannot be retitled.");
+    } else if (response.indexOf("1B") >= 0) {
         Serial.println("ERROR: Text write command failed (Received 1B error)");
+    } else {
+        // No error reply is not proof of success: while playing, the player
+        // ignores a memo write for a CD TEXT disc without answering at all.
+        // The getDiscTitle queued after this call reads back what was stored.
+        Serial.println("Memo write sent with no error reply; the read-back decides what is stored.");
     }
 }
 
