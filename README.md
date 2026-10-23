@@ -19,7 +19,7 @@ This project creates a bridge between your Sony CDP-CX355 disc changer and your 
 2. **Connect**: The device joins your WiFi network and scrolls its hostname (`sony-remote.local`) on the LED matrix
 3. **Control**: Open any web browser and navigate to `http://sony-remote.local`
 4. **Manage**: Use the web interface to:
-   - View your discs with custom titles/memos, 25 at a time
+   - Scroll through your discs with their titles; the list loads as you go
    - Click play buttons to directly select and play any disc
    - Edit disc titles and save them to the player and EEPROM
    - Control basic playback functions (play/stop/pause/next/previous)
@@ -64,7 +64,7 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → CDP-CX
 1. **Clone the Repository**
    ```bash
    git clone <repository-url>
-   cd 241219-214510-uno_r4_wifi
+   cd cdp-cx355
    ```
 
 2. **Install PlatformIO**
@@ -187,7 +187,7 @@ curl "http://sony-remote.local/discs?page=1&limit=10"
 
 ## Backing Up and Restoring Titles
 
-The player's memo memory is the primary copy of each title; the Arduino's EEPROM is a cache of it. If only the Arduino is replaced, **Auto-Discover** can re-read titles from the player. A backup protects against the other cases: the player is replaced, its memory is lost, or you want the list in a file.
+The player's memo memory is the primary copy of each title; the Arduino's EEPROM is a cache of it. If only the Arduino is replaced, **Discover** can re-read titles from the player. A backup protects against the other cases: the player is replaced, its memory is lost, or you want the list in a file.
 
 Both procedures use the HTTP API, so they run from any machine on the network. Set `HOST` to the IP address rather than `sony-remote.local` if `.local` lookups are slow on your machine; the restore loop does one lookup per disc.
 
@@ -264,7 +264,9 @@ Captured on a CDP-CX355; they match BigDave's 1998 notes for the CDP-CX250. Firs
 |---|---|
 | `98 00` / `98 01` / `98 02` | Play / stop / pause (also sent as the ack to our commands) |
 | `98 10` | Reply to a title query: no memo. Same for an empty slot and an untitled disc |
+| `98 0E` | Reply: command refused, e.g. a memo write for a CD TEXT disc |
 | `98 0F` | Reply: unknown command |
+| `98 14` | Reply: invalid disc number |
 | `98 50 DD TT MM SS` | Track started: disc, track, track length. Sent ~2.5 s after play and on every track change |
 | `98 0C` | 29 seconds left in the track |
 | `98 52 DD` / `98 58 DD` | Displaying / loaded disc DD (carousel moves take several seconds) |
@@ -286,8 +288,10 @@ The serial monitor (115200 baud) logs every queued command, raw S-Link responses
 
 ### Troubleshooting
 - **No response to commands**: confirm the CDP-CX355 is powered on, check the pin 8 connection and shared ground
-- **Auto-Discover blanks the title**: the player answered `98 10`, "no memo". Either the slot is empty or the disc has no memo and no CD TEXT; the player cannot tell these apart, so type the title manually
-- **Auto-Discover returns blank for a CD TEXT disc**: the player only reads CD TEXT when it loads the disc, so a disc that has not been played since it went into the slot has no title yet. Play it once, then Auto-Discover again
+- **Discover blanks the title**: the player answered `98 10`, "no memo". Either the slot is empty or the disc has no memo and no CD TEXT; the player cannot tell these apart, so type the title manually
+- **Discover returns blank for a CD TEXT disc**: the player only reads CD TEXT when it loads the disc, so a disc that has not been played since it went into the slot has no title yet. Play it once, then Discover again
+- **Save does nothing on a CD TEXT disc**: the player refuses the memo write with `98 0E` and keeps the disc's own title. The UI cannot tell this from a successful save, but the read-back leaves the stored title unchanged
+- **Safari on iPhone says the page cannot be found**: it tries HTTPS first. Type `http://sony-remote.local` in full and bookmark that
 - **Line protection**: a 220Ω series resistor and diode protect the single-wire bus
 - **Device unreachable after a router reboot**: it re-joins on its own within about 10 seconds of the network returning; the serial log shows `WiFi link lost. Reconnecting...` followed by the new IP
 - **Device rebooted by itself**: the serial banner reappearing without a power cycle means the watchdog fired; the preceding log lines show which phase hung
@@ -295,13 +299,14 @@ The serial monitor (115200 baud) logs every queued command, raw S-Link responses
 ## Code Structure
 
 - `src/main.cpp` — setup, command handlers, HTTP request routing
-- `src/WebUI.hpp` — embedded web interface (HTML/JS) and `/discs` JSON endpoint
+- `src/WebUI.hpp` — embedded web interface (HTML/JS) and the `/discs` and `/status` JSON endpoints
 - `src/SLinkProtocol.cpp/.hpp` — S-Link protocol implementation and command queue
 - `src/WifiManager.cpp/.hpp` — network connection and mDNS
 - `src/HttpParser.cpp/.hpp` — HTTP request parsing
 - `src/DiscStorage.hpp` — EEPROM-based disc metadata storage
 - `src/LedMatrixController.hpp` — LED matrix display control
 - `src/Secrets.hpp` — WiFi credentials (not in git)
+- `tools/slink-sniffer/` — standalone PlatformIO sketch that logs every frame on the S-Link bus and transmits hex typed over serial; used for the protocol research above (see its README)
 
 ### Building
 ```bash
@@ -322,7 +327,7 @@ Behavioral testing requires the actual hardware — the S-Link protocol can't be
 
 - S-Link is slow; saving or discovering a title takes several seconds
 - No authentication and HTTP only — intended for trusted local networks
-- CD TEXT discs: the player's own CD TEXT overrides a written memo when the disc is selected
+- CD TEXT discs cannot be retitled: the player keeps the disc's own title and refuses memo writes for it, so Save appears to work but changes nothing
 
 ## Future Work
 
