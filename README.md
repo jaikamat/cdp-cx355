@@ -247,8 +247,8 @@ This project implements Sony's proprietary S-Link (Control-A1) protocol, based o
 ### Addressing and Encoding
 ```
 0x90 - CDP unit, discs 1-200
-0x93 - CDP unit, discs 201-300
-Disc numbers are BCD encoded.
+0x93 - CDP unit, discs 201-300 (disc byte carries disc - 200; untested on hardware)
+Disc byte: 1-99 BCD; 100-200 = value + 54 (100 -> 0x9A, 115 -> 0xA9, 200 -> 0xFE).
 ```
 
 ### Commands Used

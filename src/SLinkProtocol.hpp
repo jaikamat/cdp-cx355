@@ -87,6 +87,7 @@ private:
     void sendCommand(const uint8_t* command, size_t length);
     String inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout);
     uint8_t toBCD(int val);
+    uint8_t encodeDiscByte(int disc);
     bool isBusIdle();
 
     void addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void* userData);

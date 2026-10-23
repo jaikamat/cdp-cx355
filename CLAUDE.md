@@ -61,7 +61,7 @@ pio device monitor
 
 ### S-Link Protocol Implementation
 The S-Link protocol operates at ~355 bps with specific timing requirements. Key aspects:
-- BCD encoding for disc numbers
+- Disc byte encoding: 1-99 BCD, 100-200 = value + 54 (`encodeDiscByte`; plain BCD addresses the wrong slot above 99)
 - Device addressing (0x90 for discs 1-200, 0x93 for discs 201-300)
 - Command queuing system with callbacks; one command on the bus at a time
 - Transport commands are sent once (no retry) so they can't double-execute

@@ -136,7 +136,7 @@ const char *SLinkProtocol::getTitle() const
 void SLinkProtocol::processGetDiscTitle()
 {
     uint8_t device = (_currentCommand->disc > 200) ? 0x93 : 0x90;
-    uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
+    uint8_t discByte = encodeDiscByte(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
 
     // The reply we want is the frame "98 40 <disc> <13 title bytes>". The
     // capture window also picks up unsolicited status frames from the player
@@ -237,7 +237,7 @@ void SLinkProtocol::processSimpleCommand()
 void SLinkProtocol::processSelectDisc()
 {
     uint8_t device = (_currentCommand->disc > 200) ? 0x93 : 0x90;
-    uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
+    uint8_t discByte = encodeDiscByte(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
     uint8_t trackByte = toBCD(_currentCommand->track);
     uint8_t cmd[] = {device, (uint8_t)CMD_SELECT_DISC, discByte, trackByte};
 
@@ -603,6 +603,16 @@ uint8_t SLinkProtocol::toBCD(int val)
     return ((val / 10) << 4) | (val % 10);
 }
 
+// Encode a disc number within one address range (1-200 for 0x90, 1-100 for
+// 0x93) the way the player expects. Discs 1-99 are BCD, but 100-200 are the
+// byte value minus 54 (100 -> 0x9A, 115 -> 0xA9, 200 -> 0xFE), so plain BCD
+// would address the wrong slot: BCD 115 is 0xB5, which the player reads as
+// disc 127. Inverse of decodeDiscByte(). Verified on hardware with disc 115.
+uint8_t SLinkProtocol::encodeDiscByte(int disc)
+{
+    return disc >= 100 ? (uint8_t)(disc + 54) : toBCD(disc);
+}
+
 void SLinkProtocol::addCommand(SLinkCommandType command, int disc, int track, SLinkCallback callback, void *userData)
 {
     if (_commandCount < MAX_COMMANDS)
@@ -645,7 +655,7 @@ void SLinkProtocol::executeNextCommand()
 // it would also require copying the title String into the command struct.
 void SLinkProtocol::setDiscTitle(int disc, const String& title) {
     uint8_t device = (disc > 200) ? 0x93 : 0x90;
-    uint8_t discByte = toBCD(disc > 200 ? disc - 200 : disc);
+    uint8_t discByte = encodeDiscByte(disc > 200 ? disc - 200 : disc);
 
     uint8_t cmd[16];
     cmd[0] = device;
