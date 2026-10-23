@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "WiFiS3.h"
 #include "DiscStorage.hpp"
+#include "SLinkProtocol.hpp"
 
 // Web interface for the Sony CDP-CX355 remote: the single-page HTML/JS UI
 // and the paginated /discs JSON endpoint. Kept separate from main.cpp so
@@ -96,6 +97,41 @@ inline void sendDiscsJsonStream(WiFiClient &client, const String &url, DiscStora
   client.stop();
 }
 
+// GET /status: what the player last reported about itself. Polled by the
+// page every few seconds to drive the now-playing banner. "title" is the
+// EEPROM memo for the current disc, or "" if none.
+inline void sendStatusJson(WiFiClient &client, const PlaybackStatus &status, DiscStorage &storage)
+{
+  static const char *names[] = {"unknown", "off", "stopped", "paused", "playing"};
+
+  client.println(F("HTTP/1.1 200 OK"));
+  client.println(F("Content-Type: application/json"));
+  client.println(F("Cache-Control: no-store"));
+  client.println(F("Connection: close"));
+  client.println();
+
+  client.print("{\"state\":\"");
+  client.print(names[(int)status.state]);
+  client.print("\",\"disc\":");
+  client.print(status.disc);
+  client.print(",\"track\":");
+  client.print(status.track);
+  client.print(",\"len\":\"");
+  client.print(status.lengthMin);
+  client.print(':');
+  if (status.lengthSec < 10)
+    client.print('0');
+  client.print(status.lengthSec);
+  client.print("\",\"title\":\"");
+  if (status.disc >= 1 && status.disc <= storage.getMaxDiscs())
+  {
+    DiscInfo d = storage.readDisc(status.disc - 1);
+    printJsonEscaped(client, d.memo);
+  }
+  client.print("\"}");
+  client.stop();
+}
+
 inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
 {
   client.print(F(
@@ -110,7 +146,8 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       // Mobile notes: 16px on form controls stops iOS Safari zooming in on
       // focus; .disc rows wrap so the title field and buttons fit a phone.
       "<style>"
-      "body { font-family: sans-serif; margin: 12px; }"
+      "body { font-family: sans-serif; margin: 12px; padding-bottom: 56px; }"
+      ".now { position: fixed; left: 0; right: 0; bottom: 0; background: #222; color: #fff; padding: 12px; font-size: 16px; }"
       "button, input, select { font-size: 16px; padding: 8px; margin: 2px 0; }"
       ".disc { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 8px; }"
       ".disc input { flex: 1; min-width: 120px; }"
@@ -147,6 +184,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "</select>"
       "</div>"
       "<div id='discList'></div>"
+      "<div id='now' class='now' hidden></div>"
 
       "<script>"));
 
@@ -266,9 +304,27 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "  }"
       "}"
 
+      // Now-playing banner. State comes only from what the player reported
+      // over S-Link (see /status); the page never infers it from button presses.
+      "function pollStatus() {"
+      "  fetch('/status').then(r => r.json()).then(s => {"
+      "    const el = document.getElementById('now');"
+      "    if (s.state === 'playing' || s.state === 'paused') {"
+      "      const parts = [s.state === 'playing' ? 'Playing' : 'Paused'];"
+      "      if (s.disc) parts.push('Disc ' + s.disc + (s.title ? ' (' + s.title + ')' : ''));"
+      "      if (s.track) parts.push('Track ' + s.track + ' - ' + s.len);"
+      "      el.textContent = parts.join(' - ');"
+      "      el.hidden = false;"
+      "    } else {"
+      "      el.hidden = true;"
+      "    }"
+      "  }).catch(() => {}).finally(() => setTimeout(pollStatus, 3000));"
+      "}"
+
       "document.addEventListener('DOMContentLoaded', () => {"
       "  document.getElementById('discNum').max = MAX_DISCS;"
       "  populateRangeDropdown();"
+      "  pollStatus();"
       "});"
       "</script>"
       "</body></html>"));

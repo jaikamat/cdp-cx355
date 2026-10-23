@@ -11,18 +11,24 @@
 #define SLINK_LOOP_TIMEOUT 500000
 #define SLINK_MARK_RANGE 1.2
 
+SLinkProtocol* SLinkProtocol::_instance = nullptr;
+
 SLinkProtocol::SLinkProtocol(uint8_t pin) : _pin(pin), _commandCount(0), _currentCommand(nullptr)
 {
     memset(_titleBuffer, 0, sizeof(_titleBuffer));
+    _instance = this;
 }
 
 void SLinkProtocol::begin()
 {
     pinMode(_pin, INPUT);
+    attachListener();
 }
 
 void SLinkProtocol::process()
 {
+    drainBusCapture();
+
     if (_currentCommand)
     {
         switch (_currentCommand->command)
@@ -307,8 +313,12 @@ void SLinkProtocol::_writeByte(byte value)
 void SLinkProtocol::sendCommand(const uint8_t *command, size_t length)
 {
     unsigned long Start;
-    pinMode(_pin, INPUT);
+    // The pin is always left as INPUT between transmissions, so no pinMode()
+    // is needed before waiting for the bus. (On the RA4M1, pinMode() rewrites
+    // the pin function register and silently drops the edge interrupt, which
+    // is why the listener is detached here and re-attached below.)
     _lineReady();
+    detachListener();
     Start = micros();
     pinMode(_pin, OUTPUT);
     _writeSync();
@@ -317,12 +327,205 @@ void SLinkProtocol::sendCommand(const uint8_t *command, size_t length)
         _writeByte(command[i]);
     }
     pinMode(_pin, INPUT);
+    attachListener(); // Re-arm before the reply can start
     do
     {
         delayMicroseconds(SLINK_LOOP_DELAY);
         if (digitalRead(_pin) == LOW)
             break;
     } while (micros() - Start < SLINK_WORD_DELIMITER);
+}
+
+// ---------------------------------------------------------------------------
+// Passive bus listener
+//
+// Frames the player sends on its own (verified on a CDP-CX355, matching
+// BigDave's 1998 CDP-CX250 notes; first byte 0x98 = "from CD player 1"):
+//   98 00 / 01 / 02            play / stop / pause (also acks our commands)
+//   98 50 DD TT MM SS          track started: disc, track, length
+//   98 0C                      29 seconds left in the track
+//   98 52 DD / 58 DD           displaying / loaded disc DD
+//   98 70 00 SS 00 DD 00       reply to query 0F: mode flags, current disc
+//   98 61 cc xx, 98 08         model id and "ready" after power on
+//   98 2E / 2F / 0E            power on / power off / "is off"
+// Disc byte: 1-99 BCD, 100-200 = value - 54 (0x9A..0xFE). Track and time BCD.
+// ---------------------------------------------------------------------------
+
+void SLinkProtocol::attachListener()
+{
+    _pulseHead = _pulseTail = 0;
+    _rxInFrame = false;
+    _rxLen = _rxBits = 0;
+    attachInterrupt(digitalPinToInterrupt(_pin), onEdgeISR, CHANGE);
+}
+
+void SLinkProtocol::detachListener()
+{
+    detachInterrupt(digitalPinToInterrupt(_pin));
+}
+
+void SLinkProtocol::onEdgeISR()
+{
+    if (_instance)
+        _instance->handleEdge();
+}
+
+// Runs in interrupt context: record the LOW pulse width on each rising edge,
+// and a FRAME_GAP marker when a falling edge follows a long idle period.
+void SLinkProtocol::handleEdge()
+{
+    uint32_t now = micros();
+    uint8_t next = _pulseHead + 1;
+    if (next == _pulseTail)
+        return; // Buffer full; drop the edge rather than overwrite
+
+    if (digitalRead(_pin) == LOW)
+    {
+        if (now - _lastRiseUs > FRAME_GAP_US)
+        {
+            _pulses[_pulseHead] = FRAME_GAP;
+            _pulseHead = next;
+        }
+        _lowStartUs = now;
+    }
+    else
+    {
+        uint32_t width = now - _lowStartUs;
+        _pulses[_pulseHead] = width > 0xFFFE ? 0xFFFE : (uint16_t)width;
+        _pulseHead = next;
+        _lastRiseUs = now;
+    }
+}
+
+static inline bool nearMark(uint16_t width, uint16_t mark)
+{
+    return width > mark / SLINK_MARK_RANGE && width < mark * SLINK_MARK_RANGE;
+}
+
+// Called from process(): turn buffered pulse widths into frames.
+void SLinkProtocol::drainBusCapture()
+{
+    while (_pulseTail != _pulseHead)
+    {
+        uint16_t width = _pulses[_pulseTail];
+        _pulseTail = _pulseTail + 1;
+
+        if (width == FRAME_GAP)
+        {
+            finishBusFrame();
+        }
+        else if (nearMark(width, SLINK_MARK_SYNC))
+        {
+            finishBusFrame();
+            _rxInFrame = true;
+        }
+        else if (!_rxInFrame)
+        {
+            // Mid-frame join (e.g. we re-attached during a frame): skip to next sync
+        }
+        else if (nearMark(width, SLINK_MARK_ONE) || nearMark(width, SLINK_MARK_ZERO))
+        {
+            _rxByte = (_rxByte << 1) | (nearMark(width, SLINK_MARK_ONE) ? 1 : 0);
+            if (++_rxBits == 8)
+            {
+                if (_rxLen < (int)sizeof(_rxFrame))
+                    _rxFrame[_rxLen++] = _rxByte;
+                _rxByte = 0;
+                _rxBits = 0;
+            }
+        }
+        else
+        {
+            _rxInFrame = false; // Unrecognised pulse: discard this frame
+            _rxLen = _rxBits = 0;
+        }
+    }
+
+    // The last frame on the bus is only closed by the next falling edge, so
+    // also close it once the line has been quiet long enough.
+    if (_rxInFrame && micros() - _lastRiseUs > FRAME_GAP_US)
+        finishBusFrame();
+}
+
+void SLinkProtocol::finishBusFrame()
+{
+    if (_rxInFrame && _rxLen > 0)
+        handleBusFrame(_rxFrame, _rxLen);
+    _rxInFrame = false;
+    _rxLen = _rxBits = 0;
+    _rxByte = 0;
+}
+
+uint16_t SLinkProtocol::decodeDiscByte(uint8_t b)
+{
+    uint8_t hi = b >> 4, lo = b & 0x0F;
+    return hi > 9 ? (uint16_t)b - 54 : hi * 10 + lo;
+}
+
+static inline uint8_t fromBCD(uint8_t b)
+{
+    return (b >> 4) * 10 + (b & 0x0F);
+}
+
+void SLinkProtocol::handleBusFrame(const uint8_t *frame, int len)
+{
+    if (len < 2 || frame[0] != 0x98)
+        return;
+
+    PlaybackStatus before = _status;
+    switch (frame[1])
+    {
+    case 0x00: _status.state = PlayState::Playing; break;
+    case 0x01: _status.state = PlayState::Stopped; break;
+    case 0x02: _status.state = PlayState::Paused; break;
+    case 0x0C: _status.state = PlayState::Playing; break; // Only sent while playing
+    case 0x2E: _status.state = PlayState::Stopped; break; // Just powered on, idle
+    case 0x2F:
+    case 0x0E: _status.state = PlayState::Off; break;
+    case 0x50:
+        if (len < 4) return;
+        _status.state = PlayState::Playing;
+        _status.disc = decodeDiscByte(frame[2]);
+        _status.track = fromBCD(frame[3]);
+        if (len >= 6)
+        {
+            _status.lengthMin = fromBCD(frame[4]);
+            _status.lengthSec = fromBCD(frame[5]);
+        }
+        break;
+    case 0x52:
+    case 0x58:
+    case 0x70:
+    {
+        // Current disc without track info. The carousel takes several seconds
+        // to load a new disc before the first "50" frame arrives, so forget
+        // the previous disc's track rather than show it against the new disc.
+        int discIdx = frame[1] == 0x70 ? 4 : 2;
+        if (len <= discIdx) return;
+        uint16_t disc = decodeDiscByte(frame[discIdx]);
+        if (disc != _status.disc)
+        {
+            _status.track = 0;
+            _status.lengthMin = _status.lengthSec = 0;
+        }
+        _status.disc = disc;
+        break;
+    }
+    default:
+        return; // Not a status frame we track
+    }
+    _status.updatedMs = millis();
+
+    if (before.state != _status.state || before.disc != _status.disc || before.track != _status.track)
+    {
+        static const char *names[] = {"unknown", "off", "stopped", "paused", "playing"};
+        Serial.print("Player status: ");
+        Serial.print(names[(int)_status.state]);
+        Serial.print(" disc ");
+        Serial.print(_status.disc);
+        Serial.print(" track ");
+        Serial.println(_status.track);
+    }
 }
 
 String SLinkProtocol::inputMonitorWithReturn(int type, boolean idle, unsigned long uSecTimeout)

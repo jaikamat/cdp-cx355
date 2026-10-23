@@ -11,6 +11,7 @@ This project creates a bridge between your Sony CDP-CX355 disc changer and your 
 - **Direct Disc Selection**: Jump directly to any disc number (1-300) with a single click
 - **Title Sync**: Write titles to the CDP-CX355's own memo memory over S-Link, and read titles back from the device
 - **LED Matrix Display**: Visual feedback on the Arduino showing connection status and the device hostname
+- **Now Playing**: A banner at the bottom of the page shows the disc, its title, and the track whenever the player reports it is playing or paused
 
 ### User Experience
 
@@ -22,6 +23,7 @@ This project creates a bridge between your Sony CDP-CX355 disc changer and your 
    - Click play buttons to directly select and play any disc
    - Edit disc titles and save them to the player and EEPROM
    - Control basic playback functions (play/stop/pause/next/previous)
+   - See what is playing in a banner that follows the player, not the buttons
 
 ## Architecture
 
@@ -107,6 +109,11 @@ The interface has three functional areas, protected by a global busy lock so com
 - **Play / Stop / Pause / Next / Previous**: Basic playback control
 - **Power On / Power Off**: Explicit power commands; no state is tracked, so they cannot get out of sync with the player
 
+### Now Playing Banner
+A fixed banner at the bottom of the page appears while the player is playing or paused and shows the disc number, its stored title, the track number and track length. It is hidden when the player is stopped or off.
+
+The banner is driven entirely by status frames the player broadcasts on the S-Link bus; the Arduino listens passively and the page polls `GET /status` every 3 seconds. Pressing buttons in the UI never updates it directly, so it stays correct when the player is operated from its front panel or remote. After the Arduino reboots the state is unknown until the player next reports something, which happens at the latest when the next track starts.
+
 ### Set Disc Title
 A standalone form for titling any disc by number without paging to its range. Submits the same command as the per-disc Save button.
 
@@ -150,6 +157,18 @@ Paginated disc information.
   "hasMore": true
 }
 ```
+
+### `GET /status`
+Last playback state reported by the player.
+
+```json
+{"state":"playing","disc":6,"track":2,"len":"3:27","title":"Jurassic Park"}
+```
+
+- `state`: `unknown` (nothing heard since boot), `off`, `stopped`, `paused`, `playing`
+- `disc`, `track`: 0 until the player has reported them
+- `len`: track length `m:ss` from the last track-start frame
+- `title`: the EEPROM memo for `disc`, or `""`
 
 ### `POST /`
 Command execution. Content-Type: `application/x-www-form-urlencoded`. Responds `204 No Content`; results arrive asynchronously over S-Link and are visible by re-fetching `/discs`.
@@ -238,6 +257,22 @@ Disc numbers are BCD encoded.
 - Disc select: `0x50` (disc + track)
 - Title query: `0x40` (responds with `98 40 ...` followed by ASCII title bytes)
 - Memo write: `0x80` (disc + 13 title bytes, space padded)
+- Status query: `0x0F` (responds `98 70 00 SS 00 DD 00`: mode flags and current disc, but not play state)
+
+### Status Frames the Player Broadcasts
+Captured on a CDP-CX355; they match BigDave's 1998 notes for the CDP-CX250. First byte `98` = "from CD player 1".
+
+| Frame | Meaning |
+|---|---|
+| `98 00` / `98 01` / `98 02` | Play / stop / pause (also sent as the ack to our commands) |
+| `98 50 DD TT MM SS` | Track started: disc, track, track length. Sent ~2.5 s after play and on every track change |
+| `98 0C` | 29 seconds left in the track |
+| `98 52 DD` / `98 58 DD` | Displaying / loaded disc DD (carousel moves take several seconds) |
+| `98 61 FE 6B`, `98 08` | Model id and "ready" after power on |
+| `98 2E` / `98 2F` | Power on / off |
+| `98 51 TT II MM SS` | Elapsed time, once per second, only after command `0x25` (off with `0x26`); not used |
+
+Disc byte encoding: 1-99 are BCD; 100-200 are `value - 54` (`0x9A`..`0xFE`). Track and times are BCD.
 
 ### Timing and Retry Behavior
 - The line runs at roughly 355 bps; every command takes visible time

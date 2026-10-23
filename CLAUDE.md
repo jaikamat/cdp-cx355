@@ -31,6 +31,7 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → Sony C
 - EEPROM storage for persistent disc titles
 - mDNS hostname resolution (sony-remote.local)
 - Global UI lock preventing command spam while the slow S-Link bus is busy
+- Now-playing banner driven by status frames the player broadcasts (never by UI button state)
 
 ## Build Commands
 
@@ -65,6 +66,7 @@ The S-Link protocol operates at ~355 bps with specific timing requirements. Key 
 - Command queuing system with callbacks; one command on the bus at a time
 - Transport commands are sent once (no retry) so they can't double-execute
 - Title queries retry up to 5 times; only a frame whose header is `98 40 <requested disc>` is parsed, so unsolicited status frames (`92 22`, `98 10`) in the capture window are ignored and a missing frame yields the `Timeout` sentinel, which skips the EEPROM write
+- Passive bus listener: an edge interrupt on the S-Link pin records LOW pulse widths into a 256-entry ring buffer; `process()` decodes them into frames and `handleBusFrame` updates `PlaybackStatus` from `98 00/01/02` (play/stop/pause), `98 50` (track start: disc, track, length) and `98 52/58/70` (current disc). `sendCommand` detaches the interrupt while driving the pin because `pinMode()` on the RA4M1 clears the IRQ enable. Status is Unknown after boot until the player speaks; `0x0F` only reports the current disc, not play state
 - `setDiscTitle` (memo write, command 0x80) is deliberately synchronous — it runs in the HTTP handler before the queue is next serviced, so a queued follow-up `getDiscTitle` always executes after it
 
 ### Robustness (unattended operation)
@@ -77,7 +79,7 @@ The device is meant to run for months without a power cycle. Three mechanisms ke
 Single-page application in `src/WebUI.hpp` with:
 - Progressive disc loading to prevent memory overflow
 - Real-time command execution via POST requests
-- JSON API for disc information (`/discs` endpoint)
+- JSON API for disc information (`/discs` endpoint) and playback state (`/status`, polled every 3 s for the banner; not logged to serial)
 - Global busy lock: all controls disable while a command is in flight
 - Device constants (MAX_DISCS, PAGE_SIZE) injected into the page JS so the UI stays in sync with DiscStorage
 

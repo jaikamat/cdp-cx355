@@ -21,6 +21,21 @@ enum SLinkCommandType {
     CMD_POWER_OFF = 0x2F
 };
 
+// Playback state as reported by the player itself over the bus. The player
+// announces play/stop/pause and every track start unsolicited, and this is
+// the only source of truth: nothing in the web UI or command handlers writes
+// to it. After a reboot the state is Unknown until the player next speaks.
+enum class PlayState : uint8_t { Unknown, Off, Stopped, Paused, Playing };
+
+struct PlaybackStatus {
+    PlayState state = PlayState::Unknown;
+    uint16_t disc = 0;      // 1-based; 0 = not yet reported
+    uint8_t track = 0;      // 1-based; 0 = not yet reported
+    uint8_t lengthMin = 0;  // Track length from the last "50" frame
+    uint8_t lengthSec = 0;
+    unsigned long updatedMs = 0;
+};
+
 struct SLinkCommand {
     SLinkCommandType command;
     int disc;
@@ -49,6 +64,7 @@ public:
 
     // Getters for application to retrieve data
     const char* getTitle() const;
+    const PlaybackStatus& getPlaybackStatus() const { return _status; }
 
 private:
     uint8_t _pin;
@@ -77,6 +93,35 @@ private:
     void executeNextCommand();
 
     char _titleBuffer[21]; // For storing disc title
+
+    // ---- Passive bus listener ----
+    // An interrupt on the S-Link pin records the width of every LOW pulse
+    // into a ring buffer; process() decodes those widths into frames and
+    // feeds them to handleBusFrame(). A zero entry marks a gap between
+    // frames. Indices are uint8_t so they wrap at 256 for free.
+    static const uint16_t FRAME_GAP = 0;
+    static const uint32_t FRAME_GAP_US = 5000;
+    static SLinkProtocol* _instance;
+    static void onEdgeISR();
+    void handleEdge();
+    void attachListener();
+    void detachListener();
+    void drainBusCapture();
+    void finishBusFrame();
+    void handleBusFrame(const uint8_t* frame, int len);
+    static uint16_t decodeDiscByte(uint8_t b);
+
+    volatile uint16_t _pulses[256];
+    volatile uint8_t _pulseHead = 0;
+    volatile uint8_t _pulseTail = 0;
+    volatile uint32_t _lowStartUs = 0;
+    volatile uint32_t _lastRiseUs = 0;
+    uint8_t _rxFrame[16];
+    int _rxLen = 0;
+    uint8_t _rxByte = 0;
+    int _rxBits = 0;
+    bool _rxInFrame = false;
+    PlaybackStatus _status;
 };
 
 #endif // SLINK_PROTOCOL_HPP

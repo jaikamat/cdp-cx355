@@ -224,10 +224,15 @@ void loop()
   if (!client)
     return;
 
-  Serial.println("New client connected.");
   WDT.refresh();
   HttpRequest request = HttpParser::parse(client);
   WDT.refresh();
+
+  // /status is polled every few seconds by the page; keep it out of the log
+  // so the serial monitor stays readable.
+  bool isStatusPoll = !request.isPost && request.url.startsWith("/status");
+  if (!isStatusPoll)
+    Serial.println("New client connected.");
 
   if (!request.isPost && request.url == "/favicon.ico")
   {
@@ -246,6 +251,10 @@ void loop()
     else if (request.url.startsWith("/discs"))
     {
       sendDiscsJsonStream(client, request.url, storage);
+    }
+    else if (isStatusPoll)
+    {
+      sendStatusJson(client, slink.getPlaybackStatus(), storage);
     }
     else
     {
@@ -278,5 +287,6 @@ void loop()
     client.stop();
   }
 
-  Serial.println("Client disconnected.");
+  if (!isStatusPoll)
+    Serial.println("Client disconnected.");
 }
