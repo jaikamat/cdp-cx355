@@ -1,94 +1,99 @@
 #include "HttpParser.hpp"
 
+// Upper bound on the time spent parsing one request, measured from the
+// moment the client was accepted. A client that connects and then stalls,
+// or that announces a Content-Length it never sends, is abandoned after this
+// instead of freezing loop() (and with it S-Link processing). Whatever was
+// parsed by then is returned as-is; main.cpp validates it like any request.
+// Must stay below WATCHDOG_TIMEOUT_MS in main.cpp.
+static const unsigned long REQUEST_DEADLINE_MS = 2000;
+
+// Request line plus headers. Browsers routinely send 600-1200 bytes of
+// headers (User-Agent, Accept, sec-ch-ua, Origin, Referer...). Bytes beyond
+// the buffer are read and discarded so the body still lines up.
+static const size_t HEADER_BUFFER_SIZE = 2048;
+
+// Largest body we will read. The biggest legitimate command is
+// "command=saveDiscTitle&disc=300&title=" plus a 13-character URL-encoded
+// title, well under 128 bytes. Anything larger is truncated.
+static const int MAX_BODY_SIZE = 512;
+
+// Read one byte, waiting for data until `deadline`. Returns -1 if the
+// deadline passes or the client disconnects before a byte arrives.
+static int readByte(WiFiClient &client, unsigned long deadline)
+{
+    while (!client.available())
+    {
+        if (!client.connected() || (long)(millis() - deadline) >= 0)
+            return -1;
+    }
+    return client.read();
+}
+
 HttpRequest HttpParser::parse(WiFiClient &client)
 {
     HttpRequest request;
-    char buffer[1024] = {0};
-    int index = 0;
+    const unsigned long deadline = millis() + REQUEST_DEADLINE_MS;
 
-    // --- Step A: Read the first line (method + path + HTTP version) ---
-    // We'll read until we get "\r\n" or fill buffer.
-    while (client.connected() && client.available())
+    // --- Step A: read the request line and headers ---
+    // They end at the first blank line ("\r\n\r\n"). The terminator is
+    // tracked with a small match counter rather than by searching the
+    // buffer, so it is still detected if the headers overflow the buffer.
+    char buffer[HEADER_BUFFER_SIZE];
+    size_t index = 0;
+    static const char terminator[] = "\r\n\r\n";
+    int matched = 0;
+    int c;
+    while ((c = readByte(client, deadline)) >= 0)
     {
-        char c = client.read();
-        if (index < (int)sizeof(buffer) - 1)
-        {
-            buffer[index++] = c;
-        }
-        buffer[index] = '\0';
+        if (index < HEADER_BUFFER_SIZE - 1)
+            buffer[index++] = (char)c;
 
-        // Stop at end of line
-        if (strstr(buffer, "\r\n"))
-        {
-            // First line is in buffer. Something like:
-            // "GET /?page=2 HTTP/1.1\r\n"
+        matched = (c == terminator[matched]) ? matched + 1 : (c == '\r' ? 1 : 0);
+        if (matched == 4)
             break;
-        }
+    }
+    buffer[index] = '\0';
+
+    // --- Step B: split "METHOD URL HTTP/x" from the headers that follow ---
+    char *headers = strstr(buffer, "\r\n");
+    if (headers)
+    {
+        *headers = '\0';
+        headers += 2;
+    }
+    else
+    {
+        headers = buffer + index; // No line ending seen: no headers
     }
 
-    // Parse out method and url from that first line
-    // Typically: METHOD [space] URL [space] HTTP/...
-    // e.g.: "GET /?page=2 HTTP/1.1"
-    char *methodPtr = strtok(buffer, " "); // "GET"
-    char *urlPtr = strtok(NULL, " ");      // "/?page=2"
-    // We'll ignore the HTTP version for now.
-
+    char *methodPtr = strtok(buffer, " ");
+    char *urlPtr = strtok(NULL, " ");
     if (methodPtr)
         request.method = String(methodPtr);
     if (urlPtr)
         request.url = String(urlPtr);
 
-    // If the request was GET, we keep reading the rest of the headers,
-    // but we know we won't expect a body. If it's POST, same as before.
-    index = 0; // re-use buffer for reading the rest of the headers
-    memset(buffer, 0, sizeof(buffer));
-
-    // Keep reading headers until we see "\r\n\r\n"
-    while (client.connected() && client.available())
-    {
-        char c = client.read();
-        if (index < (int)sizeof(buffer) - 1)
-        {
-            buffer[index++] = c;
-        }
-        buffer[index] = '\0';
-
-        if (strstr(buffer, "\r\n\r\n"))
-        {
-            break;
-        }
-    }
-
-    // Check if POST
+    // --- Step C: for POST, read exactly Content-Length bytes of body ---
     if (request.method == "POST")
     {
         request.isPost = true;
-        // Parse Content-Length if any
-        char *contentLengthHeader = strstr(buffer, "Content-Length: ");
+        char *contentLengthHeader = strstr(headers, "Content-Length: ");
         if (contentLengthHeader)
         {
             request.contentLength = atoi(contentLengthHeader + 16);
         }
     }
 
-    // If it's POST, read the body
     if (request.isPost && request.contentLength > 0)
     {
-        int remaining = request.contentLength;
-        String bodyString;
-        // read exactly contentLength bytes
-        while (remaining > 0 && client.connected())
+        int toRead = min(request.contentLength, MAX_BODY_SIZE);
+        request.body.reserve(toRead);
+        while (toRead > 0 && (c = readByte(client, deadline)) >= 0)
         {
-            while (client.available())
-            {
-                char c = client.read();
-                bodyString += c;
-                remaining--;
-                if (remaining <= 0)
-                    break;
-            }
+            request.body += (char)c;
+            toRead--;
         }
-        request.body = bodyString;
     }
 
     return request;

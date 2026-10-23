@@ -21,20 +21,65 @@ void WiFiManager::connect()
         Serial.println("Please upgrade the firmware");
     }
 
-    // Attempt to connect to WiFi
+    // WiFi.begin() blocks until it either joins or this timeout passes.
+    // The default is 10 s, which is longer than the watchdog allows.
+    WiFi.setTimeout(WIFI_JOIN_TIMEOUT_MS);
+
     Serial.print("Attempting to connect to network: ");
     Serial.println(ssid);
 
-    while (WiFi.status() != WL_CONNECTED)
+    // The watchdog is not running yet during setup(), so looping here
+    // indefinitely is safe. There is nothing useful to do without a network.
+    while (WiFi.begin(ssid, password) != WL_CONNECTED)
     {
-        WiFi.begin(ssid, password);
-        delay(10000); // Wait 10 seconds
+        Serial.println("Join failed, retrying...");
     }
 
     server.begin();
     Serial.println("WiFi connected.");
 
-    // Initialize mDNS
+    startMDNS();
+    printStatus();
+}
+
+// Re-join the network if the association was lost (router reboot, AP channel
+// change, signal dropout). Cheap when the link is up: one modem status query
+// every LINK_CHECK_INTERVAL_MS. When the link is down this blocks for at most
+// WIFI_JOIN_TIMEOUT_MS per call, then returns so loop() keeps running; the
+// next call retries.
+//
+// The HTTP server socket lives on the ESP32 and survives re-association, so
+// it is not restarted. mDNS is rebound because the IP address may have changed.
+void WiFiManager::ensureConnected()
+{
+    unsigned long now = millis();
+    if (now - lastLinkCheckMs < LINK_CHECK_INTERVAL_MS)
+        return;
+    lastLinkCheckMs = now;
+
+    if (WiFi.status() == WL_CONNECTED)
+        return;
+
+    Serial.println("WiFi link lost. Reconnecting...");
+    if (WiFi.begin(ssid, password) != WL_CONNECTED)
+    {
+        Serial.println("Reconnect failed; will retry.");
+        return;
+    }
+
+    Serial.println("WiFi reconnected.");
+    startMDNS();
+    printStatus();
+}
+
+// (Re)start the mDNS responder on the current IP address. Safe to call more
+// than once: the multicast socket is closed first (a no-op on first use), and
+// the HTTP service record is only registered the first time because the MDNS
+// object keeps its record table across begin() calls.
+void WiFiManager::startMDNS()
+{
+    udp.stop();
+
     Serial.print("Starting mDNS with hostname: ");
     Serial.println(hostname);
     if (mdns.begin(WiFi.localIP(), hostname))
@@ -43,15 +88,16 @@ void WiFiManager::connect()
         Serial.print(hostname);
         Serial.println(".local");
 
-        // Add service to mDNS-SD
-        mdns.addServiceRecord("sony-remote._http", 80, MDNSServiceTCP);
+        if (!serviceRecordAdded)
+        {
+            mdns.addServiceRecord("sony-remote._http", 80, MDNSServiceTCP);
+            serviceRecordAdded = true;
+        }
     }
     else
     {
         Serial.println("Error setting up mDNS responder!");
     }
-
-    printStatus();
 }
 
 void WiFiManager::printStatus()
@@ -77,7 +123,7 @@ void WiFiManager::printStatus()
 
 WiFiServer &WiFiManager::getServer()
 {
-    return server; // Ensure this returns the correct reference
+    return server;
 }
 
 const char *WiFiManager::getHostname()

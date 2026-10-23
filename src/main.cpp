@@ -8,6 +8,20 @@
 #include <functional>
 #include "SLinkProtocol.hpp"
 #include "WebUI.hpp"
+#include <WDT.h>
+
+// Hardware watchdog period. If loop() stalls for longer than this (hung
+// modem, stuck socket, bus fault) the RA4M1 resets itself instead of needing
+// a power cycle. The hardware maximum is about 5.6 s, so there is no room to
+// raise this; instead loop() refreshes the watchdog between its phases, and
+// every phase is bounded well below this value:
+//   - WiFiManager::ensureConnected   <= WIFI_JOIN_TIMEOUT_MS (4 s) when down
+//   - SLinkProtocol::process         <= 5 retries x ~0.85 s  (~4.2 s)
+//   - HttpParser::parse              <= REQUEST_DEADLINE_MS  (2 s)
+//   - command handler (setDiscTitle) <= 5 retries x ~0.85 s  (~4.2 s)
+// Anything added to loop() must either fit in that budget or refresh the
+// watchdog itself.
+const uint32_t WATCHDOG_TIMEOUT_MS = 5000;
 
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
@@ -179,11 +193,30 @@ void setup()
   String hostname = String(wifiManager.getHostname()) + ".local";
   ledController.displayText(hostname.c_str());
 
+  // Start the watchdog only now: setup() legitimately blocks for longer than
+  // the period while joining WiFi and scrolling the hostname on the matrix.
+  if (WDT.begin(WATCHDOG_TIMEOUT_MS))
+  {
+    Serial.print("Watchdog armed: ");
+    Serial.print(WDT.getTimeout());
+    Serial.println(" ms");
+  }
+  else
+  {
+    Serial.println("Watchdog failed to start!");
+  }
+
   Serial.println("=== Ready for S-Link commands ===");
 }
 
+// Each phase of loop() is followed by a watchdog refresh. See the note on
+// WATCHDOG_TIMEOUT_MS for the per-phase time budget this relies on.
 void loop()
 {
+  WDT.refresh();
+  wifiManager.ensureConnected();
+
+  WDT.refresh();
   slink.process();
   wifiManager.runMDNS();
 
@@ -192,7 +225,9 @@ void loop()
     return;
 
   Serial.println("New client connected.");
+  WDT.refresh();
   HttpRequest request = HttpParser::parse(client);
+  WDT.refresh();
 
   if (!request.isPost && request.url == "/favicon.ico")
   {

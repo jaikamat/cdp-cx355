@@ -36,7 +36,8 @@ This project creates a bridge between your Sony CDP-CX355 disc changer and your 
 - **Disc Storage** (`DiscStorage`): EEPROM-based persistence for disc metadata
 - **LED Matrix Controller** (`LedMatrixController`): Visual feedback using Arduino's built-in LED matrix
 - **WiFi Manager** (`WiFiManager`): Network connection and mDNS hostname management
-- **HTTP Parser** (`HttpParser`): Minimal HTTP request parsing
+- **HTTP Parser** (`HttpParser`): Minimal HTTP request parsing with a 2 s per-request deadline
+- **Watchdog**: 5 s hardware watchdog; the board resets itself instead of hanging if the modem or a socket locks up
 
 ### Communication Flow
 ```
@@ -214,6 +215,8 @@ The serial monitor (115200 baud) logs every queued command, raw S-Link responses
 - **No response to commands**: confirm the CDP-CX355 is powered on, check the pin 8 connection and shared ground
 - **Title discovery fails**: ensure a disc is actually loaded in that slot; watch the serial monitor for raw responses
 - **Line protection**: a 220Ω series resistor and diode protect the single-wire bus
+- **Device unreachable after a router reboot**: it re-joins on its own within about 10 seconds of the network returning; the serial log shows `WiFi link lost. Reconnecting...` followed by the new IP
+- **Device rebooted by itself**: the serial banner reappearing without a power cycle means the watchdog fired; the preceding log lines show which phase hung
 
 ## Code Structure
 
