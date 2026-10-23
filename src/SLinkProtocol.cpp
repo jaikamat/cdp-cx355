@@ -347,7 +347,9 @@ void SLinkProtocol::sendCommand(const uint8_t *command, size_t length)
 //   98 52 DD / 58 DD           displaying / loaded disc DD
 //   98 70 00 SS 00 DD 00       reply to query 0F: mode flags, current disc
 //   98 61 cc xx, 98 08         model id and "ready" after power on
-//   98 2E / 2F / 0E            power on / power off / "is off"
+//   98 2E / 2F                 power on / power off
+//   98 0E                      reply: command rejected ("power is off"); also
+//                              sent for a memo write to a CD TEXT disc
 // Disc byte: 1-99 BCD, 100-200 = value - 54 (0x9A..0xFE). Track and time BCD.
 // ---------------------------------------------------------------------------
 
@@ -480,8 +482,10 @@ void SLinkProtocol::handleBusFrame(const uint8_t *frame, int len)
     case 0x02: _status.state = PlayState::Paused; break;
     case 0x0C: _status.state = PlayState::Playing; break; // Only sent while playing
     case 0x2E: _status.state = PlayState::Stopped; break; // Just powered on, idle
-    case 0x2F:
-    case 0x0E: _status.state = PlayState::Off; break;
+    case 0x2F: _status.state = PlayState::Off; break;
+    // 0x0E ("power is off") is a reply to a rejected command, not a broadcast:
+    // a powered-on player also answers 0E to a memo write on a CD TEXT disc.
+    // It is deliberately not treated as a power-state change.
     case 0x50:
         if (len < 4) return;
         _status.state = PlayState::Playing;
