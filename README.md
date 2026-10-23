@@ -290,6 +290,7 @@ The serial monitor (115200 baud) logs every queued command, raw S-Link responses
 ### Troubleshooting
 - **No response to commands**: confirm the CDP-CX355 is powered on, check the pin 8 connection and shared ground
 - **Auto-Discover blanks the title**: the player answered `98 10`, "no memo". Either the slot is empty or the disc has no memo and no CD TEXT; the player cannot tell these apart, so type the title manually
+- **Auto-Discover returns blank for a CD TEXT disc**: the player only reads CD TEXT when it loads the disc, so a disc that has not been played since it went into the slot has no title yet. Play it once, then Auto-Discover again
 - **Line protection**: a 220Ω series resistor and diode protect the single-wire bus
 - **Device unreachable after a router reboot**: it re-joins on its own within about 10 seconds of the network returning; the serial log shows `WiFi link lost. Reconnecting...` followed by the new IP
 - **Device rebooted by itself**: the serial banner reappearing without a power cycle means the watchdog fired; the preceding log lines show which phase hung
