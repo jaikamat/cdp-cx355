@@ -25,7 +25,7 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → Sony C
 ```
 
 ### Key Features
-- Web-based remote control with transport controls (play/stop/pause/next/prev/power)
+- Web-based remote control with transport controls (play/stop/pause/next/prev/power on/power off)
 - Disc title management: write titles to the player's memo memory and read them back
 - Progressive loading of disc collection (25 discs at a time)
 - EEPROM storage for persistent disc titles
@@ -96,7 +96,7 @@ Single-page application in `src/WebUI.hpp` with:
 
 ### Command System
 Uses `std::map<String, CommandHandler>` for routing web commands to S-Link operations:
-- Transport commands: `play`, `stop`, `pause`, `next`, `prev`, `power`
+- Transport commands: `play`, `stop`, `pause`, `next`, `prev`, `powerOn`, `powerOff`
 - Disc operations: `playDisc`, `saveDiscTitle`, `discoverTitle`
 - `setDiscTitle` is an alias of `saveDiscTitle` (kept for older clients)
 
@@ -132,7 +132,6 @@ SLinkProtocol slink(8); // Change pin number as needed
 - Requires physical connection to Sony equipment
 - No authentication (designed for local network use)
 - HTTP only (no HTTPS)
-- Power state is assumed, not queried from the device
 
 ## Future Development
 

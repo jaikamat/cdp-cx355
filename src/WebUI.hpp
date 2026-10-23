@@ -120,7 +120,8 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "<button onclick='sendCommand(\"pause\")'>Pause</button> "
       "<button onclick='sendCommand(\"next\")'>Next</button> "
       "<button onclick='sendCommand(\"prev\")'>Previous</button> "
-      "<button onclick='sendCommand(\"power\")'>Power</button>"
+      "<button onclick='sendCommand(\"powerOn\")'>Power On</button> "
+      "<button onclick='sendCommand(\"powerOff\")'>Power Off</button>"
       "</div>"
 
       "<div style='margin-bottom: 20px;'>"

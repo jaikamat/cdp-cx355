@@ -17,7 +17,6 @@ LedMatrixController ledController(matrix);
 WiFiManager wifiManager(ssid, password);
 DiscStorage storage;
 SLinkProtocol slink(8); // Use Digital Pin 8 for S-Link
-bool isPlayerOn = true; // Assume player is ON as per user feedback
 
 void onDiscTitleRetrieved(SLinkProtocol *protocol, void *userData)
 {
@@ -86,18 +85,16 @@ String getFormParam(const String &args, const char *key)
 using CommandHandler = std::function<void(const String &)>;
 std::map<String, CommandHandler> commandHandlers;
 
-void handlePowerCommand(const String &)
+void handlePowerOnCommand(const String &)
 {
-  if (isPlayerOn)
-  {
-    slink.powerOff();
-  }
-  else
-  {
-    slink.powerOn();
-  }
-  isPlayerOn = !isPlayerOn;
-  Serial.println(isPlayerOn ? "Power: OFF -> ON" : "Power: ON -> OFF");
+  slink.powerOn();
+  Serial.println("Power: ON");
+}
+
+void handlePowerOffCommand(const String &)
+{
+  slink.powerOff();
+  Serial.println("Power: OFF");
 }
 
 void handlePlayDiscCommand(const String &args)
@@ -152,7 +149,8 @@ void handlePrevCommand(const String &) { slink.prevTrack(); }
 
 void setupCommandHandlers()
 {
-  commandHandlers["power"] = handlePowerCommand;
+  commandHandlers["powerOn"] = handlePowerOnCommand;
+  commandHandlers["powerOff"] = handlePowerOffCommand;
   commandHandlers["play"] = handlePlayCommand;
   commandHandlers["stop"] = handleStopCommand;
   commandHandlers["pause"] = handlePauseCommand;

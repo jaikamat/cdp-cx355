@@ -104,7 +104,7 @@ The interface has three functional areas, protected by a global busy lock so com
 
 ### Transport Controls
 - **Play / Stop / Pause / Next / Previous**: Basic playback control
-- **Power**: Toggles CDP-CX355 power state
+- **Power On / Power Off**: Explicit power commands; no state is tracked, so they cannot get out of sync with the player
 
 ### Set Disc Title
 A standalone form for titling any disc by number without paging to its range. Submits the same command as the per-disc Save button.
@@ -154,7 +154,7 @@ Paginated disc information.
 Command execution. Content-Type: `application/x-www-form-urlencoded`.
 
 **Transport commands**:
-- `command=play` / `stop` / `pause` / `next` / `prev` / `power`
+- `command=play` / `stop` / `pause` / `next` / `prev` / `powerOn` / `powerOff`
 
 **Disc operations**:
 - `command=playDisc&disc=5` — select and play a disc
@@ -245,7 +245,6 @@ Behavioral testing requires the actual hardware — the S-Link protocol can't be
 
 - S-Link is slow; saving or discovering a title takes several seconds
 - No authentication and HTTP only — intended for trusted local networks
-- Power state is assumed, not queried: if the player is toggled from its front panel, the web Power button's sense inverts until toggled again
 - CD TEXT discs: the player's own CD TEXT overrides a written memo when the disc is selected
 
 ## Future Work
