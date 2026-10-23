@@ -79,7 +79,7 @@ The device is meant to run for months without a power cycle. Three mechanisms ke
 Single-page application in `src/WebUI.hpp` with:
 - Infinite scroll: rows are appended 25 per `/discs` request as a sentinel div enters the viewport; the whole list stays in the DOM. Save/Discover refresh one row via `/discs?page=N&limit=1`. `listGen` discards a page fetch that was in flight when the dropdown cleared the list
 - Real-time command execution via POST requests
-- JSON API for disc information (`/discs` endpoint) and playback state (`/status`, polled every 3 s for the banner; not logged to serial)
+- JSON API for disc information (`/discs` endpoint) and playback state (`/status`, polled every 2 s for the banner; not logged to serial)
 - `/discs` formats each row into a stack buffer and writes it once, and `/status` and the POST reply are each one or two writes: every `client.print`/`write` in WiFiS3 is a separate command to the ESP32 modem with no buffering, so printing fields one by one cost ~18 modem round trips per disc (a 25-disc page took 1.9 s; now 0.3 s)
 - Global busy lock: all controls disable while a command is in flight
 - Device constants (MAX_DISCS, PAGE_SIZE) injected into the page JS so the UI stays in sync with DiscStorage

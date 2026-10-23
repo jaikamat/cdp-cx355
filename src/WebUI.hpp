@@ -103,7 +103,7 @@ inline void sendStatusJson(WiFiClient &client, const PlaybackStatus &status, Dis
   }
 
   // Two modem writes (headers, body) instead of one per field; see the note
-  // in sendDiscsJsonStream. This runs every 3 s per open tab.
+  // in sendDiscsJsonStream. This runs every 2 s per open tab.
   client.print(F("HTTP/1.1 200 OK\r\n"
                  "Content-Type: application/json\r\n"
                  "Cache-Control: no-store\r\n"
@@ -371,7 +371,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       // Light up the disc label of the disc the player says is loaded
       "    const active = s.state === 'playing' || s.state === 'paused' ? s.disc : 0;"
       "    document.querySelectorAll('.num').forEach(n => n.classList.toggle('playing', +n.dataset.disc === active));"
-      "  }).catch(() => {}).finally(() => setTimeout(pollStatus, 3000));"
+      "  }).catch(() => {}).finally(() => setTimeout(pollStatus, 2000));"
       "}"
 
       "document.addEventListener('DOMContentLoaded', () => {"

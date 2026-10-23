@@ -112,7 +112,7 @@ The interface has three functional areas, protected by a global busy lock so com
 ### Now Playing Banner
 A fixed banner at the bottom of the page appears while the player is playing or paused and shows the disc number, its stored title, the track number and track length. It is hidden when the player is stopped or off.
 
-The banner is driven entirely by status frames the player broadcasts on the S-Link bus; the Arduino listens passively and the page polls `GET /status` every 3 seconds. Pressing buttons in the UI never updates it directly, so it stays correct when the player is operated from its front panel or remote. After the Arduino reboots the state is unknown until the player next reports something, which happens at the latest when the next track starts.
+The banner is driven entirely by status frames the player broadcasts on the S-Link bus; the Arduino listens passively and the page polls `GET /status` every 2 seconds. Pressing buttons in the UI never updates it directly, so it stays correct when the player is operated from its front panel or remote. After the Arduino reboots the state is unknown until the player next reports something, which happens at the latest when the next track starts.
 
 ### Set Disc Title
 A standalone form for titling any disc by number without scrolling to it. Submits the same command as the per-disc Save button.
