@@ -80,6 +80,7 @@ Single-page application in `src/WebUI.hpp` with:
 - Progressive disc loading to prevent memory overflow
 - Real-time command execution via POST requests
 - JSON API for disc information (`/discs` endpoint) and playback state (`/status`, polled every 3 s for the banner; not logged to serial)
+- `/discs` formats each row into a stack buffer and writes it once: every `client.print`/`write` in WiFiS3 is a separate command to the ESP32 modem with no buffering, so printing fields one by one cost ~18 modem round trips per disc (a 25-disc page took 1.9 s; now 0.3 s)
 - Global busy lock: all controls disable while a command is in flight
 - Device constants (MAX_DISCS, PAGE_SIZE) injected into the page JS so the UI stays in sync with DiscStorage
 

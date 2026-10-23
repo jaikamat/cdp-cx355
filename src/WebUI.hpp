@@ -10,23 +10,29 @@
 // and the paginated /discs JSON endpoint. Kept separate from main.cpp so
 // application logic and presentation stay readable on their own.
 
-// Print a string into a JSON value, escaping quotes/backslashes and
-// dropping control characters so a memo can never break the document
-inline void printJsonEscaped(WiFiClient &client, const char *text)
+// Copy `text` into `out` as a JSON string body: quotes and backslashes are
+// escaped and control characters dropped, so a memo can never break the
+// document. `out` needs room for 2 * strlen(text) + 1 bytes.
+inline void jsonEscape(const char *text, char *out, size_t outSize)
 {
-  for (const char *p = text; *p; p++)
+  size_t n = 0;
+  for (const char *p = text; *p && n + 2 < outSize; p++)
   {
     char c = *p;
     if (c == '"' || c == '\\')
-    {
-      client.print('\\');
-      client.print(c);
-    }
-    else if (c >= 0x20)
-    {
-      client.print(c);
-    }
+      out[n++] = '\\';
+    if (c >= 0x20)
+      out[n++] = c;
   }
+  out[n] = '\0';
+}
+
+// Print a string into a JSON value (see jsonEscape). Sized for a DiscInfo memo.
+inline void printJsonEscaped(WiFiClient &client, const char *text)
+{
+  char buf[2 * sizeof(DiscInfo::memo) + 1];
+  jsonEscape(text, buf, sizeof(buf));
+  client.print(buf);
 }
 
 inline void sendDiscsJsonStream(WiFiClient &client, const String &url, DiscStorage &storage)
@@ -56,44 +62,37 @@ inline void sendDiscsJsonStream(WiFiClient &client, const String &url, DiscStora
       limit = 25;
   }
 
-  client.println(F("HTTP/1.1 200 OK"));
-  client.println(F("Content-Type: application/json"));
-  client.println(F("Connection: close"));
-  client.println();
-
   int total = storage.getMaxDiscs();
   int startIdx = (page - 1) * limit;
   int endIdx = startIdx + limit;
   if (endIdx > total)
     endIdx = total;
 
-  client.print("{\"discs\":[");
+  // Every client.print/write is a separate command to the ESP32 modem
+  // (WiFiS3 has no write buffer), so the response is assembled into a
+  // buffer and written in as few pieces as possible: one for the headers,
+  // one per disc, one for the trailer. Printing a row field by field cost
+  // about 18 modem round trips per disc and made a 25-disc page take ~1.9 s.
+  client.print(F("HTTP/1.1 200 OK\r\n"
+                 "Content-Type: application/json\r\n"
+                 "Connection: close\r\n"
+                 "\r\n"
+                 "{\"discs\":["));
 
-  bool first = true;
+  char memo[2 * sizeof(DiscInfo::memo) + 1];
+  char row[96];
   for (int i = startIdx; i < endIdx; i++)
   {
-    if (!first)
-      client.print(",");
-    first = false;
-
     DiscInfo d = storage.readDisc(i);
-    client.print("{\"d\":");
-    client.print(d.discNumber);
-    client.print(",\"m\":\"");
-    printJsonEscaped(client, d.memo);
-    client.print("\"}");
+    jsonEscape(d.memo, memo, sizeof(memo));
+    int n = snprintf(row, sizeof(row), "%s{\"d\":%d,\"m\":\"%s\"}",
+                     i == startIdx ? "" : ",", d.discNumber, memo);
+    client.write((const uint8_t *)row, n);
   }
 
-  client.print("],\"page\":");
-  client.print(page);
-  client.print(",\"limit\":");
-  client.print(limit);
-  client.print(",\"total\":");
-  client.print(total);
-  client.print(",\"hasMore\":");
-  client.print(endIdx < total ? "true" : "false");
-  client.print("}");
-
+  int n = snprintf(row, sizeof(row), "],\"page\":%d,\"limit\":%d,\"total\":%d,\"hasMore\":%s}",
+                   page, limit, total, endIdx < total ? "true" : "false");
+  client.write((const uint8_t *)row, n);
   client.stop();
 }
 
