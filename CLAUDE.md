@@ -27,7 +27,7 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → Sony C
 ### Key Features
 - Web-based remote control with transport controls (play/stop/pause/next/prev/power on/power off)
 - Disc title management: write titles to the player's memo memory and read them back
-- Progressive loading of disc collection (25 discs at a time)
+- Disc collection loads 25 at a time by infinite scroll (IntersectionObserver on a sentinel div); a dropdown jumps to a range
 - EEPROM storage for persistent disc titles
 - mDNS hostname resolution (sony-remote.local)
 - Global UI lock preventing command spam while the slow S-Link bus is busy
@@ -77,7 +77,7 @@ The device is meant to run for months without a power cycle. Three mechanisms ke
 
 ### Web Interface
 Single-page application in `src/WebUI.hpp` with:
-- Progressive disc loading to prevent memory overflow
+- Infinite scroll: rows are appended 25 per `/discs` request as a sentinel div enters the viewport; the whole list stays in the DOM. Save/Discover refresh one row via `/discs?page=N&limit=1`. `listGen` discards a page fetch that was in flight when the dropdown cleared the list
 - Real-time command execution via POST requests
 - JSON API for disc information (`/discs` endpoint) and playback state (`/status`, polled every 3 s for the banner; not logged to serial)
 - `/discs` formats each row into a stack buffer and writes it once: every `client.print`/`write` in WiFiS3 is a separate command to the ESP32 modem with no buffering, so printing fields one by one cost ~18 modem round trips per disc (a 25-disc page took 1.9 s; now 0.3 s)

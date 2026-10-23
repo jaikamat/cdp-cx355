@@ -197,7 +197,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
 
       "<section>"
       "<h2>Set Disc Title</h2>"
-      "<form class='form' onsubmit=\"event.preventDefault(); if(!lock('Setting title...'))return; var d=document.getElementById('discNum').value; var t=document.getElementById('title').value; fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'command=saveDiscTitle&disc='+d+'&title='+encodeURIComponent(t)}).then(()=>{refreshCurrentRange();setTimeout(unlock,3000);}).catch(()=>setTimeout(unlock,1000));\">"
+      "<form class='form' onsubmit=\"event.preventDefault(); if(!lock('Setting title...'))return; var d=document.getElementById('discNum').value; var t=document.getElementById('title').value; fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'command=saveDiscTitle&disc='+d+'&title='+encodeURIComponent(t)}).then(()=>{refreshDisc(d);setTimeout(unlock,3000);}).catch(()=>setTimeout(unlock,1000));\">"
       "<input type='number' id='discNum' placeholder='Disc' min='1'>"
       "<input type='text' id='title' placeholder='Title (13 chars)' maxlength='13'>"
       "<button type='submit'>Set</button>"
@@ -207,9 +207,10 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "<section>"
       "<h2>Disc Collection</h2>"
       "<select id='rangeSelect' onchange='loadRange()'>"
-      "<option value=''>-- Select Disc Range --</option>"
+      "<option value=''>-- Jump to Range --</option>"
       "</select>"
       "<div id='discList'></div>"
+      "<div id='more' style='height:1px'></div>"
       "</section>"
       "<div id='now' class='now' hidden></div>"
 
@@ -221,7 +222,9 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
   client.print(";const PAGE_SIZE = 25;");
 
   client.print(F(
-      "let currentRange = null;"
+      "let nextPage = 1;"
+      "let loading = false;"
+      "let listGen = 0;"
       "let busy = false;"
 
       "function lock(msg) {"
@@ -244,10 +247,8 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "    method: 'POST',"
       "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
       "    body: 'command=' + cmd"
-      "  }).then(() => {"
-      "    refreshCurrentRange();"
-      "    setTimeout(unlock, 500);"
-      "  }).catch(() => setTimeout(unlock, 500));"
+      "  }).then(() => setTimeout(unlock, 500))"
+      "  .catch(() => setTimeout(unlock, 500));"
       "}"
 
       "function playDisc(num) {"
@@ -268,7 +269,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
       "    body: 'command=saveDiscTitle&disc=' + num + '&title=' + encodeURIComponent(input.value)"
       "  }).then(() => {"
-      "    refreshCurrentRange();"
+      "    refreshDisc(num);"
       "    setTimeout(unlock, 3000);"
       "  }).catch(() => setTimeout(unlock, 1000));"
       "}"
@@ -280,7 +281,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
       "    body: 'command=discoverTitle&disc=' + num"
       "  }).then(() => {"
-      "    refreshCurrentRange();"
+      "    refreshDisc(num);"
       "    setTimeout(unlock, 5000);"
       "  }).catch(() => setTimeout(unlock, 2000));"
       "}"
@@ -295,41 +296,76 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "  }"
       "}"
 
-      "function loadRange() {"
-      "  const page = document.getElementById('rangeSelect').value;"
-      "  if (!page) return;"
-      "  currentRange = page;"
+      // Disc list: infinite scroll. Rows are appended 25 at a time as the
+      // sentinel div below the list scrolls into view, so the device never
+      // serves more than one page per request while the browser keeps every
+      // loaded row (300 rows is a small DOM). The dropdown clears the list
+      // and restarts scrolling from the chosen range. listGen discards a
+      // page that was in flight when the list was cleared.
+      "function discRow(item) {"
+      "  return '<div class=\"disc\">'"
+      "    + '<span class=\"num\" data-disc=\"' + item.d + '\">DISC ' + String(item.d).padStart(3, '0') + '</span>'"
+      "    + '<input type=\"text\" data-disc=\"' + item.d + '\" maxlength=\"13\">'"
+      "    + '<div class=\"btns\">'"
+      "    + '<button type=\"button\" onclick=\"playDisc(' + item.d + ')\">&#9654; Play</button>'"
+      "    + '<button type=\"button\" onclick=\"saveDiscTitle(' + item.d + ')\">Save</button>'"
+      "    + '<button type=\"button\" onclick=\"discoverTitle(' + item.d + ')\">Discover</button>'"
+      "    + '</div></div>';"
+      "}"
+
+      // Assign titles via the DOM so quotes in a memo can't break the markup
+      "function setTitle(item) {"
+      "  const input = document.querySelector('input[data-disc=\"' + item.d + '\"]');"
+      "  if (input) input.value = item.m;"
+      "}"
+
+      "function loadPage(page) {"
+      "  const gen = listGen;"
+      "  loading = true;"
       "  fetch('/discs?page=' + page + '&limit=' + PAGE_SIZE)"
       "    .then(response => response.json())"
       "    .then(data => {"
-      "      const container = document.getElementById('discList');"
-      "      let html = '';"
-      "      data.discs.forEach(item => {"
-      "        html += '<div class=\"disc\">';"
-      "        html += '<span class=\"num\" data-disc=\"' + item.d + '\">DISC ' + String(item.d).padStart(3, '0') + '</span>';"
-      "        html += '<input type=\"text\" data-disc=\"' + item.d + '\" maxlength=\"13\">';"
-      "        html += '<div class=\"btns\">';"
-      "        html += '<button type=\"button\" onclick=\"playDisc(' + item.d + ')\">&#9654; Play</button>';"
-      "        html += '<button type=\"button\" onclick=\"saveDiscTitle(' + item.d + ')\">Save</button>';"
-      "        html += '<button type=\"button\" onclick=\"discoverTitle(' + item.d + ')\">Discover</button>';"
-      "        html += '</div></div>';"
-      "      });"
-      "      container.innerHTML = html;"
-      // Assign titles via the DOM so quotes in a memo can't break the markup
-      "      data.discs.forEach(item => {"
-      "        const input = container.querySelector('input[data-disc=\"' + item.d + '\"]');"
-      "        if (input) input.value = item.m;"
-      "      });"
+      "      if (gen !== listGen) return;"
+      "      document.getElementById('discList').insertAdjacentHTML('beforeend', data.discs.map(discRow).join(''));"
+      "      data.discs.forEach(setTitle);"
+      "      nextPage = data.hasMore ? page + 1 : 0;"
       "    })"
-      "    .catch(err => {"
-      "      console.error('Error fetching discs:', err);"
-      "    });"
+      "    .catch(err => console.error('Error fetching discs:', err))"
+      "    .finally(() => { loading = false; watchSentinel(); });"
       "}"
 
-      "function refreshCurrentRange() {"
-      "  if (currentRange) {"
-      "    setTimeout(loadRange, 3000);"
-      "  }"
+      // Fires when the sentinel enters the viewport (200px early so the next
+      // page is usually there before the user reaches the bottom)
+      "const observer = new IntersectionObserver(entries => {"
+      "  if (entries[0].isIntersecting && nextPage && !loading) loadPage(nextPage);"
+      "}, { rootMargin: '200px' });"
+
+      // Re-arm so the observer reports the current state even if it has not
+      // changed, e.g. a tall window that shows a whole page with room to spare
+      "function watchSentinel() {"
+      "  const more = document.getElementById('more');"
+      "  observer.unobserve(more);"
+      "  observer.observe(more);"
+      "}"
+
+      "function loadRange() {"
+      "  const page = +document.getElementById('rangeSelect').value;"
+      "  if (!page) return;"
+      "  listGen++;"
+      "  document.getElementById('discList').innerHTML = '';"
+      "  nextPage = page;"
+      "  watchSentinel();"
+      "}"
+
+      // After a Save or Discover, re-read just that disc once the bus has
+      // had time to answer. page=N&limit=1 addresses exactly disc N.
+      "function refreshDisc(num) {"
+      "  setTimeout(() => {"
+      "    fetch('/discs?page=' + num + '&limit=1')"
+      "      .then(response => response.json())"
+      "      .then(data => data.discs.forEach(setTitle))"
+      "      .catch(() => {});"
+      "  }, 3000);"
       "}"
 
       // Now-playing banner. State comes only from what the player reported
@@ -356,6 +392,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "document.addEventListener('DOMContentLoaded', () => {"
       "  document.getElementById('discNum').max = MAX_DISCS;"
       "  populateRangeDropdown();"
+      "  watchSentinel();"
       "  pollStatus();"
       "});"
       "</script>"

@@ -115,13 +115,14 @@ A fixed banner at the bottom of the page appears while the player is playing or 
 The banner is driven entirely by status frames the player broadcasts on the S-Link bus; the Arduino listens passively and the page polls `GET /status` every 3 seconds. Pressing buttons in the UI never updates it directly, so it stays correct when the player is operated from its front panel or remote. After the Arduino reboots the state is unknown until the player next reports something, which happens at the latest when the next track starts.
 
 ### Set Disc Title
-A standalone form for titling any disc by number without paging to its range. Submits the same command as the per-disc Save button.
+A standalone form for titling any disc by number without scrolling to it. Submits the same command as the per-disc Save button.
 
 ### Disc Collection
-A progressive loading system keeps memory usage small:
+The list loads 25 discs at a time as you scroll, so the Arduino never serves more than one page per request while the browser keeps every row it has loaded:
 
-- **Range Selector**: Pick a 25-disc range (e.g., "Discs 1-25") from the dropdown; only one range is loaded at a time
-- **Per-Disc Controls**, for each disc in the loaded range:
+- **Infinite Scroll**: The first 25 discs load when the page opens; the next 25 load as you near the bottom, through disc 300
+- **Jump to Range**: Pick a range (e.g., "Discs 101-125") from the dropdown to clear the list and restart scrolling from there
+- **Per-Disc Controls**, for each loaded disc:
   ```
   Disc 1: [Title Text Field] [Play] [Save] [Auto-Discover]
   ```
@@ -328,7 +329,6 @@ Behavioral testing requires the actual hardware — the S-Link protocol can't be
 ## Future Work
 
 - Indicate in the UI whether a title is editable (memo) or read-only (CD TEXT)
-- Load the first 25 discs automatically on page load
 - Playback animations on the LED matrix
 
 ## License
