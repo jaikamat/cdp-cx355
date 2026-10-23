@@ -27,14 +27,6 @@ inline void jsonEscape(const char *text, char *out, size_t outSize)
   out[n] = '\0';
 }
 
-// Print a string into a JSON value (see jsonEscape). Sized for a DiscInfo memo.
-inline void printJsonEscaped(WiFiClient &client, const char *text)
-{
-  char buf[2 * sizeof(DiscInfo::memo) + 1];
-  jsonEscape(text, buf, sizeof(buf));
-  client.print(buf);
-}
-
 inline void sendDiscsJsonStream(WiFiClient &client, const String &url, DiscStorage &storage)
 {
   int page = 1;
@@ -103,31 +95,24 @@ inline void sendStatusJson(WiFiClient &client, const PlaybackStatus &status, Dis
 {
   static const char *names[] = {"unknown", "off", "stopped", "paused", "playing"};
 
-  client.println(F("HTTP/1.1 200 OK"));
-  client.println(F("Content-Type: application/json"));
-  client.println(F("Cache-Control: no-store"));
-  client.println(F("Connection: close"));
-  client.println();
-
-  client.print("{\"state\":\"");
-  client.print(names[(int)status.state]);
-  client.print("\",\"disc\":");
-  client.print(status.disc);
-  client.print(",\"track\":");
-  client.print(status.track);
-  client.print(",\"len\":\"");
-  client.print(status.lengthMin);
-  client.print(':');
-  if (status.lengthSec < 10)
-    client.print('0');
-  client.print(status.lengthSec);
-  client.print("\",\"title\":\"");
+  char title[2 * sizeof(DiscInfo::memo) + 1] = "";
   if (status.disc >= 1 && status.disc <= storage.getMaxDiscs())
   {
     DiscInfo d = storage.readDisc(status.disc - 1);
-    printJsonEscaped(client, d.memo);
+    jsonEscape(d.memo, title, sizeof(title));
   }
-  client.print("\"}");
+
+  // Two modem writes (headers, body) instead of one per field; see the note
+  // in sendDiscsJsonStream. This runs every 3 s per open tab.
+  client.print(F("HTTP/1.1 200 OK\r\n"
+                 "Content-Type: application/json\r\n"
+                 "Cache-Control: no-store\r\n"
+                 "Connection: close\r\n"
+                 "\r\n"));
+  char body[128];
+  int n = snprintf(body, sizeof(body), "{\"state\":\"%s\",\"disc\":%u,\"track\":%u,\"len\":\"%u:%02u\",\"title\":\"%s\"}",
+                   names[(int)status.state], status.disc, status.track, status.lengthMin, status.lengthSec, title);
+  client.write((const uint8_t *)body, n);
   client.stop();
 }
 

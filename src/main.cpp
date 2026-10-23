@@ -282,8 +282,7 @@ void loop()
     // The page's JavaScript issues every command with fetch() and ignores the
     // response, so there is nothing to send back. A redirect here would make
     // fetch() re-download the whole page after every button press.
-    client.println(F("HTTP/1.1 204 No Content"));
-    client.println(F("Connection: close\r\n"));
+    client.print(F("HTTP/1.1 204 No Content\r\nConnection: close\r\n\r\n"));
     client.stop();
   }
 
