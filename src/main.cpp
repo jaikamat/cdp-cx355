@@ -270,10 +270,11 @@ void loop()
       Serial.println("Unknown command");
     }
 
-    client.println(F("HTTP/1.1 303 See Other"));
-    client.println(F("Location: /"));
+    // The page's JavaScript issues every command with fetch() and ignores the
+    // response, so there is nothing to send back. A redirect here would make
+    // fetch() re-download the whole page after every button press.
+    client.println(F("HTTP/1.1 204 No Content"));
     client.println(F("Connection: close\r\n"));
-    client.println();
     client.stop();
   }
 

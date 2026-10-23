@@ -152,7 +152,7 @@ Paginated disc information.
 ```
 
 ### `POST /`
-Command execution. Content-Type: `application/x-www-form-urlencoded`.
+Command execution. Content-Type: `application/x-www-form-urlencoded`. Responds `204 No Content`; results arrive asynchronously over S-Link and are visible by re-fetching `/discs`.
 
 **Transport commands**:
 - `command=play` / `stop` / `pause` / `next` / `prev` / `powerOn` / `powerOff`
