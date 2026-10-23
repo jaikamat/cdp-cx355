@@ -168,6 +168,44 @@ curl -X POST http://sony-remote.local/ -d "command=playDisc&disc=5"
 curl "http://sony-remote.local/discs?page=1&limit=10"
 ```
 
+## Backing Up and Restoring Titles
+
+The player's memo memory is the primary copy of each title; the Arduino's EEPROM is a cache of it. If only the Arduino is replaced, **Auto-Discover** can re-read titles from the player. A backup protects against the other cases: the player is replaced, its memory is lost, or you want the list in a file.
+
+Both procedures use the HTTP API, so they run from any machine on the network. Set `HOST` to the IP address rather than `sony-remote.local` if `.local` lookups are slow on your machine; the restore loop does one lookup per disc.
+
+### Export
+
+Writes one line per titled disc, `disc<TAB>title`, to `disc-titles.tsv`:
+
+```bash
+HOST=http://sony-remote.local
+for p in 1 2 3 4 5 6; do
+  curl -s "$HOST/discs?page=$p&limit=50" |
+    python3 -c 'import sys, json
+for d in json.load(sys.stdin)["discs"]:
+    if d["m"]: print(d["d"], d["m"], sep="\t")'
+done > disc-titles.tsv
+```
+
+### Restore
+
+Writes each title to the player over S-Link and syncs it back into EEPROM, exactly as the **Save** button does. Each title takes several seconds on the bus, so the loop waits 5 seconds between discs; a full 300-disc restore takes about 25 minutes. Keep the player powered on.
+
+```bash
+HOST=http://sony-remote.local
+while IFS=$'\t' read -r disc title; do
+  echo "Disc $disc: $title"
+  curl -s -o /dev/null -X POST "$HOST/" \
+    --data-urlencode "command=saveDiscTitle" \
+    --data-urlencode "disc=$disc" \
+    --data-urlencode "title=$title"
+  sleep 5
+done < disc-titles.tsv
+```
+
+Edit `disc-titles.tsv` first to restore only some discs. The serial monitor logs `Setting title for disc N` and `Callback received for disc N: <title>` for each one.
+
 ## Storage
 
 ```cpp
