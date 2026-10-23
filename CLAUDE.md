@@ -70,7 +70,7 @@ The S-Link protocol operates at ~355 bps with specific timing requirements. Key 
 ### Robustness (unattended operation)
 The device is meant to run for months without a power cycle. Three mechanisms keep it alive, and all three share one time budget:
 - **Hardware watchdog**: `WDT.begin(WATCHDOG_TIMEOUT_MS)` (5 s, hardware max ~5.6 s) is armed at the end of `setup()` and refreshed between the phases of `loop()`. Any new blocking code in `loop()` must finish well inside 5 s or refresh the watchdog itself. The per-phase bounds are documented above the constant in main.cpp.
-- **WiFi reconnection**: `WiFiManager::ensureConnected()` polls link state every 5 s (each `WiFi.status()` is a UART round trip to the ESP32, so it is not called every loop). On loss it re-joins with a 4 s cap (`WiFi.setTimeout`) and rebinds mDNS to the new IP. The HTTP server socket survives re-association and is not restarted.
+- **WiFi reconnection**: `WiFiManager::ensureConnected()` polls link state every 5 s (each `WiFi.status()` is a UART round trip to the ESP32, so it is not called every loop). On loss it re-joins with a 4 s cap (`WiFi.setTimeout`). mDNS is bound only once `WiFi.localIP()` is non-zero and rebound whenever it changes, because `WiFi.begin()` returns on association, before DHCP completes; binding early advertises 0.0.0.0 and the `.local` name stops resolving. The HTTP server socket survives re-association and is not restarted.
 - **HTTP deadline**: `HttpParser::parse` abandons a request 2 s after accept (`REQUEST_DEADLINE_MS`). Headers are read into a 2 KB buffer; the body is capped at 512 bytes. A stalled or lying client therefore costs at most 2 s, not a hang.
 
 ### Web Interface

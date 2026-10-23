@@ -38,8 +38,15 @@ void WiFiManager::connect()
     server.begin();
     Serial.println("WiFi connected.");
 
-    startMDNS();
-    printStatus();
+    // Associated, but DHCP may still be running. Give it a few seconds so
+    // mDNS can be bound before setup() returns; if it is still not done,
+    // ensureConnected() binds it on a later poll.
+    unsigned long start = millis();
+    while (WiFi.localIP() == IPAddress(0, 0, 0, 0) && millis() - start < DHCP_WAIT_MS)
+    {
+        delay(100);
+    }
+    bindMDNSIfIpChanged();
 }
 
 // Re-join the network if the association was lost (router reboot, AP channel
@@ -57,36 +64,52 @@ void WiFiManager::ensureConnected()
         return;
     lastLinkCheckMs = now;
 
-    if (WiFi.status() == WL_CONNECTED)
-        return;
-
-    Serial.println("WiFi link lost. Reconnecting...");
-    if (WiFi.begin(ssid, password) != WL_CONNECTED)
+    if (WiFi.status() != WL_CONNECTED)
     {
-        Serial.println("Reconnect failed; will retry.");
-        return;
+        Serial.println("WiFi link lost. Reconnecting...");
+        if (WiFi.begin(ssid, password) != WL_CONNECTED)
+        {
+            Serial.println("Reconnect failed; will retry.");
+            return;
+        }
+        Serial.println("WiFi reconnected.");
+        // DHCP is probably still running; the check below binds mDNS on
+        // this poll if the address is already here, otherwise on a later one.
     }
 
-    Serial.println("WiFi reconnected.");
-    startMDNS();
+    bindMDNSIfIpChanged();
+}
+
+// Bind (or rebind) mDNS when the IP address becomes known or changes.
+// Does nothing while the address is still 0.0.0.0 (DHCP pending) or when it
+// matches the address mDNS is already answering with. Advertising 0.0.0.0
+// makes "sony-remote.local" resolve to nothing, so the zero check matters.
+void WiFiManager::bindMDNSIfIpChanged()
+{
+    IPAddress ip = WiFi.localIP();
+    if (ip == IPAddress(0, 0, 0, 0) || ip == mdnsBoundIp)
+        return;
+    startMDNS(ip);
     printStatus();
 }
 
-// (Re)start the mDNS responder on the current IP address. Safe to call more
-// than once: the multicast socket is closed first (a no-op on first use), and
-// the HTTP service record is only registered the first time because the MDNS
-// object keeps its record table across begin() calls.
-void WiFiManager::startMDNS()
+// (Re)start the mDNS responder on `ip`. Safe to call more than once: the
+// multicast socket is closed first (a no-op on first use), and the HTTP
+// service record is only registered the first time because the MDNS object
+// keeps its record table across begin() calls.
+void WiFiManager::startMDNS(const IPAddress &ip)
 {
     udp.stop();
 
     Serial.print("Starting mDNS with hostname: ");
     Serial.println(hostname);
-    if (mdns.begin(WiFi.localIP(), hostname))
+    if (mdns.begin(ip, hostname))
     {
+        mdnsBoundIp = ip;
         Serial.print("mDNS responder started: ");
         Serial.print(hostname);
-        Serial.println(".local");
+        Serial.print(".local -> ");
+        Serial.println(ip);
 
         if (!serviceRecordAdded)
         {
