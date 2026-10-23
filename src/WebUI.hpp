@@ -148,15 +148,19 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "select { color: #d7d9dc; font-family: inherit; width: 100%; }"
       ".row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }"
       ".row button { flex: 1 1 30%; }"
-      ".form { display: flex; gap: 6px; }"
-      ".form input[type=number] { width: 5.5em; }"
-      ".form input[type=text] { flex: 1; min-width: 0; }"
-      ".disc { display: grid; grid-template-columns: auto 1fr; gap: 6px; margin-top: 10px; }"
-      ".num { font: 600 12px ui-monospace, Menlo, monospace; letter-spacing: .06em; color: #9a9ea5; align-self: center; }"
-      ".disc input { min-width: 0; }"
-      ".btns { grid-column: 1 / -1; display: flex; gap: 6px; }"
-      ".btns button { flex: 1; }"
-      "@media (min-width: 640px) { .disc { grid-template-columns: auto 1fr auto; } .btns { grid-column: auto; } .btns button { flex: none; } }"
+      // Disc rows are one line each: number, title, Play. Tapping the row
+      // opens the shared <dialog> editor, so the input and the Save/Discover
+      // buttons exist once in the page instead of once per disc.
+      ".disc { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 5px 0; border-top: 1px solid #3a3d42; cursor: pointer; }"
+      ".disc:first-child { border-top: none; }"
+      ".num { font: 600 12px ui-monospace, Menlo, monospace; letter-spacing: .06em; color: #9a9ea5; }"
+      ".title { font: 16px ui-monospace, Menlo, monospace; color: #ffb000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }"
+      ".title.empty { color: #6b5a2a; }"
+      ".disc button { min-height: 36px; padding: 0 14px; }"
+      "dialog { background: #24272b; color: #d7d9dc; border: 1px solid #3a3d42; border-radius: 6px; padding: 12px; width: min(92vw, 420px); }"
+      "dialog::backdrop { background: rgba(0, 0, 0, .6); }"
+      "dialog input { width: 100%; }"
+      "#edDisc:focus { outline: none; }"
       ".status { color: #ffb000; font: 12px ui-monospace, Menlo, monospace; letter-spacing: .06em; text-transform: none; margin-left: 8px; }"
       ".now { position: fixed; left: 0; right: 0; bottom: 0; background: #0b0c0e; border-top: 2px solid #3a3d42; color: #ffb000; font: 16px ui-monospace, Menlo, monospace; padding: 16px 14px; text-shadow: 0 0 6px rgba(255,176,0,.45); white-space: pre; overflow: hidden; text-overflow: ellipsis; }"
       ".num.playing { color: #ffb000; text-shadow: 0 0 6px rgba(255,176,0,.45); }"
@@ -181,15 +185,6 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "</section>"
 
       "<section>"
-      "<h2>Set Disc Title</h2>"
-      "<form class='form' onsubmit=\"event.preventDefault(); if(!lock('Setting title...'))return; var d=document.getElementById('discNum').value; var t=document.getElementById('title').value; fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'command=saveDiscTitle&disc='+d+'&title='+encodeURIComponent(t)}).then(()=>{refreshDisc(d);setTimeout(unlock,3000);}).catch(()=>setTimeout(unlock,1000));\">"
-      "<input type='number' id='discNum' placeholder='Disc' min='1'>"
-      "<input type='text' id='title' placeholder='Title (13 chars)' maxlength='13'>"
-      "<button type='submit'>Set</button>"
-      "</form>"
-      "</section>"
-
-      "<section>"
       "<h2>Disc Collection</h2>"
       "<select id='rangeSelect' onchange='loadRange()'>"
       "<option value=''>-- Jump to Range --</option>"
@@ -198,6 +193,19 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "<div id='more' style='height:1px'></div>"
       "</section>"
       "<div id='now' class='now' hidden></div>"
+
+      // Shared editor for whichever disc row was tapped (see openDisc). The
+      // heading takes initial focus so showModal() does not focus the input
+      // and raise the phone keyboard before the user has chosen what to do.
+      "<dialog id='editor'>"
+      "<h2 id='edDisc' tabindex='-1'></h2>"
+      "<input type='text' id='edTitle' placeholder='Title (13 chars)' maxlength='13'>"
+      "<div class='row'>"
+      "<button onclick='saveDiscTitle()'>Save</button>"
+      "<button onclick='discoverTitle()'>Discover</button>"
+      "<button onclick='document.getElementById(\"editor\").close()'>Close</button>"
+      "</div>"
+      "</dialog>"
 
       "<script>"));
 
@@ -246,20 +254,33 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "  .catch(() => setTimeout(unlock, 500));"
       "}"
 
-      "function saveDiscTitle(num) {"
-      "  const input = document.querySelector('input[data-disc=\"' + num + '\"]');"
-      "  if (!input || !lock('Saving disc ' + num + '...')) return;"
+      "function pad(n) { return String(n).padStart(3, '0'); }"
+
+      // The editor dialog works on editDisc, the disc whose row was tapped
+      "let editDisc = 0;"
+      "function openDisc(num) {"
+      "  editDisc = num;"
+      "  const t = document.querySelector('.disc[data-disc=\"' + num + '\"] .title');"
+      "  document.getElementById('edDisc').textContent = 'DISC ' + pad(num);"
+      "  document.getElementById('edTitle').value = t && !t.classList.contains('empty') ? t.textContent : '';"
+      "  document.getElementById('editor').showModal();"
+      "}"
+
+      "function saveDiscTitle() {"
+      "  const num = editDisc;"
+      "  if (!lock('Saving disc ' + num + '...')) return;"
       "  fetch('/', {"
       "    method: 'POST',"
       "    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },"
-      "    body: 'command=saveDiscTitle&disc=' + num + '&title=' + encodeURIComponent(input.value)"
+      "    body: 'command=saveDiscTitle&disc=' + num + '&title=' + encodeURIComponent(document.getElementById('edTitle').value)"
       "  }).then(() => {"
       "    refreshDisc(num);"
       "    setTimeout(unlock, 3000);"
       "  }).catch(() => setTimeout(unlock, 1000));"
       "}"
 
-      "function discoverTitle(num) {"
+      "function discoverTitle() {"
+      "  const num = editDisc;"
       "  if (!lock('Discovering disc ' + num + '...')) return;"
       "  fetch('/', {"
       "    method: 'POST',"
@@ -288,20 +309,22 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       // and restarts scrolling from the chosen range. listGen discards a
       // page that was in flight when the list was cleared.
       "function discRow(item) {"
-      "  return '<div class=\"disc\">'"
-      "    + '<span class=\"num\" data-disc=\"' + item.d + '\">DISC ' + String(item.d).padStart(3, '0') + '</span>'"
-      "    + '<input type=\"text\" data-disc=\"' + item.d + '\" maxlength=\"13\">'"
-      "    + '<div class=\"btns\">'"
-      "    + '<button type=\"button\" onclick=\"playDisc(' + item.d + ')\">&#9654; Play</button>'"
-      "    + '<button type=\"button\" onclick=\"saveDiscTitle(' + item.d + ')\">Save</button>'"
-      "    + '<button type=\"button\" onclick=\"discoverTitle(' + item.d + ')\">Discover</button>'"
-      "    + '</div></div>';"
+      "  return '<div class=\"disc\" data-disc=\"' + item.d + '\" onclick=\"openDisc(' + item.d + ')\">'"
+      "    + '<span class=\"num\" data-disc=\"' + item.d + '\">DISC ' + pad(item.d) + '</span>'"
+      "    + '<span class=\"title\"></span>'"
+      "    + '<button type=\"button\" onclick=\"event.stopPropagation(); playDisc(' + item.d + ')\">&#9654;</button>'"
+      "    + '</div>';"
       "}"
 
-      // Assign titles via the DOM so quotes in a memo can't break the markup
+      // Assign titles via the DOM so quotes in a memo can't break the markup.
+      // Also refreshes the editor if it is showing this disc.
       "function setTitle(item) {"
-      "  const input = document.querySelector('input[data-disc=\"' + item.d + '\"]');"
-      "  if (input) input.value = item.m;"
+      "  const t = document.querySelector('.disc[data-disc=\"' + item.d + '\"] .title');"
+      "  if (t) {"
+      "    t.textContent = item.m || '\\u2014';"
+      "    t.classList.toggle('empty', !item.m);"
+      "  }"
+      "  if (item.d === editDisc) document.getElementById('edTitle').value = item.m;"
       "}"
 
       "function loadPage(page) {"
@@ -360,7 +383,7 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "    const el = document.getElementById('now');"
       "    if (s.state === 'playing' || s.state === 'paused') {"
       "      const parts = [s.state === 'playing' ? '\\u25B6' : '\\u25AE\\u25AE'];"
-      "      if (s.disc) parts.push('DISC ' + String(s.disc).padStart(3, '0'));"
+      "      if (s.disc) parts.push('DISC ' + pad(s.disc));"
       "      if (s.track) parts.push('TRK ' + String(s.track).padStart(2, '0') + '  ' + s.len);"
       "      if (s.title) parts.push(s.title);"
       "      el.textContent = parts.join('  ');"
@@ -375,7 +398,6 @@ inline void sendIndexHtml(WiFiClient &client, int maxDiscs)
       "}"
 
       "document.addEventListener('DOMContentLoaded', () => {"
-      "  document.getElementById('discNum').max = MAX_DISCS;"
       "  populateRangeDropdown();"
       "  watchSentinel();"
       "  pollStatus();"

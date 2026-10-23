@@ -26,7 +26,7 @@ Web Browser → HTTP/JSON → Arduino Uno R4 WiFi → S-Link Protocol → Sony C
 
 ### Key Features
 - Web-based remote control with transport controls (play/stop/pause/next/prev/power on/power off)
-- Disc title management: write titles to the player's memo memory and read them back
+- Disc title management: write titles to the player's memo memory and read them back, via a single `<dialog>` editor opened by tapping a disc row
 - Disc collection loads 25 at a time by infinite scroll (IntersectionObserver on a sentinel div); a dropdown jumps to a range
 - EEPROM storage for persistent disc titles
 - mDNS hostname resolution (sony-remote.local)

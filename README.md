@@ -114,22 +114,19 @@ A fixed banner at the bottom of the page appears while the player is playing or 
 
 The banner is driven entirely by status frames the player broadcasts on the S-Link bus; the Arduino listens passively and the page polls `GET /status` every 2 seconds. Pressing buttons in the UI never updates it directly, so it stays correct when the player is operated from its front panel or remote. After the Arduino reboots the state is unknown until the player next reports something, which happens at the latest when the next track starts.
 
-### Set Disc Title
-A standalone form for titling any disc by number without scrolling to it. Submits the same command as the per-disc Save button.
-
 ### Disc Collection
 The list loads 25 discs at a time as you scroll, so the Arduino never serves more than one page per request while the browser keeps every row it has loaded:
 
 - **Infinite Scroll**: The first 25 discs load when the page opens; the next 25 load as you near the bottom, through disc 300
 - **Jump to Range**: Pick a range (e.g., "Discs 101-125") from the dropdown to clear the list and restart scrolling from there
-- **Per-Disc Controls**, for each loaded disc:
+- **Disc Rows**: one line per disc showing its number, title (a dash for an empty slot) and a Play button:
   ```
-  Disc 1: [Title Text Field] [Play] [Save] [Auto-Discover]
+  DISC 006  Jurassic Park                 [>]
   ```
-  - **Title Field**: Editable text input (13 character limit)
   - **Play**: Immediately selects and plays the disc
+  - **Tap the row** to open the editor dialog for that disc, which holds the title field (13 character limit) and the Save and Discover buttons. There is one editor for the whole page rather than a set of controls under every row
   - **Save**: Writes the title to the CDP-CX355's memo memory via S-Link, then reads it back and stores it in EEPROM
-  - **Auto-Discover**: Queries the CDP-CX355 for the disc's title (memo or CD TEXT) and stores it in EEPROM. If the player reports no title, the stored title is cleared. An empty slot and a disc with neither memo nor CD TEXT get the same reply, so both come back blank; type the title by hand for the latter
+  - **Discover**: Queries the CDP-CX355 for the disc's title (memo or CD TEXT) and stores it in EEPROM. If the player reports no title, the stored title is cleared. An empty slot and a disc with neither memo nor CD TEXT get the same reply, so both come back blank; type the title by hand for the latter
 
 ### UI Locking During Operations
 - All buttons and inputs dim while an operation is in progress
