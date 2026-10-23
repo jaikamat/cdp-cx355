@@ -146,8 +146,17 @@ void SLinkProtocol::processGetDiscTitle()
     // lowercase hex, so the header for disc 7 is "98,40,7,".
     String frameHeader = String("98,40,") + String(discByte, HEX) + ",";
 
+    // "98 10" is the player's explicit "no memo" answer. It is sent both for
+    // an empty slot and for a loaded disc with neither memo nor CD TEXT (the
+    // player offers no way to tell those apart; verified with the sniffer),
+    // so it means "this slot has no title" and the stored title is blanked.
+    // Only a genuine lack of any reply yields the "Timeout" sentinel, which
+    // leaves EEPROM untouched.
+    static const char *noMemoHeader = "98,10,";
+
     String response;
     int frameIdx = -1;
+    bool noMemo = false;
     for (int attempt = 1; attempt <= 5; attempt++)
     {
         uint8_t cmd[] = {device, (uint8_t)CMD_GET_DISC_TITLE, discByte};
@@ -157,7 +166,8 @@ void SLinkProtocol::processGetDiscTitle()
         response = inputMonitorWithReturn(2, false, 200000UL); // 0.2 seconds
 
         frameIdx = response.indexOf(frameHeader);
-        if (frameIdx >= 0)
+        noMemo = response.indexOf(noMemoHeader) >= 0;
+        if (frameIdx >= 0 || noMemo)
         {
             break;
         }
@@ -167,7 +177,12 @@ void SLinkProtocol::processGetDiscTitle()
     Serial.print("GetDiscTitle Response: ");
     Serial.println(response);
 
-    if (frameIdx >= 0)
+    if (frameIdx < 0 && noMemo)
+    {
+        Serial.println("Player reports no memo for this slot (empty, or disc without memo/CD TEXT).");
+        _titleBuffer[0] = '\0';
+    }
+    else if (frameIdx >= 0)
     {
         // Title bytes run from just after the header to the end of the frame.
         int titleStart = frameIdx + frameHeader.length();

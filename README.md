@@ -128,7 +128,7 @@ A progressive loading system keeps memory usage small:
   - **Title Field**: Editable text input (13 character limit)
   - **Play**: Immediately selects and plays the disc
   - **Save**: Writes the title to the CDP-CX355's memo memory via S-Link, then reads it back and stores it in EEPROM
-  - **Auto-Discover**: Queries the CDP-CX355 for the disc's title (memo or CD TEXT) and stores it in EEPROM
+  - **Auto-Discover**: Queries the CDP-CX355 for the disc's title (memo or CD TEXT) and stores it in EEPROM. If the player reports no title, the stored title is cleared. An empty slot and a disc with neither memo nor CD TEXT get the same reply, so both come back blank; type the title by hand for the latter
 
 ### UI Locking During Operations
 - All buttons and inputs dim while an operation is in progress
@@ -265,6 +265,8 @@ Captured on a CDP-CX355; they match BigDave's 1998 notes for the CDP-CX250. Firs
 | Frame | Meaning |
 |---|---|
 | `98 00` / `98 01` / `98 02` | Play / stop / pause (also sent as the ack to our commands) |
+| `98 10` | Reply to a title query: no memo. Same for an empty slot and an untitled disc |
+| `98 0F` | Reply: unknown command |
 | `98 50 DD TT MM SS` | Track started: disc, track, track length. Sent ~2.5 s after play and on every track change |
 | `98 0C` | 29 seconds left in the track |
 | `98 52 DD` / `98 58 DD` | Displaying / loaded disc DD (carousel moves take several seconds) |
@@ -286,7 +288,7 @@ The serial monitor (115200 baud) logs every queued command, raw S-Link responses
 
 ### Troubleshooting
 - **No response to commands**: confirm the CDP-CX355 is powered on, check the pin 8 connection and shared ground
-- **Title discovery fails**: ensure a disc is actually loaded in that slot; watch the serial monitor for raw responses
+- **Auto-Discover blanks the title**: the player answered `98 10`, "no memo". Either the slot is empty or the disc has no memo and no CD TEXT; the player cannot tell these apart, so type the title manually
 - **Line protection**: a 220Ω series resistor and diode protect the single-wire bus
 - **Device unreachable after a router reboot**: it re-joins on its own within about 10 seconds of the network returning; the serial log shows `WiFi link lost. Reconnecting...` followed by the new IP
 - **Device rebooted by itself**: the serial banner reappearing without a power cycle means the watchdog fired; the preceding log lines show which phase hung
@@ -327,7 +329,6 @@ Behavioral testing requires the actual hardware — the S-Link protocol can't be
 
 - Indicate in the UI whether a title is editable (memo) or read-only (CD TEXT)
 - Load the first 25 discs automatically on page load
-- Show a failure state on Auto-Discover when no disc or title is found
 - Playback animations on the LED matrix
 
 ## License
