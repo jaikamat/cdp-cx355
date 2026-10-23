@@ -132,7 +132,16 @@ void SLinkProtocol::processGetDiscTitle()
     uint8_t device = (_currentCommand->disc > 200) ? 0x93 : 0x90;
     uint8_t discByte = toBCD(_currentCommand->disc > 200 ? _currentCommand->disc - 200 : _currentCommand->disc);
 
+    // The reply we want is the frame "98 40 <disc> <13 title bytes>". The
+    // capture window also picks up unsolicited status frames from the player
+    // (e.g. "92 22"), so we locate this exact header and parse only the bytes
+    // that follow it, up to the end of that frame. inputMonitorWithReturn
+    // renders each frame as "\nSTART,<hex>,<hex>,...\n" with unpadded
+    // lowercase hex, so the header for disc 7 is "98,40,7,".
+    String frameHeader = String("98,40,") + String(discByte, HEX) + ",";
+
     String response;
+    int frameIdx = -1;
     for (int attempt = 1; attempt <= 5; attempt++)
     {
         uint8_t cmd[] = {device, (uint8_t)CMD_GET_DISC_TITLE, discByte};
@@ -141,7 +150,8 @@ void SLinkProtocol::processGetDiscTitle()
 
         response = inputMonitorWithReturn(2, false, 200000UL); // 0.2 seconds
 
-        if (response.indexOf("98,40,") >= 0)
+        frameIdx = response.indexOf(frameHeader);
+        if (frameIdx >= 0)
         {
             break;
         }
@@ -151,38 +161,39 @@ void SLinkProtocol::processGetDiscTitle()
     Serial.print("GetDiscTitle Response: ");
     Serial.println(response);
 
-    if (response.length() > 0)
+    if (frameIdx >= 0)
     {
-        response.replace(",", " ");
-        response.replace("START", "");
-        response.replace("\n", " ");
-        response.trim();
+        // Title bytes run from just after the header to the end of the frame.
+        int titleStart = frameIdx + frameHeader.length();
+        int frameEnd = response.indexOf('\n', titleStart);
+        if (frameEnd < 0)
+            frameEnd = response.length();
 
         String title;
-        int start = 0;
-        int byteCount = 0;
-        while (start < response.length())
+        int pos = titleStart;
+        while (pos < frameEnd)
         {
-            int end = response.indexOf(' ', start);
-            if (end == -1)
-                end = response.length();
-            String hexByte = response.substring(start, end);
-            if (hexByte.length() > 0)
+            int comma = response.indexOf(',', pos);
+            if (comma < 0 || comma > frameEnd)
+                comma = frameEnd;
+            if (comma > pos)
             {
-                long byteVal = strtol(hexByte.c_str(), NULL, 16);
-                byteCount++;
-                if (byteCount >= 4 && byteVal >= 0x20 && byteVal <= 0x7E)
+                long byteVal = strtol(response.substring(pos, comma).c_str(), NULL, 16);
+                if (byteVal >= 0x20 && byteVal <= 0x7E)
                 {
                     title += (char)byteVal;
                 }
             }
-            start = end + 1;
+            pos = comma + 1;
         }
         title.trim();
         strncpy(_titleBuffer, title.c_str(), 20);
+        _titleBuffer[20] = '\0';
     }
     else
     {
+        // No frame for this disc arrived. The callback treats this sentinel
+        // as "leave EEPROM alone" rather than clearing the stored title.
         strcpy(_titleBuffer, "Timeout");
     }
 

@@ -64,7 +64,7 @@ The S-Link protocol operates at ~355 bps with specific timing requirements. Key 
 - Device addressing (0x90 for discs 1-200, 0x93 for discs 201-300)
 - Command queuing system with callbacks; one command on the bus at a time
 - Transport commands are sent once (no retry) so they can't double-execute
-- Title queries retry up to 5 times; responses parsed from `98 40 ...` frames
+- Title queries retry up to 5 times; only a frame whose header is `98 40 <requested disc>` is parsed, so unsolicited status frames (`92 22`, `98 10`) in the capture window are ignored and a missing frame yields the `Timeout` sentinel, which skips the EEPROM write
 - `setDiscTitle` (memo write, command 0x80) is deliberately synchronous — it runs in the HTTP handler before the queue is next serviced, so a queued follow-up `getDiscTitle` always executes after it
 
 ### Robustness (unattended operation)
